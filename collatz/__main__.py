@@ -8,6 +8,7 @@ Exemplos:
     python -m collatz exclude --limit-bits 71  # exclusão de ciclos (N = 2^71)
     python -m collatz lyapunov --j 10
     python -m collatz spectral --k 4
+    python -m collatz transfer --k3 3 --k2 6 --n 100000
     python -m collatz tree --depth 120 --x 1000
 """
 
@@ -17,7 +18,8 @@ import argparse
 import math
 import sys
 
-from . import cycles, invariants, padic, report, search, spectral, symmetries, tree
+from . import (cycles, invariants, padic, report, search, spectral,
+               symmetries, transfer, tree)
 
 
 def main(argv=None) -> int:
@@ -48,6 +50,11 @@ def main(argv=None) -> int:
 
     p = sub.add_parser("spectral", help="operador de transferência mod 3^k")
     p.add_argument("--k", type=int, default=3)
+
+    p = sub.add_parser("transfer", help="operador de transferência infinito (p-ádico)")
+    p.add_argument("--k3", type=int, default=3, help="nível 3^k da seção da cadeia de Syracuse")
+    p.add_argument("--k2", type=int, default=6, help="nível 2^k da seção do operador em Z_2")
+    p.add_argument("--n", type=int, default=100_000, help="janela [1,N] da seção em Z_+")
 
     p = sub.add_parser("tree", help="árvore inversa: cobertura/crescimento")
     p.add_argument("--depth", type=int, default=120)
@@ -100,6 +107,35 @@ def main(argv=None) -> int:
     elif args.cmd == "spectral":
         print("uniforme estacionária (exato):", spectral.stationary_uniform_check(args.k))
         print(f"|lambda_2| ~ {spectral.spectral_gap(args.k):.6f}")
+
+    elif args.cmd == "transfer":
+        c3, arg3 = transfer.syracuse_w1_coefficient(args.k3)
+        print(f"Z_3 (Syracuse), nível 3^{args.k3}: coeficiente W1 exato = "
+              f"{c3} ≈ {float(c3):.8f} (cota uniforme 1/3; par extremal {arg3})")
+        print("  ramos contraem por exatamente 1/3:",
+              transfer.syracuse_branch_contraction_check(min(args.k3, 4)))
+        print("  família projetiva pi_k -> pi_{k-1}:",
+              transfer.stationary_projective_check(args.k3))
+        prof = transfer.koopman_decay_profile(args.k3)
+        print(f"  decaimento dev_n <= Lip/3^n: {prof['decay']}; "
+              f"U^k f = pi(f) exato: {prof['finite_time']}")
+        c2, arg2 = transfer.transfer_2adic_w1_coefficient(args.k2)
+        print(f"Z_2 (transferência de T), nível 2^{args.k2}: coeficiente W1 "
+              f"exato = {c2} (par extremal {arg2})")
+        print("  ramos inversos + contração 1/2:",
+              transfer.inverse_branches_check_2adic(min(args.k2, 7)))
+        print("  L^k f = média de Haar exata:",
+              transfer.haar_mixing_check_2adic(args.k2))
+        sec = transfer.finite_section_nilpotency(args.n)
+        print(f"Z_+ (pushforward), seção [1,{args.n:,}]: acíclica = {sec['acyclic']}, "
+              f"índice de nilpotência = {sec['index']} "
+              f"(~{sec['index'] / math.log(args.n):.1f}·ln N; testemunha {sec['witness']})")
+        w = transfer.power_weight_obstruction(8)
+        print(f"  obstrução a pesos n^theta: n = {w['n']} tem 8 passos ímpares, "
+              f"T^8(n)/n = {w['ratio']} ≈ {float(w['ratio']):.2f} > 1")
+        ap = transfer.absorption_profile(min(args.n, 100_000))
+        print(f"  contração em densidade: taxa ≈ {ap['rate']:.4f}/passo "
+              f"(referência grandes desvios {ap['reference_rate']:.4f})")
 
     elif args.cmd == "tree":
         cov = tree.coverage_density(args.x, args.depth)
