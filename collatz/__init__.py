@@ -21,6 +21,11 @@ symmetries  Busca de conjugações afins entre sistemas 3n+d e automorfismos
             afins dos grafos de transição modulares.
 spectral    Operador de transferência de Syracuse em (Z/3^k)*: distribuição
             estacionária exata e lacuna espectral.
+transfer    Operador de transferência INFINITO: Koopman da cadeia de Syracuse
+            em Lip(Z_3) (contração de Wasserstein <= 1/3, uniforme em k),
+            transferência de T em Lip(Z_2) (contração 1/2, Haar invariante)
+            e a face Z_+ (seções nilpotentes, obstrução a pesos n^theta,
+            contração em densidade).
 tree        Árvore inversa (pré-imagens de 1): densidade de cobertura e taxa
             de crescimento.
 report      Orquestra todos os módulos e produz um relatório de achados.
