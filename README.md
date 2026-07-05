@@ -18,6 +18,7 @@ python -m collatz cycles --d -1           # enumeração exata de ciclos (3n-1)
 python -m collatz exclude --limit-bits 71 # exclusão diofantina de ciclos
 python -m collatz lyapunov --j 10         # obstrução à função de Lyapunov
 python -m collatz spectral --k 4          # operador de transferência mod 3^k
+python -m collatz transfer --k3 3 --k2 6  # operador de transferência infinito
 python -m collatz tree --depth 120        # cobertura da árvore inversa
 python -m collatz terras --k 18           # estrutura 2-ádica
 python -m pytest tests/                   # suíte de testes
@@ -111,6 +112,30 @@ obstrução à convergência pode viver em aritmética 3-ádica finita* — o qu
 resta de estrutura é 2-ádico/global (a equidistribuição quantitativa é o
 motor do teorema de Tao 2019).
 
+### 10. `transfer` — o operador de transferência **infinito** (substitui as projeções mod 3^k)
+As matrizes do §8 são seções finitas do operador de Koopman `U` da cadeia de
+Syracuse `x ↦ (3x+1)·2^(−a)` agindo em `C(ℤ₃)` — e sua lacuna ℓ² é trivial,
+logo não diz nada no limite. Este módulo identifica a norma em que a lacuna
+sobrevive: cada ramo contrai a métrica 3-ádica por **exatamente 1/3**
+(verificação exata: a cadeia é um IFS uniformemente contrativo em ℤ₃), e o
+**coeficiente de contração de Wasserstein é τ_k ≤ 1/3 uniforme em k**
+(valores exatos: τ₂ = 5/21, τ₃ = 455/1387, τ₄ ≈ 0.33333206 ↗ 1/3). Logo
+`spec(U|Lip(ℤ₃)) ⊆ {1} ∪ {|z| ≤ 1/3}`: **contração global** (Banach em W₁) —
+medida invariante *única* em ℤ₃ (a medida de Syracuse de Tao; as π_k formam
+família projetiva, verificado exato), equidistribuição a taxa 3^(−n) e
+`U^k f = π(f)` **exatamente** em k passos (o colapso de posto do §8 relido).
+Analogamente em ℤ₂: `Lf(x) = ½f(2x) + ½f((2x−1)/3)` tem coeficiente
+**exatamente 1/2** e `L^k f =` média de Haar exata — mixing máximo, o dual
+funcional-analítico da conjugação de Terras (§4). **A fronteira honesta,
+medida:** em ℓ¹(ℤ₊), onde a conjectura vive, toda seção finita é *nilpotente*
+(espectro {0}; no 3n−1 o detector acusa o ciclo {5,7,10}), nenhum peso `n^θ`
+dá contração uniforme (testemunha exata `n = 2^t−1 ≡ −1 mod 2^t` — a mesma
+obstrução 2-ádica de Karp, §6) e o que resta é contração **em densidade**
+(taxa medida ≈ 0.93/passo). Síntese: as faces finitas têm espectro trivial
+{1}∪{0}, os operadores infinitos têm lacunas máximas com contração global
+provada — a conjectura vive exatamente na fronteira singular ℤ₊ ⊂ ℤ₂
+(Haar-nula), onde massas pontuais não sentem a contração de densidades.
+
 ### 9. `tree` — árvore inversa de 1
 A conjectura ⇔ a árvore de pré-imagens `m → {2m, (2m−1)/3}` cobre ℤ₊.
 O algoritmo mede a cobertura (→ 100% nos intervalos testados), o fator de
@@ -129,9 +154,14 @@ menores inteiros ainda ausentes em cada profundidade (candidatos a estudo).
   argumento por resíduos finitos + log fecha o problema — os ciclos
   negativos/2-ádicos são contraexemplos *do método*, não do teorema.
 * **Direções que o toolkit deixa quantificadas:** lacuna espectral uniforme
-  em 3^k; taxas de grandes desvios do conjunto ruim; densidade da árvore
+  em 3^k — **resolvida** pelo módulo `transfer`: em W₁/Lip(ℤ₃) ela existe e
+  vale ≥ 2/3 (coeficiente ≤ 1/3), com contração global e medida de Syracuse
+  única; taxas de grandes desvios do conjunto ruim; densidade da árvore
   inversa; e a fronteira exata (comprimento de ciclo, altura de excursão)
-  onde um contraexemplo ainda pode se esconder.
+  onde um contraexemplo ainda pode se esconder.  O que o espectro **não**
+  pode dar também ficou delimitado: as três faces finitas (mod 3^k, cilindros
+  2-ádicos, seções [1, N]) têm espectro trivial {1} ∪ {0}, e a passagem ao
+  infinito só produz contração em topologias cegas a ℤ₊.
 
 ## Referências
 * R. Terras, *A stopping time problem on the positive integers*, Acta Arith. 30 (1976).
