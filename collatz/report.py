@@ -210,8 +210,9 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         f"{secm['cycle']} (seção NÃO nilpotente).  E NENHUM peso n^θ dá contração "
         f"uniforme em t passos: testemunha exata n = 2^t−1 ≡ −1 (mod 2^t) (t = 8: "
         f"T^t(n)/n = {w8['ratio']} > 1) — a MESMA obstrução 2-ádica −1 de Karp (§6).")
+    rate_str = f"{ap['rate']:.4f}" if ap['rate'] is not None else "N/A"
     add(f"- O que resta em Z₊ é contração EM DENSIDADE: massa não absorvida em {{1,2}} "
-        f"decai a ≈ {ap['rate']:.4f}/passo (medido; referência de grandes desvios "
+        f"decai a ≈ {rate_str}/passo (medido; referência de grandes desvios "
         f"{ap['reference_rate']:.4f}).  SÍNTESE: todas as faces finitas/compactas têm "
         "espectro trivial {1} ∪ {0} e os operadores infinitos têm lacunas espectrais "
         "máximas (1/3 e 1/2) com contração global provada — a conjectura não é uma "
