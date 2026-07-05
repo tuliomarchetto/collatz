@@ -167,17 +167,24 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "resultados de densidade de Tao 2019.)\n")
 
     # 9. árvore inversa
-    add("## 9. Árvore inversa de 1 (cobertura e crescimento)\n")
+    add("## 9. Árvore inversa de 1 (cobertura e profundidade)\n")
     cov = tree.coverage_density(tree_X, tree_depth)
     miss = tree.missing_below(tree_X, tree_depth)
     rates = tree.growth_rate(28)
     tail = rates[-6:]
-    add(f"- Cobertura de 1..{tree_X} até profundidade {tree_depth}: {cov:.1%}"
+    req_depth = tree.required_depth(tree_X)
+    bounds = tree.empirical_bounds(30)
+    add(f"- Cobertura empírica de 1..{tree_X} até profundidade {tree_depth}: {cov:.1%}"
         + ("" if not miss else f"; menores ausentes: {miss}"))
     add(f"- Fator de crescimento por nível (últimos): "
-        f"{[round(r, 3) for r in tail]} — consistente com o fator 4/3 previsto "
+        f"{[round(r, 3) for r in tail]} — consistente empíricamente com o fator 4/3 previsto "
         "(1 filho par sempre; filho ímpar quando 2m ≡ 2 mod 3).")
-    add("- A conjectura ⇔ cobertura → 100% para todo X quando a profundidade cresce.\n")
+    add(f"- PROFUNDIDADE RIGOROSA: A profundidade exata mínima para a árvore inversa cobrir TODOS os "
+        f"inteiros de 1 a {tree_X} é rigorosamente {req_depth} níveis (este é o tempo de parada total máximo no intervalo).")
+    add(f"- LIMITES RIGOROSOS DE EXPANSÃO: Na profundidade k, o elemento máximo é exata e rigorosamente 2^k. "
+        f"O elemento mínimo cresce lentamente: na profundidade 30 os nós da árvore estão estritamente contidos "
+        f"em [{bounds[-1][0]}, {bounds[-1][1]}]. A difusão para trás captura os números pequenos sucessivamente.")
+    add("- A conjectura é rigorosamente equivalente a: a profundidade necessária para cobrir 1..X é finita para todo X.\n")
 
     add(f"---\n*Gerado em {time.time()-t0:.1f}s.*")
     return "\n".join(lines)

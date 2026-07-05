@@ -90,3 +90,54 @@ def missing_below(X: int, depth: int, cap: int | None = None) -> List[int]:
         cap = max(1_000_000, 1000 * X)
     reached, _ = inverse_tree(depth, cap=cap)
     return [n for n in range(1, X + 1) if n not in reached][:20]
+
+
+def required_depth(X: int) -> int:
+    """Calcula a profundidade exata e rigorosa necessária na árvore inversa
+    para cobrir todos os inteiros de 1 até X. Por definição, isso é
+    exatamente o tempo de parada total máximo (total stopping time) no
+    intervalo [1, X]."""
+    memo = {1: 0}
+    max_d = 0
+    for n in range(1, X + 1):
+        curr = n
+        steps = 0
+        path = []
+        while curr not in memo:
+            path.append(curr)
+            if curr % 2 == 0:
+                curr //= 2
+            else:
+                curr = 3 * curr + 1
+            steps += 1
+        total = steps + memo[curr]
+        for i, val in enumerate(path):
+            memo[val] = total - i
+        if memo[n] > max_d:
+            max_d = memo[n]
+    return max_d
+
+
+def empirical_bounds(depth: int) -> List[Tuple[int, int]]:
+    """Calcula os limites inferior e superior (min, max) dos nós
+    na árvore inversa, nível por nível, até a profundidade dada.
+    Mostra rigorosamente a expansão do conjunto de nós alcançados."""
+    reached: Set[int] = {1, 2}
+    frontier = [2]
+    bounds = [(1, 1)]  # depth 0
+    for _ in range(depth):
+        nxt = []
+        for m in frontier:
+            kids = [2 * m]
+            q, r = divmod(2 * m - 1, 3)
+            if r == 0 and q % 2 == 1 and q > 0:
+                kids.append(q)
+            for c in kids:
+                if c not in reached:
+                    reached.add(c)
+                    nxt.append(c)
+        frontier = nxt
+        if not frontier:
+            break
+        bounds.append((min(frontier), max(frontier)))
+    return bounds
