@@ -78,16 +78,33 @@ decai exponencialmente com a taxa de grandes desvios `1 − H(1/log₂3)`.
   inversa de 1 vive em `n ≢ 0 (mod 3)`.
 
 ### 6. `invariants.karp_max_mean_cycle` — obstrução à função de Lyapunov
-Se existisse `f(n) = log n + w(n mod 2^j)` estritamente decrescente ao longo
-das órbitas, a divergência estaria excluída. Tal `w` existe **sse** o ciclo
-de média máxima do grafo de transição em ℤ/2^j é negativo (algoritmo de
-Karp, exato). **Achado estrutural central:** a média máxima é
-`log₂3 − 1 > 0`, atingida no resíduo `−1 mod 2^j`, e os ciclos de média
-positiva são exatamente os pontos periódicos 2-ádicos dos **ciclos de
-inteiros negativos** (−1, −5, −17). Ou seja: *nenhuma testemunha modular
-finita pode provar a conjectura* — toda prova precisa distinguir ℤ₊ dentro
-de ℤ₂. Isto explica algoritmicamente por que abordagens elementares
-falham e direciona a busca para invariantes não modulares.
+Uma estratégia natural para provar a convergência global seria exibir uma
+função de Lyapunov da forma `f(n) = log n + w(n mod 2^j)` que decresce
+estritamente ao longo das órbitas. É um fato matemático conhecido que a
+existência de ciclos nos inteiros negativos proíbe a existência de tal 
+função em toda a reta, mas este algoritmo reformula essa impossibilidade 
+como um problema de otimização exata em grafos: a função `w` existe 
+**sse** o ciclo de média máxima no grafo de transição (não determinístico) 
+em ℤ/2^j for estritamente negativo.
+
+**A caracterização exata da obstrução:** O algoritmo de Karp não apenas 
+confirma a inexistência de `w` (média máxima = `log₂3 − 1 > 0`), ele 
+isolará inexoravelmente o resíduo `−1 mod 2^j` como o responsável 
+topológico. Por que `-1`? Sob o mapa acelerado `T(n) = (3n+1)/2` (para 
+ímpares), o inteiro `-1` é um **ponto fixo** (`T(-1) = -1`). No grafo de
+transição módulo `2^j`, isso se manifesta como um **laço próprio** (self-loop)
+no nó `2^j - 1`, cujas transições são exclusivamente formadas por passos 
+ímpares. Como cada passo ímpar tem um ganho associado de `log₂(3/2) = log₂3 − 1`,
+este laço possui um saldo estritamente positivo e incompensável.
+
+Matematicamente, se tentássemos construir o potencial compensatório `w`, a
+condição de decréscimo ao longo desse laço próprio exigiria:
+`w(-1) - w(-1) + log₂3 - 1 < 0  ⟹  log₂3 - 1 < 0` (Contradição!).
+Isso demonstra rigorosamente que abordagens baseadas exclusivamente em resíduos
+finitos falham não por uma limitação técnica, mas porque a aritmética modular
+é "cega" à diferença entre ℤ₊ (onde queremos provar que não há divergência) e
+o elemento `-1 ∈ ℤ₂` (onde um ciclo de crescimento positivo real existe).
+Qualquer prova precisará quebrar essa simetria 2-ádica.
 
 ### 7. `symmetries` — conjugações afins e rigidez
 Busca exaustiva de `φ(x) = ax + b` com `φ∘T_d = T_{d'}∘φ`. Achados:
@@ -107,10 +124,11 @@ em 2 mod 3 duas vezes mais que em 1, pois `(3n+1)/2^a ≡ (−1)^a mod 3` com
 racional para todo 3^k. **Segundo achado exato:** o espectro além de
 λ₁ = 1 é `{0}` — linhas de P coincidem para `r ≡ r' (mod 3^{k-1})`, logo
 P^k tem posto 1 (`memory_loss_check` verifica em aritmética racional): a
-cadeia perde toda a memória mod 3^k em exatamente k passos. *Nenhuma
-obstrução à convergência pode viver em aritmética 3-ádica finita* — o que
-resta de estrutura é 2-ádico/global (a equidistribuição quantitativa é o
-motor do teorema de Tao 2019).
+cadeia perde toda a memória mod 3^k em exatamente k passos. Do ponto de
+vista estrutural, a nilpotência dessa projeção sugere que obstruções à 
+convergência não podem ser detectadas puramente por aritmética 3-ádica
+finita; a memória modular se dissipa, deixando a estrutura global/2-ádica 
+como o provável motor do comportamento assintótico (ver Tao, 2019).
 
 ### 9. `tree` — árvore inversa de 1
 A conjectura ⇔ a árvore de pré-imagens `m → {2m, (2m−1)/3}` cobre ℤ₊.
@@ -133,15 +151,16 @@ família projetiva, verificado exato), equidistribuição a taxa 3^(−n) e
 `U^k f = π(f)` **exatamente** em k passos (o colapso de posto do §8 relido).
 Analogamente em ℤ₂: `Lf(x) = ½f(2x) + ½f((2x−1)/3)` tem coeficiente
 **exatamente 1/2** e `L^k f =` média de Haar exata — mixing máximo, o dual
-funcional-analítico da conjugação de Terras (§4). **A fronteira honesta,
-medida:** em ℓ¹(ℤ₊), onde a conjectura vive, toda seção finita é *nilpotente*
-(espectro {0}; no 3n−1 o detector acusa o ciclo {5,7,10}), nenhum peso `n^θ`
-dá contração uniforme (testemunha exata `n = 2^t−1 ≡ −1 mod 2^t` — a mesma
-obstrução 2-ádica de Karp, §6) e o que resta é contração **em densidade**
-(taxa medida ≈ 0.93/passo). Síntese: as faces finitas têm espectro trivial
-{1}∪{0}, os operadores infinitos têm lacunas máximas com contração global
-provada — a conjectura vive exatamente na fronteira singular ℤ₊ ⊂ ℤ₂
-(Haar-nula), onde massas pontuais não sentem a contração de densidades.
+funcional-analítico da conjugação de Terras (§4).
+Estes resultados estabelecem contração em espaços de densidades globais.
+Contudo, em ℓ¹(ℤ₊) — onde a conjectura efetivamente vive —, toda seção
+finita do operador testada exibe comportamento nilpotente (espectro {0}) e 
+nenhum peso elementar `n^θ` produz contração uniforme (devido à mesma 
+obstrução de Karp, `n ≡ -1 mod 2^t`). Isso ilustra a lacuna conceitual 
+entre C e D: a contração de distribuições globais (Wasserstein em ℤ₃)
+não implica rigorosamente o colapso de massas pontuais num conjunto
+Haar-nulo como ℤ₊. O comportamento rigoroso em densidades não se traduz,
+de forma elementar, em conclusões para órbitas pontuais.
 
 ## Síntese: o que os achados dizem sobre prova × contraexemplo
 
@@ -158,10 +177,12 @@ provada — a conjectura vive exatamente na fronteira singular ℤ₊ ⊂ ℤ₂
   vale ≥ 2/3 (coeficiente ≤ 1/3), com contração global e medida de Syracuse
   única; taxas de grandes desvios do conjunto ruim; densidade da árvore
   inversa; e a fronteira exata (comprimento de ciclo, altura de excursão)
-  onde um contraexemplo ainda pode se esconder.  O que o espectro **não**
-  pode dar também ficou delimitado: as três faces finitas (mod 3^k, cilindros
-  2-ádicos, seções [1, N]) têm espectro trivial {1} ∪ {0}, e a passagem ao
-  infinito só produz contração em topologias cegas a ℤ₊.
+  onde um contraexemplo ainda pode se esconder. Os limites da abordagem espectral
+  também ficam evidentes: projeções finitas (mod 3^k, cilindros 2-ádicos,
+  seções de dimensão finita) apresentam espectro trivial {1} ∪ {0}, e a 
+  contração garantida pelos limites infinitos ocorre em topologias fracas 
+  (como a métrica de Wasserstein), que descrevem a evolução de distribuições, 
+  mas não impõem uma restrição direta e incondicional a pontos singulares em ℤ₊.
 
 ## Referências
 * R. Terras, *A stopping time problem on the positive integers*, Acta Arith. 30 (1976).

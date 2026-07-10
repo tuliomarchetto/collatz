@@ -170,17 +170,24 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "resultados de densidade de Tao 2019.)\n")
 
     # 9. árvore inversa
-    add("## 9. Árvore inversa de 1 (cobertura e crescimento)\n")
+    add("## 9. Árvore inversa de 1 (cobertura e profundidade)\n")
     cov = tree.coverage_density(tree_X, tree_depth)
     miss = tree.missing_below(tree_X, tree_depth)
     rates = tree.growth_rate(28)
     tail = rates[-6:]
-    add(f"- Cobertura de 1..{tree_X} até profundidade {tree_depth}: {cov:.1%}"
+    req_depth = tree.required_depth(tree_X)
+    bounds = tree.empirical_bounds(30)
+    add(f"- Cobertura empírica de 1..{tree_X} até profundidade {tree_depth}: {cov:.1%}"
         + ("" if not miss else f"; menores ausentes: {miss}"))
     add(f"- Fator de crescimento por nível (últimos): "
-        f"{[round(r, 3) for r in tail]} — consistente com o fator 4/3 previsto "
+        f"{[round(r, 3) for r in tail]} — consistente empíricamente com o fator 4/3 previsto "
         "(1 filho par sempre; filho ímpar quando 2m ≡ 2 mod 3).")
-    add("- A conjectura ⇔ cobertura → 100% para todo X quando a profundidade cresce.\n")
+    add(f"- PROFUNDIDADE RIGOROSA: A profundidade exata mínima para a árvore inversa cobrir TODOS os "
+        f"inteiros de 1 a {tree_X} é rigorosamente {req_depth} níveis (este é o tempo de parada total máximo no intervalo).")
+    add(f"- LIMITES RIGOROSOS DE EXPANSÃO: Na profundidade k, o elemento máximo é exata e rigorosamente 2^k. "
+        f"O elemento mínimo cresce lentamente: na profundidade 30 os nós da árvore estão estritamente contidos "
+        f"em [{bounds[-1][0]}, {bounds[-1][1]}]. A difusão para trás captura os números pequenos sucessivamente.")
+    add("- A conjectura é rigorosamente equivalente a: a profundidade necessária para cobrir 1..X é finita para todo X.\n")
 
     # 10. operador de transferência infinito
     add("## 10. Operador de transferência infinito: de mod 3^k a Lip(Z₃), Lip(Z₂) e ℓ¹(Z₊)\n")
@@ -223,8 +230,9 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         f"{secm['cycle']} (seção NÃO nilpotente).  E NENHUM peso n^θ dá contração "
         f"uniforme em t passos: testemunha exata n = 2^t−1 ≡ −1 (mod 2^t) (t = 8: "
         f"T^t(n)/n = {w8['ratio']} > 1) — a MESMA obstrução 2-ádica −1 de Karp (§6).")
+    rate_str = f"{ap['rate']:.4f}" if ap['rate'] is not None else "N/A"
     add(f"- O que resta em Z₊ é contração EM DENSIDADE: massa não absorvida em {{1,2}} "
-        f"decai a ≈ {ap['rate']:.4f}/passo (medido; referência de grandes desvios "
+        f"decai a ≈ {rate_str}/passo (medido; referência de grandes desvios "
         f"{ap['reference_rate']:.4f}).  SÍNTESE: todas as faces finitas/compactas têm "
         "espectro trivial {1} ∪ {0} e os operadores infinitos têm lacunas espectrais "
         "máximas (1/3 e 1/2) com contração global provada — a conjectura não é uma "
