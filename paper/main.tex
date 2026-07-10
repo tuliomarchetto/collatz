@@ -57,7 +57,7 @@ Let $T:\Z\to\Z$ be the accelerated Collatz map,
 \[
 T(n)=\begin{cases} n/2, & n \text{ even},\\ (3n+1)/2, & n \text{ odd}.\end{cases}
 \]
-The Collatz conjecture asserts that every $n\ge 1$ reaches the cycle $\{1,2\}$ under iteration of $T$. The problem has an extensive literature, surveyed by Lagarias \cite{lagarias1985,lagarias2010}; the strongest partial results include Terras's theorem that almost every $n$ has finite stopping time \cite{terras1976}, the density bounds of Krasikov and Lagarias \cite{krasikovlagarias2003}, lower bounds on the length of hypothetical nontrivial cycles by Eliahou \cite{eliahou1993} and Simons--de Weger \cite{simonsdeweger2005}, Tao's theorem that almost all orbits attain almost bounded values \cite{tao2022}, and the computational verification of convergence for all $n\le 2^{68}$ by Barina \cite{barina2021}. Functional-analytic and Markov-chain approaches to the $3n+1$ map, close in spirit to our Section~\ref{sec:wasserstein}, are developed systematically by Wirsching \cite{wirsching1998}.
+The Collatz conjecture asserts that every $n\ge 1$ reaches the cycle $\{1,2\}$ under iteration of $T$. The problem has an extensive literature, surveyed by Lagarias \cite{lagarias1985,lagarias2010}; the strongest partial results include Terras's theorem that almost every $n$ has finite stopping time \cite{terras1976} (obtained independently by Everett \cite{everett1977}), the density bounds of Krasikov and Lagarias \cite{krasikovlagarias2003}, lower bounds on the length of hypothetical nontrivial cycles by Eliahou \cite{eliahou1993}, Simons--de Weger \cite{simonsdeweger2005} and, most recently, Hercher \cite{hercher2023}, Tao's theorem that almost all orbits attain almost bounded values \cite{tao2022}, and the computational verification of convergence for all $n\le 2^{68}$ by Barina \cite{barina2021}. Functional-analytic and Markov-chain approaches to the $3n+1$ map, close in spirit to our Section~\ref{sec:wasserstein}, are developed systematically by Wirsching \cite{wirsching1998}; the induced Markov chains modulo $3^k$ of generalized Collatz maps, including their stationary vectors, were studied by Matthews and Watts \cite{matthewswatts1984,matthewswatts1985}.
 
 This paper has two aims. The first is to prove a nonexistence theorem for a natural class of candidate Lyapunov functions (Section~\ref{sec:main}) and two exact contraction theorems for the transfer structure of the map on the $2$-adic and $3$-adic completions (Section~\ref{sec:wasserstein}). The second is methodological: we describe a small computational laboratory, built exclusively on exact arithmetic, whose outputs instantiate the theory --- enumerating cycles as solutions of a Diophantine equation, certifying continued-fraction data by integer comparisons, and computing Wasserstein contraction coefficients as exact rationals (Sections~\ref{sec:algorithms}--\ref{sec:results}).
 
@@ -110,7 +110,7 @@ T_d(n)=\begin{cases} n/2, & n \text{ even},\\ (3n+d)/2, & n \text{ odd},\end{cas
 and we write $T = T_1$. The \emph{Syracuse map} $S$ acts on odd integers by $S(n) = (3n+1)/2^{\nutwo(3n+1)}$. The \emph{parity vector} of length $k$ of $n$ is $\bigl(n \bmod 2,\, T(n) \bmod 2,\, \dots,\, T^{k-1}(n) \bmod 2\bigr) \in \{0,1\}^k$.
 \end{definition}
 
-We will use Terras's structural theorem: the length-$k$ parity vector, as a function of $n \bmod 2^k$, is a bijection of $\Z/2^k\Z$ onto $\{0,1\}^k$, and $T$ extends to $\Ztwo$ where it is topologically conjugate to the one-sided shift \cite{terras1976,lagarias1985}.
+We will use Terras's structural theorem: the length-$k$ parity vector, as a function of $n \bmod 2^k$, is a bijection of $\Z/2^k\Z$ onto $\{0,1\}^k$, and $T$ extends to $\Ztwo$ where it is topologically conjugate to the one-sided shift \cite{terras1976,lagarias1985}; the conjugacy map itself is studied in detail by Bernstein and Lagarias \cite{bernsteinlagarias1996}.
 
 \begin{definition}[Wasserstein distance and contraction coefficient]\label{def:w1}
 Let $(X,d)$ be a compact metric space and $\mu,\nu$ Borel probability measures on $X$. The Kantorovich--Rubinstein distance is
@@ -240,7 +240,7 @@ which forces $3^k < 2^k$, false for every $k \ge 1$.
 \end{proof}
 
 \begin{remark}[Relation to the literature]\label{rem:originality}
-That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$; see Section~\ref{sec:results-cycles}), and a strictly decreasing $V$ defined on all of $\Z\setminus\{0\}$ would forbid them. The content of Theorem~\ref{thm:main} is sharper: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional, caused by the projection of the single $2$-adic point $-1$ rather than by any actual cycle in the domain of the hypothesis. To our knowledge, this positive-integer formulation is not stated explicitly in the sources cited here \cite{terras1976,lagarias1985,eliahou1993,krasikovlagarias2003,simonsdeweger2005,lagarias2010,tao2022}. We make no claim of priority; such a claim requires a broader dedicated literature review. Section~\ref{sec:karp} recasts the theorem as the infeasibility of a system of difference constraints and Section~\ref{sec:results-karp} locates the obstruction computationally at every level $5 \le j \le 10$.
+That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$; see Section~\ref{sec:results-cycles}), and a strictly decreasing $V$ defined on all of $\Z\setminus\{0\}$ would forbid them. Moreover, the underlying phenomenon is folklore: it has been understood since the coefficient/stopping-time analyses of Terras \cite{terras1976} and Everett \cite{everett1977} that the residue class $-1 \bmod 2^k$ rises for $k$ consecutive accelerated steps (e.g.\ $n = 2^k - 1$), so no descent argument that reads only a fixed finite dyadic residue can be uniform. The content of Theorem~\ref{thm:main} is the precise packaging of this phenomenon as a nonexistence statement for the class of Definition~\ref{def:lyap}: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional, caused by the projection of the single $2$-adic point $-1$ rather than by any actual cycle in the domain of the hypothesis. To our knowledge, this positive-integer formulation is not stated explicitly in the sources cited here \cite{terras1976,everett1977,lagarias1985,eliahou1993,krasikovlagarias2003,simonsdeweger2005,lagarias2010,tao2022}, but we regard the theorem as a formalization of a known heuristic rather than a new phenomenon. We make no claim of priority; such a claim requires a broader dedicated literature review. Section~\ref{sec:karp} recasts the theorem as the infeasibility of a system of difference constraints and Section~\ref{sec:results-karp} locates the obstruction computationally at every level $5 \le j \le 10$.
 \end{remark}
 
 \section{Wasserstein contraction of the transfer structure}\label{sec:wasserstein}
@@ -332,7 +332,7 @@ The remaining assertions follow from Lemma~\ref{lem:dobrushin} with $\tau = 1/3$
 \end{proof}
 
 \begin{remark}\label{rem:tauk}
-The bound $\tau(P_k) \le 1/3$ is uniform in $k$. The exact finite-level values computed in rational arithmetic in Section~\ref{sec:results-wasserstein} are $\tau_2 = 5/21$, $\tau_3 = 455/1387$, and $\tau_4 = 7635497415/22906579627 \approx 0.33333206$; they satisfy $\tau_2 < \tau_3 < \tau_4 \le 1/3$. These three calculations do not by themselves establish an asymptotic limit for $\tau(P_k)$.
+The bound $\tau(P_k) \le 1/3$ is uniform in $k$. The exact finite-level values computed in rational arithmetic in Section~\ref{sec:results-wasserstein} are $\tau_2 = 5/21$, $\tau_3 = 455/1387$, and $\tau_4 = 7635497415/22906579627 \approx 0.33333206$; they satisfy $\tau_2 < \tau_3 < \tau_4 \le 1/3$. These three calculations do not by themselves establish an asymptotic limit for $\tau(P_k)$. Likewise, whether the coefficient on the full space is exactly $\tau(P) = 1/3$, i.e.\ whether the synchronous-coupling upper bound of Theorem~\ref{thm:z3} is attained in the supremum over $\Zthree$, is left open here; the monotone finite-level values are consistent with $\tau(P_k) \uparrow 1/3$ but prove neither the limit nor its attainment.
 \end{remark}
 
 We now turn to the dual chain on $\Ztwo$. The accelerated map $T$ extends continuously to $\Ztwo$ and preserves Haar measure; it is conjugate to the one-sided Bernoulli shift \cite{terras1976,lagarias1985}. Its transfer (backward) chain is driven by the two inverse branches of $T$ on $\Ztwo$:
@@ -369,7 +369,7 @@ Since each branch scales the metric by $\tfrac12$, $|\psi_u(x) - \psi_u(y)|_2 = 
 \end{proof}
 
 \begin{remark}\label{rem:duality}
-Theorem~\ref{thm:z2}(3) is the functional-analytic reading of Terras's conjugacy with the Bernoulli shift \cite{terras1976}: the backward chain forgets the level-$k$ observable in exactly $k$ steps, i.e.\ mixing is not merely geometric but \emph{finite-time} on cylinder observables. It is also the exact analogue of the finite-level rank collapse of the Syracuse chain (Section~\ref{sec:results-spectral}).
+Theorem~\ref{thm:z2}(3) is the functional-analytic reading of Terras's conjugacy with the Bernoulli shift \cite{terras1976}: the backward chain forgets the level-$k$ observable in exactly $k$ steps, i.e.\ mixing is not merely geometric but \emph{finite-time} on cylinder observables. It is also the exact analogue of the finite-level rank collapse of the Syracuse chain (Proposition~\ref{prop:rankcollapse}).
 \end{remark}
 
 \begin{remark}[Scope of the contraction theorems]\label{rem:scope}
@@ -466,6 +466,24 @@ Proposition~\ref{prop:karpfeas} recasts Theorem~\ref{thm:main} as the infeasibil
 
 The projected Syracuse kernel $P_k$ on $\{r \bmod 3^k : 3 \nmid r\}$ is computed exactly: since $2$ is a primitive root modulo $3^k$, the multiplier $2^{-a} \bmod 3^k$ is periodic in $a$ with period $\varphi(3^k) = 2\cdot 3^{k-1}$, so the total transition mass onto each target residue is a finite geometric aggregate, a closed-form rational. Stationary measures are obtained by Gaussian elimination over $\mathbb{Q}$.
 
+The finite-time memory loss observed numerically at low levels is in fact a theorem, valid at every level:
+
+\begin{proposition}[Finite-time rank collapse of $P_k$]\label{prop:rankcollapse}
+Fix $k \ge 1$. For $0 \le j \le k$, the $j$-step transition law $P_k^{\,j}(r,\cdot)$ depends only on $r \bmod 3^{k-j}$. In particular all rows of $P_k^{\,k}$ coincide with the stationary distribution $\pi_k$, i.e.\ $P_k^{\,k} = \mathbf{1}\pi_k$, and $\operatorname{spec}(P_k) = \{1\} \cup \{0\}$.
+\end{proposition}
+
+\begin{proof}
+For every branch and every $\ell \ge 1$, the residue $\varphi_a(x) = (3x+1)2^{-a} \bmod 3^\ell$ depends only on $x \bmod 3^{\ell-1}$, since $3x \bmod 3^\ell$ is determined by $x \bmod 3^{\ell-1}$ and $2^{-a}$ is a fixed unit. Hence the law of the next state modulo $3^\ell$ depends only on the current state modulo $3^{\ell-1}$.
+
+We prove the first claim by induction on $j$; the case $j = 0$ is trivial. Assume $P_k^{\,j}(s,\cdot)$ depends only on $s \bmod 3^{k-j}$, with $j < k$. Grouping the sum over intermediate states by their class $c$ modulo $3^{k-j}$,
+\[
+P_k^{\,j+1}(r,\cdot) \;=\; \sum_{c \bmod 3^{k-j}} \Pr\bigl[\text{next state} \equiv c \ (3^{k-j}) \mid r\bigr]\; P_k^{\,j}(c,\cdot),
+\]
+and by the branch property with $\ell = k-j \ge 1$ each probability in the sum depends only on $r \bmod 3^{k-j-1}$, completing the induction.
+
+At $j = k$ the rows of $P_k^{\,k}$ depend on $r \bmod 3^0$, i.e.\ they are all equal to a single distribution $\rho$; stationarity gives $\pi_k = \pi_k P_k^{\,k} = \rho$, so $P_k^{\,k} = \mathbf{1}\pi_k$. Finally, if $\lambda$ is an eigenvalue of $P_k$ with eigenvector $v$, then $\lambda^k v = P_k^{\,k} v = (\pi_k v)\mathbf{1}$; either $\lambda^k = 0$, or $v$ is a multiple of $\mathbf{1}$ and $\lambda = 1$.
+\end{proof}
+
 Wasserstein distances on the quotient are also exact, via the closed form on ultrametric spaces:
 
 \begin{lemma}[$\dW$ on $\Z/p^k\Z$]\label{lem:w1formula}
@@ -559,7 +577,7 @@ $N = 2^{68}$ (published in \cite{barina2021}) & $k > 8{,}517{,}411{,}709$ & $> 1
 \bottomrule
 \end{tabular}
 \end{center}
-The second row uses the published verification limit of \cite{barina2021}. These reproduce the method of \cite{eliahou1993,simonsdeweger2005}.
+The second row uses the published verification limit of \cite{barina2021}. These reproduce the method of \cite{eliahou1993,simonsdeweger2005}; they do not improve on the state of the art, which combines this circle of ideas with additional constraints on the number of local minima --- Hercher \cite{hercher2023} proves that any nontrivial cycle has at least $92$ local minima, yielding stronger exclusion bounds than the plain Diophantine argument reproduced here.
 
 \subsection{Locating the obstruction (R4)}\label{sec:results-karp}
 Karp's algorithm on $G_j$ for $j = 5,\dots,10$ returns the self-loop at $-1 \bmod 2^j$ as an optimal cycle in every run, with maximum mean $\log_2 3 - 1 = 0.5849625\ldots$ (float agreement $< 2\cdot10^{-15}$; value certified symbolically per Section~\ref{sec:methodology}). This is the finite-level fingerprint of Theorem~\ref{thm:main}; the computation is not used to claim uniqueness of the optimal cycle.
@@ -568,7 +586,7 @@ Karp's algorithm on $G_j$ for $j = 5,\dots,10$ returns the self-loop at $-1 \bmo
 The conjecture is equivalent to the statement that the preimage tree of $1$ under $T$ (edges $m \to 2m$ and, when integral and odd, $m \to (2m-1)/3$) covers $\Z_+$. Exact BFS gives: the minimum depth at which the tree rooted at $1$ covers all of $\{1,\dots,1000\}$ is $113$ (the depth of $n = 871$, equivalently the maximum total stopping time in the range); and at level $30$ the new nodes span exactly the interval of values $[123,\ 2^{31}]$ (minimum and maximum new node). Growth per level is $\approx 4/3$, consistent with the branching heuristic; Krasikov--Lagarias prove the reached set below $X$ has cardinality $\ge X^{0.84}$ \cite{krasikovlagarias2003}.
 
 \subsection{Finite-level Syracuse spectra (R6)}\label{sec:results-spectral}
-For the projected kernel $P_k$ (exact rationals, Section~\ref{sec:transfer-alg}), the uniform measure is \emph{not} stationary; the exact stationary measure modulo $3$ is $\pi(1) = 1/3$, $\pi(2) = 2/3$ --- Syracuse iterates fall on $2 \bmod 3$ twice as often as on $1 \bmod 3$, an exact consequence of $(3n+1)/2^a \equiv (-1)^a \pmod 3$ with $\Pr[a \text{ odd}] = 2/3$ under Lemma~\ref{lem:geometric}. At the reproduced level $k=3$, $P_3^{\,3} = \mathbf{1}\pi_3$ exactly in rational arithmetic. This finite rank-collapse check complements the Wasserstein contraction result of Theorem~\ref{thm:z3}; it does not substitute for a general spectral statement about all finite sections.
+For the projected kernel $P_k$ (exact rationals, Section~\ref{sec:transfer-alg}), the uniform measure is \emph{not} stationary; the exact stationary measure modulo $3$ is $\pi(1) = 1/3$, $\pi(2) = 2/3$ --- Syracuse iterates fall on $2 \bmod 3$ twice as often as on $1 \bmod 3$, an exact consequence of $(3n+1)/2^a \equiv (-1)^a \pmod 3$ with $\Pr[a \text{ odd}] = 2/3$ under Lemma~\ref{lem:geometric}. At the reproduced level $k=3$, $P_3^{\,3} = \mathbf{1}\pi_3$ exactly in rational arithmetic --- an instantiation of Proposition~\ref{prop:rankcollapse}, which proves $P_k^{\,k} = \mathbf{1}\pi_k$ and $\operatorname{spec}(P_k) = \{1\} \cup \{0\}$ for every $k$; the exact check validates the implementation. The study of these induced chains modulo $3^k$, including the non-uniform stationary vector, goes back to Matthews and Watts \cite{matthewswatts1984,matthewswatts1985}, and the mod-$3$ distribution $(1/3, 2/3)$ of Syracuse iterates is implicit in the analysis of the Syracuse offsets in \cite{tao2022}; the computation here reproduces these facts exactly rather than discovering them.
 
 \subsection{Exact Wasserstein coefficients (R7)}\label{sec:results-wasserstein}
 Lemma~\ref{lem:w1formula} applied to the exact kernels:
@@ -604,7 +622,7 @@ The theorem does not rule out Lyapunov constructions outside the finite-modular 
 \end{itemize}
 
 \subsection*{Wasserstein contraction and prior theory}
-Our secondary contribution (Theorems~\ref{thm:z3} and \ref{thm:z2}) identifies the exact norm in which the transfer structure of the map contracts uniformly (Wasserstein over the compact $p$-adic rings, with coefficients $1/3$ and $1/2$). One might ask if these results already follow from existing transfer-operator theory. While rapid mixing is well known \cite{terras1976,wirsching1998}, previous formulations often rely on functional-analytic bounds or lack explicit, dimension-free constants. Our bounds are exact and purely geometric, providing a much simpler mechanism for finite-time Haar averaging that contrasts sharply with the trivial $\ell^2$ spectra of all finite sections.
+Our secondary contribution (Theorems~\ref{thm:z3} and \ref{thm:z2}) identifies a norm in which the transfer structure of the map contracts uniformly (Wasserstein over the compact $p$-adic rings, with coefficients $1/3$ and $1/2$). These results are elementary consequences of the fact that the inverse branches are uniform ultrametric contractions ($|3|_3 = 1/3$, $|2|_2 = 1/2$), combined with the Banach fixed point theorem; the mixing phenomena they quantify are well known \cite{terras1976,wirsching1998,matthewswatts1985,tao2022}, and unique ergodicity of the Syracuse model is implicit in the construction of the Syracuse measure in \cite{tao2022}. What we believe is useful here is the packaging: explicit, dimension-free Dobrushin--Wasserstein coefficients, exact rational values at finite levels, and a purely geometric mechanism for finite-time Haar averaging that contrasts with the trivial $\ell^2$ spectra of the finite sections (Proposition~\ref{prop:rankcollapse}).
 
 \subsection*{Extensions and related systems}
 A concrete route to generalized affine maps is to identify fixed points or cycles in an appropriate $p$-adic completion, determine their multiplier, and then test whether positive integer representatives in the same finite residue classes retain a positive logarithmic gain. The present proof supplies this template for the accelerated $3n+1$ map through the fixed point $-1\in\Ztwo$. For generalized $3n+d$ maps and for maps based on other primes, the relevant completion, inverse branches, and gain function must be specified anew; a $p$-adic cycle alone does not automatically yield an obstruction. This separates a tractable local calculation from the additional global work needed to formulate a valid modular Lyapunov class for another system.
