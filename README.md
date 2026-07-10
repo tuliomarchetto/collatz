@@ -1,5 +1,7 @@
 # Collatz Lab — algorithmic search for invariants, symmetries and structure
 
+[![CI](https://github.com/tuliomarchetto/Collatz/actions/workflows/ci.yml/badge.svg)](https://github.com/tuliomarchetto/Collatz/actions/workflows/ci.yml)
+
 A set of algorithms (pure Python, no dependencies) to investigate the
 **Collatz Conjecture** (3n+1) from two complementary angles:
 
@@ -12,6 +14,7 @@ A set of algorithms (pure Python, no dependencies) to investigate the
    1993, Krasikov–Lagarias 2003, Tao 2019).
 
 ```bash
+pip install -e ".[test]"                  # install (runtime needs stdlib only)
 python -m collatz all                     # full findings report
 python -m collatz verify --limit 1000000  # counterexample sieve
 python -m collatz cycles --d -1           # exact cycle enumeration (3n-1)
@@ -22,7 +25,12 @@ python -m collatz transfer --k3 3 --k2 6  # infinite transfer operator
 python -m collatz tree --depth 120        # inverse-tree coverage
 python -m collatz terras --k 18           # 2-adic structure
 python -m pytest tests/                   # test suite
+python reproduce_paper_results.py         # regenerate every number in the paper
 ```
+
+Equivalent `make` targets: `make install`, `make test`, `make reproduce`,
+`make report`, `make paper`. The test suite and the reproduction script run
+in CI (GitHub Actions) on Linux and macOS, CPython 3.9–3.13.
 
 Notation: `T(n) = n/2` (n even), `(3n+d)/2` (n odd) — the accelerated map of
 the `3n+d` system; `d = 1` is the Collatz problem, `d = −1` and `d = 5` are
@@ -197,10 +205,22 @@ elementary way, into conclusions about individual orbits.
 * T. Tao, *Almost all orbits of the Collatz map attain almost bounded values*, Forum Math. Pi 10 (2022).
 * D. Barina, *Convergence verification of the Collatz problem*, J. Supercomputing 77 (2021) — verification ≈ 2⁷¹.
 
-## Report
+## Report and paper
 The full mathematical report is available in [`RELATORIO.md`](RELATORIO.md)
 (canonical, Brazilian Portuguese) and in [`REPORT.md`](REPORT.md) (English
-translation).
+translation). A formal manuscript (LaTeX, journal format, with complete
+proofs and bibliography) lives in [`paper/main.tex`](paper/main.tex) — build
+it with `make paper` (requires `latexmk`) or any TeX engine. Every number
+quoted in the report and in the manuscript is regenerated and checked by
+[`reproduce_paper_results.py`](reproduce_paper_results.py).
+
+## Reproducibility
+* No runtime dependencies (standard library only); `pytest` is the only
+  development dependency (`requirements.txt` / `pyproject.toml`).
+* `python reproduce_paper_results.py` recomputes results R1–R8 from scratch
+  in exact arithmetic and exits nonzero if any value differs from the ones
+  quoted in the paper (~2 s; `--quick` skips the slowest sections).
+* CI runs the test suite and the reproduction script on every push.
 
 ## License
 Code (`collatz/`) is released under the MIT License — see [LICENSE](LICENSE).

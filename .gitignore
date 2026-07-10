@@ -2,3 +2,16 @@ __pycache__/
 *.pyc
 .pytest_cache/
 CLAUDE.md
+*.egg-info/
+build/
+dist/
+.venv/
+# LaTeX build artifacts (paper/main.pdf is reproducible via `make paper`)
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.synctex.gz

@@ -1,0 +1,6 @@
+# Runtime: none — the `collatz` package uses only the Python standard
+# library (fractions, decimal, math) by design, so that every reported
+# number is exact and reproducible without third-party numerics.
+#
+# Development / verification:
+pytest>=7

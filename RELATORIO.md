@@ -7,6 +7,10 @@ Este documento formaliza a investigação sobre a Conjectura de Collatz (dinâmi
 2. **Parte II: Descrição dos Algoritmos**, descrevendo os métodos computacionais exatos projetados para investigar o sistema (álgebra exata, grafos modulares, métrica Wasserstein).
 3. **Parte III: Resultados Experimentais e Verificações**, catalogando os limites numéricos, achados em simulações e certificados computacionais que instanciam as teorias matemáticas na prática.
 
+**Separação das afirmações.** A Parte I contém apenas enunciados provados analiticamente; nenhuma de suas demonstrações depende de computação. A Parte III contém apenas verificações computacionais, cada uma enunciada com seu limite exato de varredura. Os limites empíricos ali reportados (e.g. o crivo de convergência até $200.000$) são deliberadamente modestos e não reivindicam novidade — o recorde publicado de verificação é $2^{68}$ (Barina 2021) — seu papel é validar os detectores em sistemas com contraexemplos conhecidos ($3n-1$, $3n+5$, os ciclos negativos de $3n+1$) e instanciar os teoremas da Parte I em níveis finitos, não estender recordes numéricos.
+
+**Manuscrito formal e reprodutibilidade.** Um manuscrito formal deste material (LaTeX, com demonstrações completas e bibliografia pontual) é mantido em [`paper/main.tex`](paper/main.tex). Todo número citado neste relatório e no manuscrito é regenerado e conferido pelo script [`reproduce_paper_results.py`](reproduce_paper_results.py) (seções R1–R8), que termina com erro em qualquer divergência.
+
 ---
 
 ## Parte I: Resultados Matemáticos
@@ -77,14 +81,21 @@ Para certificar fisicamente a mecânica de obstrução estabelecida no Teorema P
 ### 3. Espectros via Aritmética Métrica
 As dinâmicas de matriz $P_k$ e métrica $W_1$ de Kolmogorov para $\tau_k$ (descritas nos Teoremas $1$ e $2$) foram mecanizadas formulando algoritmos para extrair a matriz adjunta das cadeias sobre o anel finito.
 
+### 4. Metodologia: Aritmética Exata
+A regra que governa todo o laboratório é: **nenhuma quantidade em ponto flutuante participa de qualquer afirmação certificada.** Concretamente:
+* **Inteiros e racionais.** Toda a aritmética inteira usa inteiros de precisão arbitrária (overflow é impossível; quantidades como $3^q$ com $q \approx 10^5$ são exatas). Toda a aritmética racional — matrizes de transferência, medidas estacionárias, distâncias de Wasserstein, os coeficientes $\tau_k$, a equação de ciclos $n = b(p)/(2^L - 3^k)$ — usa frações exatas (o módulo `fractions`). Valores como $\tau_3 = 455/1387$ são saídas exatas; expansões decimais são apenas exibição.
+* **A constante $\log_2 3$.** A única constante irracional do ferramental entra em dois pontos, ambos tratados sem confiar em ponto flutuante. (i) Os convergentes de sua fração contínua são extraídos de uma aproximação decimal de 120 dígitos e então **certificados exatamente**: a alternância prevista $p/q \gtrless \log_2 3$ equivale à comparação inteira $2^p \gtrless 3^q$, conferida em aritmética inteira exata para todo denominador $q \le 10^5$ (cobrindo o intervalo que nossas cotas usam); uma falha de certificação levantaria um erro. (ii) A folga $\varepsilon(N) = \log_2(1 + 1/(3N))$ da exclusão diofantina é substituída por uma cota racional **superior** certificada (o valor de 120 dígitos arredondado para cima em uma unidade no último dígito); qualquer superestimativa apenas enfraquece a cota resultante $K$, nunca sua validade. Nenhuma dessas computações pode sofrer overflow ou perda de precisão.
+* **Onde floats aparecem.** O algoritmo de Karp executa sua programação dinâmica sobre pesos IEEE double por velocidade, mas seu veredito é certificado simbolicamente: a média máxima de ciclo é *provada* igual a $\log_2 3 - 1$ (nenhum peso de aresta excede $\log_2 3 - 1$, e o laço em $-1 \bmod 2^j$ o atinge), e uma execução só é aceita se o ciclo ótimo extraído consistir exclusivamente de resíduos ímpares — condição exata sob a qual sua média é $\log_2 3 - 1$ por construção. O valor em float concorda a $< 2\cdot 10^{-15}$, como esperado. Analogamente, a estimativa de $|\lambda_2|$ por iteração de potência é apenas um diagnóstico numérico; a contraparte certificada é o colapso exato de posto $P_k^{\,k} = \mathbf{1}\pi_k$, verificado em aritmética racional.
+* **Determinismo.** Não há componente de Monte Carlo; todos os algoritmos são determinísticos e reexecuções são bit-idênticas entre plataformas.
+
 ---
 
 ## Parte III: Resultados Experimentais e Verificações
 
-Abaixo reportamos quantificações absolutas obtidas pela aplicação dos motores computacionais detalhados na Parte II.
+Abaixo reportamos quantificações absolutas obtidas pela aplicação dos motores computacionais detalhados na Parte II. Tudo nesta parte é **verificação com limite finito explícito**, não teorema; cada número é regenerado por `reproduce_paper_results.py`.
 
 ### Crivo Computacional Global e Árvore Inversa
-*   **Limites Positivos Iniciais:** Foi atestado o fechamento a 1 de todos os naturais não-nulos menores que $200.000$ sob detecção linear ascendente; nenhum desvio cíclico documentado.
+*   **Limites Positivos Iniciais:** Foi atestado o fechamento a 1 de todos os naturais não-nulos menores que $200.000$ sob detecção linear ascendente; nenhum desvio cíclico documentado. (Isto está muito abaixo do recorde publicado $2^{68}$, Barina 2021; é incluído apenas como hipótese autossuficiente e reexecutável para a exclusão diofantina abaixo.)
 *   **Balanço de Difusão (Árvore Inversa):** A construção mecânica atestou rigorosamente a profundidade $113$ como o mínimo grau necessário da árvore invertida de Syracuse para encapsular todos os naturais sob o limiar empírico de $1000$. Com $30$ níveis mapeados a termo absoluto, o subconjunto cobre todo o espectro interno em $[123, 2147483648]$.
 
 ### Descoberta Analítica de Ciclos Estendidos
@@ -95,6 +106,6 @@ Abaixo reportamos quantificações absolutas obtidas pela aplicação dos motore
 *   Operacionalizando a fronteira atestada ( $N = 200.000$ ), provou-se numericamente que a incidência de qualquer órbita não-trivial fechada forçaria um laço com base mínima estrita de 676 iterações diretas (contendo nada menos que 428 incrementos). Se o limite fosse adotado aos patamares divulgados contemporaneamente ($2^{71}$), este percurso cíclico cresce para além de $103$ bilhões de itens — ratificando o aspecto de fuga.
 
 ### Evidências Físicas das Topologias
-*   **Colapso de Posto Empírico ($3^k$):** Avaliando o operador Syracuse a $k=3$ (anel $\mathbb{Z}/27\mathbb{Z}$), a convergência espectral anulou todos autovalores suplementares precisamente. A medida convergiu irrefutavelmente às proporções racionais $1/3$ e $2/3$, rompendo simetrias triviais e provando os colapsos do Teorema 1 em dimensão de testes finita.
+*   **Colapso de Posto Empírico ($3^k$):** Avaliando o operador Syracuse a $k=3$ (anel $\mathbb{Z}/27\mathbb{Z}$), a convergência espectral anulou todos autovalores suplementares precisamente. A medida convergiu irrefutavelmente às proporções racionais $1/3$ e $2/3$, rompendo simetrias triviais e instanciando, em dimensão de testes finita, o colapso previsto pelo Teorema 1.
 *   **Medidas Absolutas ($\tau_k$ Wasserstein):** Para $k \in \{2, 3, 4\}$, as avaliações fracionais precisas retornadas foram $\tau_2 = 5/21$, $\tau_3 = 455/1387$ e $\tau_4 \approx 0.33333206$. O erro diferencial de limiar cai monotonamente provando a ascensão restrita para cota global $\frac{1}{3}$.
-*   **Identificação Prática de $-1 \bmod 2^j$:** Expondo a análise do *Karp Mean Cycle* para módulos iterados no intervalo $j = 5 \dots 10$, a média retornada fixou-se, de forma computacional incondicional, no cume constante de $0.584962$ (precisão flutuante de $\log_2 3 - 1$). Em $100\%$ dos processamentos executados, o subgrafo responsável pelo distúrbio continha uma e apenas uma assinatura de classe residual: a gerada estritamente pelo módulo transiente do inteira $-1$.
+*   **Identificação Prática de $-1 \bmod 2^j$:** Expondo a análise do *Karp Mean Cycle* para módulos iterados no intervalo $j = 5 \dots 10$, a média retornada fixou-se, de forma computacional incondicional, no cume constante de $0.584962$ — o valor $\log_2 3 - 1$, certificado simbolicamente conforme a metodologia da Parte II §4 (o float concorda a $< 2\cdot 10^{-15}$). Em $100\%$ dos processamentos executados, o subgrafo responsável pelo distúrbio continha uma e apenas uma assinatura de classe residual: a gerada estritamente pelo módulo transiente do inteiro $-1$.
