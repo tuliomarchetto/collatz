@@ -1,33 +1,34 @@
 """
-Operador de transferência de Syracuse módulo 3^k.
+Syracuse transfer operator modulo 3^k.
 
-Modelo (o mesmo usado por Tao, 2019, "Almost all orbits..."): para n ímpar
-"típico", o mapa de Syracuse S(n) = (3n+1)/2^a tem a ~ Geométrica(1/2)
-(consequência exata da bijeção de Terras).  Projetando em Z/3^k, obtém-se
-uma cadeia de Markov nos resíduos r com 3 ∤ r:
+Model (the same used by Tao, 2019, "Almost all orbits..."): for a
+"typical" odd n, the Syracuse map S(n) = (3n+1)/2^a has a ~ Geometric(1/2)
+(an exact consequence of the Terras bijection). Projecting onto Z/3^k
+gives a Markov chain on residues r with 3 ∤ r:
 
     r  ->  (3r + 1) · inv(2^a)  (mod 3^k),   P(a) = 2^{-a}.
 
-Como 2 é raiz primitiva mod 3^k, inv(2^a) é periódico em a com período
-ord = φ(3^k) = 2·3^{k-1}; somando a série geométrica, a matriz de
-transição é EXATA em aritmética racional:
+Since 2 is a primitive root mod 3^k, inv(2^a) is periodic in a with
+period ord = φ(3^k) = 2·3^{k-1}; summing the geometric series, the
+transition matrix is EXACT in rational arithmetic:
 
-    P[r][r'] = (soma sobre a<=ord com transição r->r' de 2^{-a}) / (1 - 2^{-ord}).
+    P[r][r'] = (sum over a<=ord with transition r->r' of 2^{-a}) / (1 - 2^{-ord}).
 
-Algoritmos:
-* syracuse_transfer_matrix(k) — matriz exata (Fraction).
-* stationary_uniform_check(k) — testa se a uniforme é estacionária.
-  ACHADO: não é!  Mod 3 a medida invariante é (1/3, 2/3) — o viés
-  (3n+1)/2^a ≡ (-1)^a (mod 3), P(a ímpar) = 2/3, propaga-se para todo
-  3^k.  Um invariante de medida explícito e exato da dinâmica projetada.
-* stationary_exact(k) — a medida invariante exata (racional), por
-  eliminação gaussiana.
-* spectral_gap(k) — módulo do segundo autovalor por iteração de potência
-  no complemento espectral da estacionária; lacuna espectral grande =
-  mixing rápido = as órbitas esquecem o resíduo inicial exponencialmente
-  rápido.  Estrutura a perseguir: gap uniforme em k daria equidistribuição
-  quantitativa (na medida invariante) — o tipo de ingrediente que alimenta
-  resultados "para quase todo n" (Tao 2019).
+Algorithms:
+* syracuse_transfer_matrix(k) — exact matrix (Fraction).
+* stationary_uniform_check(k) — tests whether the uniform distribution
+  is stationary. FINDING: it is not! Mod 3 the invariant measure is
+  (1/3, 2/3) — the bias (3n+1)/2^a ≡ (-1)^a (mod 3), P(a odd) = 2/3,
+  propagates to every 3^k. An explicit and exact measure invariant of
+  the projected dynamics.
+* stationary_exact(k) — the exact (rational) invariant measure, via
+  Gaussian elimination.
+* spectral_gap(k) — modulus of the second eigenvalue via power iteration
+  on the spectral complement of the stationary distribution; a large
+  spectral gap = fast mixing = orbits forget the initial residue
+  exponentially fast. Structure to pursue: a gap uniform in k would give
+  quantitative equidistribution (in the invariant measure) — the kind of
+  ingredient that feeds "for almost every n" results (Tao 2019).
 """
 
 from __future__ import annotations
@@ -41,12 +42,12 @@ def _states(k: int) -> List[int]:
 
 
 def syracuse_transfer_matrix(k: int) -> Tuple[List[int], Dict[int, Dict[int, Fraction]]]:
-    """Matriz de transição exata da cadeia de Syracuse em {r mod 3^k, 3∤r}.
+    """Exact transition matrix of the Syracuse chain on {r mod 3^k, 3∤r}.
 
-    Devolve (estados, P) com P[r][r'] racional exato."""
+    Returns (states, P) with P[r][r'] an exact rational."""
     M = 3 ** k
     states = _states(k)
-    ord_ = 2 * 3 ** (k - 1)          # ordem de 2 mod 3^k (2 é raiz primitiva)
+    ord_ = 2 * 3 ** (k - 1)          # order of 2 mod 3^k (2 is a primitive root)
     assert pow(2, ord_, M) == 1
     inv2 = pow(2, -1, M)
     norm = Fraction(1) - Fraction(1, 2 ** ord_)
@@ -56,21 +57,21 @@ def syracuse_transfer_matrix(k: int) -> Tuple[List[int], Dict[int, Dict[int, Fra
         t = target
         for a in range(1, ord_ + 1):
             t = (t * inv2) % M       # t = (3r+1)·inv(2^a)
-            if t % 3 != 0:           # sempre verdade: (3r+1)/2^a ≢ 0 mod 3
+            if t % 3 != 0:           # always true: (3r+1)/2^a ≢ 0 mod 3
                 w = Fraction(1, 2 ** a) / norm
                 P[r][t] = P[r].get(t, Fraction(0)) + w
     return states, P
 
 
 def stationary_uniform_check(k: int) -> bool:
-    """Verifica EXATAMENTE se a uniforme sobre os estados é estacionária
-    (matriz duplamente estocástica).
+    """Checks EXACTLY whether the uniform distribution over the states is
+    stationary (doubly stochastic matrix).
 
-    ACHADO (descoberto por este código): NÃO é — p.ex. mod 3 a medida
-    invariante exata é pi(1) = 1/3, pi(2) = 2/3: os iterados de Syracuse
-    visitam 2 (mod 3) duas vezes mais que 1 (mod 3), porque
-    (3n+1)/2^a ≡ 2^{-a} ≡ (-1)^a (mod 3) e a é ímpar com probabilidade
-    2/3.  A medida invariante correta é calculada por stationary_exact."""
+    FINDING (discovered by this code): it is NOT — e.g. mod 3 the exact
+    invariant measure is pi(1) = 1/3, pi(2) = 2/3: the Syracuse iterates
+    visit 2 (mod 3) twice as often as 1 (mod 3), because
+    (3n+1)/2^a ≡ 2^{-a} ≡ (-1)^a (mod 3) and a is odd with probability
+    2/3. The correct invariant measure is computed by stationary_exact."""
     states, P = syracuse_transfer_matrix(k)
     col: Dict[int, Fraction] = {r: Fraction(0) for r in states}
     for r in states:
@@ -83,15 +84,15 @@ def stationary_uniform_check(k: int) -> bool:
 
 
 def stationary_exact(k: int) -> Dict[int, Fraction]:
-    """Medida invariante EXATA (racional) da cadeia de Syracuse mod 3^k:
-    resolve pi·P = pi, soma(pi) = 1 por eliminação gaussiana em Fraction.
+    """EXACT (rational) invariant measure of the Syracuse chain mod 3^k:
+    solves pi·P = pi, sum(pi) = 1 via Gaussian elimination over Fraction.
 
-    Este é um invariante estrutural genuíno da dinâmica projetada: a única
-    medida de probabilidade preservada pelo operador de transferência."""
+    This is a genuine structural invariant of the projected dynamics: the
+    unique probability measure preserved by the transfer operator."""
     states, P = syracuse_transfer_matrix(k)
     n = len(states)
     idx = {r: i for i, r in enumerate(states)}
-    # sistema (P^T - I) pi = 0, com última linha substituída por soma = 1
+    # system (P^T - I) pi = 0, with the last row replaced by sum = 1
     A: List[List[Fraction]] = [[Fraction(0)] * (n + 1) for _ in range(n)]
     for r in states:
         for s, w in P[r].items():
@@ -99,7 +100,7 @@ def stationary_exact(k: int) -> Dict[int, Fraction]:
     for i in range(n):
         A[i][i] -= 1
     A[n - 1] = [Fraction(1)] * n + [Fraction(1)]
-    # eliminação gaussiana com pivoteamento parcial
+    # Gaussian elimination with partial pivoting
     for col_i in range(n):
         piv = next(row for row in range(col_i, n) if A[row][col_i] != 0)
         A[col_i], A[piv] = A[piv], A[col_i]
@@ -114,7 +115,7 @@ def stationary_exact(k: int) -> Dict[int, Fraction]:
 
 def stationary_distribution(k: int, iters: int = 2000,
                             tol: float = 1e-13) -> Dict[int, float]:
-    """Distribuição estacionária por iteração de potência (float)."""
+    """Stationary distribution via power iteration (float)."""
     states, P = syracuse_transfer_matrix(k)
     Pf = {r: {s: float(w) for s, w in row.items()} for r, row in P.items()}
     pi = {r: 1.0 / len(states) for r in states}
@@ -132,15 +133,16 @@ def stationary_distribution(k: int, iters: int = 2000,
 
 
 def memory_loss_check(k: int) -> bool:
-    """Verifica EXATAMENTE o colapso de posto do operador de transferência:
-    estados r ≡ r' (mod 3^{k-1}) têm linhas IDÊNTICAS, pois a linha só
-    depende de 3r+1 (mod 3^k), que só depende de r (mod 3^{k-1}).
+    """Checks EXACTLY the rank collapse of the transfer operator: states
+    r ≡ r' (mod 3^{k-1}) have IDENTICAL rows, because the row depends
+    only on 3r+1 (mod 3^k), which depends only on r (mod 3^{k-1}).
 
-    Consequência (por indução): P^k tem posto 1 — a cadeia atinge a medida
-    invariante em EXATAMENTE k passos e o espectro além de lambda_1 = 1 é
-    {0}.  ACHADO ESTRUTURAL: a projeção mod 3^k não retém nenhuma memória
-    de longo prazo; nenhuma obstrução à convergência pode viver em
-    aritmética 3-ádica finita — sobra apenas a estrutura 2-ádica/global."""
+    Consequence (by induction): P^k has rank 1 — the chain reaches the
+    invariant measure in EXACTLY k steps and the spectrum beyond
+    lambda_1 = 1 is {0}. STRUCTURAL FINDING: the mod 3^k projection
+    retains no long-term memory; no obstruction to convergence can live
+    in finite 3-adic arithmetic — only the 2-adic/global structure
+    remains."""
     M = 3 ** k
     states, P = syracuse_transfer_matrix(k)
     if k == 1:
@@ -152,10 +154,10 @@ def memory_loss_check(k: int) -> bool:
 
 
 def spectral_gap(k: int, iters: int = 400) -> float:
-    """Estimativa de |lambda_2| da cadeia mod 3^k por iteração de potência
-    na ação à direita f -> P f, removendo a componente espectral do
-    autovalor 1 (autovetor direito constante, autovetor esquerdo pi):
-    f -> f - (pi·f)·1.  Lacuna espectral = 1 - |lambda_2|."""
+    """Estimate of |lambda_2| of the chain mod 3^k via power iteration on
+    the right action f -> P f, removing the spectral component of
+    eigenvalue 1 (constant right eigenvector, left eigenvector pi):
+    f -> f - (pi·f)·1. Spectral gap = 1 - |lambda_2|."""
     states, P = syracuse_transfer_matrix(k)
     Pf = {r: {s: float(w) for s, w in row.items()} for r, row in P.items()}
     pi = {r: float(v) for r, v in stationary_exact(k).items()}
@@ -174,6 +176,6 @@ def spectral_gap(k: int, iters: int = 400) -> float:
         norm = math.sqrt(sum(v * v for v in g.values()))
         if norm == 0.0:
             return 0.0
-        lam = norm            # ||P f|| com ||f|| = 1
+        lam = norm            # ||P f|| with ||f|| = 1
         f = {r: v / norm for r, v in g.items()}
     return lam

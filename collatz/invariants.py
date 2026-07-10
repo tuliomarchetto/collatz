@@ -1,37 +1,38 @@
 """
-Busca automática de invariantes.
+Automatic search for invariants.
 
-Três famílias de algoritmos:
+Three families of algorithms:
 
-1. INVARIANTES MODULARES EXATOS — induced_map_search(M):
-   procura pares (m1, m2) tais que T(n) mod m2 é FUNÇÃO de n mod m1.
-   Achado estrutural: T(n) mod m é determinado por n mod 2m (e nada menos,
-   para m potência de 2) — a torre Z/2^{k+1} -> Z/2^k cujo limite inverso
-   é Z_2, confirmando que a única "coordenada" fatorável da dinâmica é a
-   2-ádica.
+1. EXACT MODULAR INVARIANTS — induced_map_search(M):
+   searches for pairs (m1, m2) such that T(n) mod m2 is a FUNCTION of
+   n mod m1. Structural finding: T(n) mod m is determined by n mod 2m
+   (and nothing less, for m a power of 2) — the tower Z/2^{k+1} -> Z/2^k
+   whose inverse limit is Z_2, confirming that the only factorable
+   "coordinate" of the dynamics is the 2-adic one.
 
-2. PARTIÇÕES CONSERVADAS — conserved_partition(m):
-   computa a partição estável mais grossa de Z/m sob a relação de
-   transição (bissimulação / refinamento de partição, como minimização de
-   DFA).  Qualquer função constante nos blocos é uma "quantidade discreta
-   conservada pela dinâmica projetada".  Também detecta classes
-   TRANSIENTES (que a dinâmica abandona e nunca reentra) — p.ex. os
-   múltiplos de 3: T nunca produz múltiplo de 3 a partir de passo ímpar,
-   logo a dinâmica de longo prazo vive em n coprimo com 3.
+2. CONSERVED PARTITIONS — conserved_partition(m):
+   computes the coarsest stable partition of Z/m under the transition
+   relation (bisimulation / partition refinement, as in DFA
+   minimization). Any function that is constant on the blocks is a
+   "discrete quantity conserved by the projected dynamics". Also detects
+   TRANSIENT classes (which the dynamics abandons and never re-enters) —
+   e.g. multiples of 3: T never produces a multiple of 3 from an odd
+   step, so the long-term dynamics lives on n coprime to 3.
 
-3. FUNÇÃO DE LYAPUNOV / CICLO DE MÉDIA MÁXIMA — karp_max_mean_cycle(j):
-   Se existisse f(n) = log n + w(n mod 2^j) estritamente decrescente ao
-   longo de toda órbita, a conjectura (parte de divergência) estaria
-   provada.  Tal w existe sse o CICLO DE MÉDIA MÁXIMA do grafo de
-   transição em Z/2^j (pesos = log2 do fator multiplicativo do passo) for
-   negativo.  O algoritmo de Karp computa esse valor exatamente.
-   ACHADO ESTRUTURAL: o máximo é log2(3) - 1 > 0, atingido no laço do
-   resíduo -1 mod 2^j — e todos os ciclos de média positiva correspondem a
-   pontos periódicos 2-ádicos que são os ciclos de INTEIROS NEGATIVOS
-   (-1, -5, -17).  Ou seja: a obstrução ao método de Lyapunov modular é
-   exatamente a existência dos ciclos negativos; nenhuma testemunha
-   modular finita pode provar a conjectura — uma explicação algorítmica
-   da dificuldade do problema (cf. Conway: generalizações indecidíveis).
+3. LYAPUNOV FUNCTION / MAXIMUM MEAN CYCLE — karp_max_mean_cycle(j):
+   If there existed f(n) = log n + w(n mod 2^j) strictly decreasing
+   along every orbit, the conjecture (the divergence part) would be
+   proved. Such a w exists iff the MAXIMUM MEAN CYCLE of the transition
+   graph on Z/2^j (weights = log2 of the step's multiplicative factor)
+   is negative. Karp's algorithm computes that value exactly.
+   STRUCTURAL FINDING: the maximum is log2(3) - 1 > 0, attained at the
+   loop on residue -1 mod 2^j — and every cycle with positive mean
+   corresponds to 2-adic periodic points that are the cycles of
+   NEGATIVE INTEGERS (-1, -5, -17). In other words: the obstruction to
+   the modular Lyapunov method is exactly the existence of the negative
+   cycles; no finite modular witness can prove the conjecture — an
+   algorithmic explanation of the problem's difficulty (cf. Conway:
+   undecidable generalizations).
 """
 
 from __future__ import annotations
@@ -43,13 +44,13 @@ from .core import T
 
 
 # ----------------------------------------------------------------------
-# 1. Mapas induzidos módulo m
+# 1. Induced maps modulo m
 # ----------------------------------------------------------------------
 
 def induced_map_exists(m1: int, m2: int, d: int = 1) -> bool:
-    """True sse n mod m1 determina T(n) mod m2 (teste exato: basta conferir
-    todos os resíduos com dois levantamentos, pois T é afim por paridade e
-    o comportamento é periódico em n de período lcm(2, m1))."""
+    """True iff n mod m1 determines T(n) mod m2 (exact test: it suffices
+    to check all residues with two lifts, since T is affine per parity
+    and the behavior is periodic in n with period lcm(2, m1))."""
     period = m1 if m1 % 2 == 0 else 2 * m1
     table: Dict[int, int] = {}
     for n in range(2 * period):
@@ -60,8 +61,8 @@ def induced_map_exists(m1: int, m2: int, d: int = 1) -> bool:
 
 
 def induced_map_search(max_m: int = 64, d: int = 1) -> List[Tuple[int, int]]:
-    """Para cada m2 <= max_m, encontra o MENOR m1 tal que n mod m1 determina
-    T(n) mod m2.  Devolve a lista (m2, m1_minimo)."""
+    """For each m2 <= max_m, finds the SMALLEST m1 such that n mod m1
+    determines T(n) mod m2. Returns the list (m2, minimal_m1)."""
     out = []
     for m2 in range(2, max_m + 1):
         for m1 in range(1, 64 * m2 + 1):
@@ -72,13 +73,13 @@ def induced_map_search(max_m: int = 64, d: int = 1) -> List[Tuple[int, int]]:
 
 
 # ----------------------------------------------------------------------
-# 2. Partição conservada (bissimulação) e classes transientes
+# 2. Conserved partition (bisimulation) and transient classes
 # ----------------------------------------------------------------------
 
 def _successors_mod(m: int, d: int = 1) -> Dict[int, Set[int]]:
-    """Relação de transição em Z/m: r -> {T(n) mod m : n ≡ r (mod m)}.
-    Basta considerar os levantamentos n = r e n = r + m (paridades opostas
-    se m é ímpar) e n = r, r+m, ..., cobrindo o período 2m."""
+    """Transition relation on Z/m: r -> {T(n) mod m : n ≡ r (mod m)}.
+    It suffices to consider the lifts n = r and n = r + m (opposite
+    parities if m is odd) and n = r, r+m, ..., covering the period 2m."""
     succ: Dict[int, Set[int]] = {r: set() for r in range(m)}
     for n in range(2 * m):
         succ[n % m].add(T(n, d) % m)
@@ -86,16 +87,16 @@ def _successors_mod(m: int, d: int = 1) -> Dict[int, Set[int]]:
 
 
 def conserved_partition(m: int, d: int = 1) -> List[Set[int]]:
-    """Partição estável mais grossa de Z/m que refina o observável
-    'paridade' (o único observável intrínseco da dinâmica, pois é ele que
-    decide o ramo do mapa): refinamento iterativo pela assinatura
-    'conjunto de blocos sucessores' até ponto fixo (bissimulação, como
-    minimização de DFA).  Blocos de tamanho > 1 sobreviventes seriam
-    invariantes discretos ocultos; para m = 2^k a partição refina até
-    singletons — equivalente à bijeção de Terras (k paridades futuras
-    distinguem n mod 2^k)."""
+    """Coarsest stable partition of Z/m that refines the 'parity'
+    observable (the only intrinsic observable of the dynamics, since it
+    decides the map's branch): iterative refinement by the 'set of
+    successor blocks' signature until a fixed point (bisimulation, as in
+    DFA minimization). Surviving blocks of size > 1 would be hidden
+    discrete invariants; for m = 2^k the partition refines down to
+    singletons — equivalent to the Terras bijection (k future parities
+    distinguish n mod 2^k)."""
     succ = _successors_mod(m, d)
-    # coloração inicial: paridade quando ela é função do resíduo (m par)
+    # initial coloring: parity when it is a function of the residue (m even)
     if m % 2 == 0:
         block: Dict[int, int] = {r: r % 2 for r in range(m)}
     else:
@@ -118,12 +119,12 @@ def conserved_partition(m: int, d: int = 1) -> List[Set[int]]:
 
 
 def transient_classes(m: int, d: int = 1) -> Set[int]:
-    """Classes de resíduo mod m que, uma vez abandonadas pela órbita, nunca
-    são reentradas: nenhuma OUTRA classe transita para elas (arestas de
-    entrada apenas do laço próprio).  P.ex. m=3: {0} — nenhum n coprimo
-    com 3 tem T(n) múltiplo de 3; logo toda órbita abandona os múltiplos
-    de 3 em tempo finito e a dinâmica de longo prazo vive em 3 ∤ n.
-    Idem, a árvore inversa de 1 não contém múltiplo de 3."""
+    """Residue classes mod m that, once abandoned by the orbit, are never
+    re-entered: no OTHER class transitions into them (incoming edges only
+    from the self-loop). E.g. m=3: {0} — no n coprime to 3 has T(n) a
+    multiple of 3; so every orbit abandons the multiples of 3 in finite
+    time and the long-term dynamics lives on 3 ∤ n. Likewise, the inverse
+    tree of 1 contains no multiple of 3."""
     succ = _successors_mod(m, d)
     incoming: Dict[int, Set[int]] = {r: set() for r in range(m)}
     for r, ss in succ.items():
@@ -134,14 +135,14 @@ def transient_classes(m: int, d: int = 1) -> Set[int]:
 
 
 # ----------------------------------------------------------------------
-# 3. Ciclo de média máxima (Karp) — obstrução à função de Lyapunov modular
+# 3. Maximum mean cycle (Karp) — obstruction to the modular Lyapunov function
 # ----------------------------------------------------------------------
 
 def transition_graph_mod2j(j: int) -> Tuple[List[List[int]], List[float]]:
-    """Grafo de transição em Z/2^j para T.  Cada resíduo r tem exatamente
-    dois sucessores (levantamentos r e r+2^j), todos os arcos saindo de r
-    têm o mesmo peso: log2(3/2) se r ímpar, -1 se r par (fator
-    multiplicativo do passo).  Devolve (lista de sucessores, peso por nó)."""
+    """Transition graph on Z/2^j for T. Each residue r has exactly two
+    successors (lifts r and r+2^j); all arcs leaving r have the same
+    weight: log2(3/2) if r is odd, -1 if r is even (multiplicative factor
+    of the step). Returns (successor list, weight per node)."""
     M = 1 << j
     succ = [[T(r) % M, T(r + M) % M] for r in range(M)]
     w = [math.log2(3) - 1 if r & 1 else -1.0 for r in range(M)]
@@ -149,17 +150,18 @@ def transition_graph_mod2j(j: int) -> Tuple[List[List[int]], List[float]]:
 
 
 def karp_max_mean_cycle(j: int) -> Tuple[float, List[int]]:
-    """Algoritmo de Karp: valor exato (em float) do ciclo de média máxima do
-    grafo de transição mod 2^j, e um ciclo que o atinge.
+    """Karp's algorithm: exact value (as a float) of the maximum mean
+    cycle of the transition graph mod 2^j, and a cycle attaining it.
 
-    Interpretação: qualquer órbita real induz um passeio neste grafo, e o
-    crescimento assintótico de log2(n) por passo é majorado pela média do
-    melhor ciclo alcançável.  Média máxima < 0 provaria não-divergência.
+    Interpretation: any real orbit induces a walk on this graph, and the
+    asymptotic growth of log2(n) per step is bounded above by the mean of
+    the best reachable cycle. A negative maximum mean would prove
+    non-divergence.
     """
     succ, w = transition_graph_mod2j(j)
     M = len(succ)
     NEG = float("-inf")
-    # F[t][v] = maior peso de um passeio de comprimento t terminando em v
+    # F[t][v] = largest weight of a walk of length t ending at v
     F = [[NEG] * M for _ in range(M + 1)]
     parent: List[List[int]] = [[-1] * M for _ in range(M + 1)]
     for v in range(M):
@@ -186,7 +188,7 @@ def karp_max_mean_cycle(j: int) -> Tuple[float, List[int]]:
         )
         if val > best:
             best, best_v = val, v
-    # reconstrói um passeio e extrai um ciclo
+    # reconstructs a walk and extracts a cycle
     walk = [best_v]
     v = best_v
     for t in range(M, 0, -1):
@@ -204,9 +206,9 @@ def karp_max_mean_cycle(j: int) -> Tuple[float, List[int]]:
 
 
 def lyapunov_verdict(j: int) -> Dict[str, object]:
-    """Executa Karp e interpreta: os nós do ciclo ótimo são levantados a
-    inteiros 2-ádicos; ciclos de média positiva devem corresponder aos
-    ciclos de inteiros NEGATIVOS do 3n+1 (p.ex. resíduo 2^j - 1 = -1)."""
+    """Runs Karp and interprets it: the nodes of the optimal cycle are
+    lifted to 2-adic integers; cycles with positive mean must correspond
+    to the cycles of NEGATIVE integers of 3n+1 (e.g. residue 2^j - 1 = -1)."""
     mean, cyc = karp_max_mean_cycle(j)
     M = 1 << j
     as_signed = [r - M if r > M // 2 else r for r in cyc]
@@ -220,14 +222,14 @@ def lyapunov_verdict(j: int) -> Dict[str, object]:
 
 
 # ----------------------------------------------------------------------
-# Deriva (drift) esperada por classe de resíduo
+# Expected drift by residue class
 # ----------------------------------------------------------------------
 
 def drift_by_class(m: int, depth: int, d: int = 1) -> Dict[int, float]:
-    """Deriva média de log2 após `depth` passos, condicionada a n mod m,
-    calculada EXATAMENTE fazendo a média sobre os resíduos mod m·2^depth
-    (que determinam as primeiras `depth` paridades).  Deriva negativa em
-    toda classe é evidência (não prova) de contração típica."""
+    """Mean log2 drift after `depth` steps, conditioned on n mod m,
+    computed EXACTLY by averaging over the residues mod m·2^depth (which
+    determine the first `depth` parities). Negative drift in every class
+    is evidence (not proof) of typical contraction."""
     alpha = math.log2(3)
     period = m * (1 << depth)
     tot: Dict[int, float] = {r: 0.0 for r in range(m)}

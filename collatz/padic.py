@@ -1,30 +1,31 @@
 """
-Estrutura 2-ádica: a simetria fundamental do mapa acelerado.
+2-adic structure: the fundamental symmetry of the accelerated map.
 
-Teorema de Terras (1976) / Lagarias (1985).  A aplicação
+Terras's theorem (1976) / Lagarias (1985). The map
 
-    Q_k : Z/2^k -> {0,1}^k,   n |-> vetor de paridade de comprimento k
+    Q_k : Z/2^k -> {0,1}^k,   n |-> length-k parity vector
 
-é uma BIJEÇÃO, e o mapa acelerado T é conjugado ao shift de Bernoulli:
-o vetor de paridade de T(n) é o shift do vetor de paridade de n.  Em
-outras palavras, estendido aos inteiros 2-ádicos Z_2, T é
-mensuravelmente isomorfo ao shift (sigma-álgebra e medida de Haar), e a
-paridade dos iterados de um n "aleatório" é uma sequência i.i.d. de
-moedas justas.  Esta é a simetria estrutural mais forte conhecida do
-sistema — e a razão pela qual heurísticas probabilísticas prevêem
-convergência (deriva média log(3)/2 - log 2 < 0 por passo).
+is a BIJECTION, and the accelerated map T is conjugate to the Bernoulli
+shift: the parity vector of T(n) is the shift of the parity vector of n.
+In other words, extended to the 2-adic integers Z_2, T is measurably
+isomorphic to the shift (sigma-algebra and Haar measure), and the parity
+of the iterates of a "random" n is an i.i.d. sequence of fair coin
+flips. This is the strongest known structural symmetry of the system —
+and the reason probabilistic heuristics predict convergence (mean drift
+log(3)/2 - log 2 < 0 per step).
 
-Algoritmos:
+Algorithms:
 
-* terras_bijection_check(k)  — verifica exatamente a bijetividade de Q_k.
-* shift_conjugacy_check(k)   — verifica Q_{k-1}(T(n)) = shift(Q_k(n)).
-* parity_census(k)           — distribuição EXATA do nº de passos ímpares
-                               entre os primeiros k passos, sobre n mod 2^k:
-                               deve ser Binomial(k, 1/2).  Daí segue a
-                               medida exata do "conjunto ruim" (classes que
-                               ainda crescem após k passos) e sua taxa de
-                               decaimento — comparada com a taxa de grandes
-                               desvios  1 - H(1/log2(3)) (H = entropia binária).
+* terras_bijection_check(k)  — exactly verifies the bijectivity of Q_k.
+* shift_conjugacy_check(k)   — verifies Q_{k-1}(T(n)) = shift(Q_k(n)).
+* parity_census(k)           — EXACT distribution of the number of odd
+                               steps among the first k steps, over
+                               n mod 2^k: should be Binomial(k, 1/2).
+                               From this follows the exact measure of the
+                               "bad set" (classes that still grow after k
+                               steps) and its decay rate — compared with
+                               the large-deviations rate
+                               1 - H(1/log2(3)) (H = binary entropy).
 """
 
 from __future__ import annotations
@@ -36,7 +37,7 @@ from .core import parity_vector
 
 
 def terras_bijection_check(k: int) -> bool:
-    """True sse n |-> vetor de paridade(n, k) é bijetivo em Z/2^k."""
+    """True iff n |-> parity_vector(n, k) is bijective on Z/2^k."""
     seen = set()
     for n in range(1 << k):
         seen.add(parity_vector(n, k))
@@ -44,8 +45,8 @@ def terras_bijection_check(k: int) -> bool:
 
 
 def shift_conjugacy_check(k: int) -> bool:
-    """Verifica a conjugação com o shift: para todo n mod 2^k, o vetor de
-    paridade de T(n) (comprimento k-1) é o shift do vetor de n."""
+    """Verifies the conjugacy with the shift: for every n mod 2^k, the
+    parity vector of T(n) (length k-1) is the shift of the vector of n."""
     from .core import T
     for n in range(1 << k):
         pv = parity_vector(n, k)
@@ -56,9 +57,9 @@ def shift_conjugacy_check(k: int) -> bool:
 
 
 def parity_census(k: int) -> Dict[int, int]:
-    """Conta, para n percorrendo Z/2^k, quantos têm exatamente j passos
-    ímpares nos primeiros k passos de T.  Resultado esperado (e implicado
-    pela bijeção de Terras): coeficiente binomial C(k, j)."""
+    """Counts, for n ranging over Z/2^k, how many have exactly j odd
+    steps in the first k steps of T. Expected result (implied by the
+    Terras bijection): the binomial coefficient C(k, j)."""
     census: Dict[int, int] = {}
     for n in range(1 << k):
         j = sum(parity_vector(n, k))
@@ -71,14 +72,15 @@ def census_is_binomial(census: Dict[int, int], k: int) -> bool:
 
 
 def bad_set_measure(k: int) -> Tuple[float, float]:
-    """Medida (fração de resíduos mod 2^k) do conjunto 'ruim': classes cujo
-    fator de crescimento após k passos é >= 1, i.e. 3^j >= 2^k, ou seja
+    """Measure (fraction of residues mod 2^k) of the 'bad' set: classes
+    whose growth factor after k steps is >= 1, i.e. 3^j >= 2^k, i.e.
     j > k/log2(3).
 
-    Devolve (medida_exata, taxa_teorica) onde a taxa teórica de decaimento
-    por grandes desvios é 2^{-k(1-H(theta))}, theta = 1/log2 3 ~ 0.6309.
-    A conjectura 'quase todo n tem tempo de parada finito' (Terras) é
-    exatamente a afirmação de que essa medida -> 0; a taxa quantifica-a.
+    Returns (exact_measure, theoretical_rate) where the theoretical
+    large-deviations decay rate is 2^{-k(1-H(theta))}, theta = 1/log2 3
+    ~ 0.6309. The conjecture 'almost every n has finite stopping time'
+    (Terras) is exactly the statement that this measure -> 0; the rate
+    quantifies it.
     """
     alpha = math.log2(3)
     theta = 1 / alpha

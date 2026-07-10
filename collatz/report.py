@@ -1,6 +1,11 @@
 """
-Relatório integrado: executa todos os algoritmos de busca e consolida os
-achados estruturais em texto (Markdown).
+Integrated report: runs all search algorithms and consolidates the
+structural findings as text (Markdown).
+
+Note: this module's `run_all()` builds the formal report artifact in
+Brazilian Portuguese (mirrored in RELATORIO.md); the string literals
+passed to `add(...)` inside `run_all()` are the report body and are
+intentionally kept in Portuguese.
 """
 
 from __future__ import annotations
@@ -12,7 +17,7 @@ from typing import List
 from . import (cycles, invariants, padic, search, spectral, symmetries,
                transfer, tree)
 
-KNOWN_VERIFIED = 2 ** 71  # limite computacional publicado (Barina et al.)
+KNOWN_VERIFIED = 2 ** 71  # published computational limit (Barina et al.)
 
 
 def _fmt_cycle(c) -> str:
@@ -32,7 +37,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
 
     add("# Relatório — busca de invariantes, simetrias e estrutura na dinâmica de Collatz\n")
 
-    # 1. contraexemplo direto
+    # 1. direct counterexample
     add("## 1. Busca direta de contraexemplo (crivo + detecção de ciclos)\n")
     res = search.verify_range(verify_limit)
     if res.all_converge:
@@ -51,7 +56,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         + ("ciclo não trivial encontrado: " + _fmt_cycle(resm.cycle)
            if resm.cycle else "nenhum ciclo (INESPERADO)") + "\n")
 
-    # 2. ciclos exatos
+    # 2. exact cycles
     add("## 2. Enumeração exata de ciclos (pontos fixos racionais dos vetores de paridade)\n")
     cy1 = cycles.find_cycles(d=1, max_len=cycle_len)
     add(f"- Sistema 3n+1, comprimento ≤ {cycle_len}, inteiros (ℤ): "
@@ -67,7 +72,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         + "; ".join(_fmt_cycle(c) for c in cy5[:3]) + " — contraexemplos existem "
         "em sistemas vizinhos e o mesmo algoritmo os encontra.\n")
 
-    # 3. exclusão de ciclos por frações contínuas
+    # 3. cycle exclusion via continued fractions
     add("## 3. Exclusão de ciclos via aproximação diofantina de log₂3\n")
     bound_local = cycles.cycle_exclusion_bound(verify_limit)
     bound_lit = cycles.cycle_exclusion_bound(KNOWN_VERIFIED)
@@ -81,7 +86,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "com erro < 1/(3N ln 2); os convergentes de log₂3 (verificados exatamente "
         "por comparação de potências 2^p × 3^q) tornam isso impossível para k pequeno.\n")
 
-    # 4. estrutura 2-ádica
+    # 4. 2-adic structure
     add("## 4. Simetria 2-ádica (Terras): conjugação com o shift de Bernoulli\n")
     ok_b = padic.terras_bijection_check(terras_k)
     ok_s = padic.shift_conjugacy_check(min(terras_k, 14))
@@ -101,7 +106,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         f"exponencial (taxa assintótica de grandes desvios 2^(−0.0497·k)); "
         "'quase todo n' contrai (teorema de Terras, verificado).\n")
 
-    # 5. invariantes modulares
+    # 5. modular invariants
     add("## 5. Invariantes modulares e partições conservadas\n")
     ind = invariants.induced_map_search(16)
     pow2 = [(m2, m1) for m2, m1 in ind if m1 == 2 * m2]
@@ -120,7 +125,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "ausência de invariante discreto oculto além da estrutura 2-ádica "
         "(reencontro da bijeção de Terras por outro algoritmo).\n")
 
-    # 6. função de Lyapunov / obstrução
+    # 6. Lyapunov function / obstruction
     add("## 6. Busca de função de Lyapunov modular (ciclo de média máxima, Karp)\n")
     verd = invariants.lyapunov_verdict(karp_j)
     add(f"- Grafo de transição mod 2^{karp_j}: média máxima de crescimento "
@@ -134,7 +139,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "mapa 2-ádico.  Provas por 'testemunha modular finita' estão excluídas; "
         "qualquer prova precisa distinguir ℤ₊ dentro de ℤ₂.\n")
 
-    # 7. simetrias
+    # 7. symmetries
     add("## 7. Simetrias: conjugações afins entre sistemas 3n+d\n")
     conj = symmetries.affine_conjugacy_search(1, -1, max_a=6, max_b=12)
     add(f"- Conjugações afins 3n+1 → 3n−1 encontradas: {conj} — φ(x) = −x: "
@@ -149,7 +154,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         f"{'trivial' if autos == [(1, 0)] else 'NÃO trivial'}: a dinâmica projetada "
         "é rígida (sem simetria interna escondida em potências de 2).\n")
 
-    # 8. espectral
+    # 8. spectral
     add("## 8. Operador de transferência de Syracuse mod 3^k\n")
     pi1 = spectral.stationary_exact(1)
     uni = spectral.stationary_uniform_check(spectral_k)
@@ -169,7 +174,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         "equidistribuição quantitativa na medida invariante é o ingrediente dos "
         "resultados de densidade de Tao 2019.)\n")
 
-    # 9. árvore inversa
+    # 9. inverse tree
     add("## 9. Árvore inversa de 1 (cobertura e profundidade)\n")
     cov = tree.coverage_density(tree_X, tree_depth)
     miss = tree.missing_below(tree_X, tree_depth)
@@ -189,7 +194,7 @@ def run_all(verify_limit: int = 200_000, cycle_len: int = 14,
         f"em [{bounds[-1][0]}, {bounds[-1][1]}]. A difusão para trás captura os números pequenos sucessivamente.")
     add("- A conjectura é rigorosamente equivalente a: a profundidade necessária para cobrir 1..X é finita para todo X.\n")
 
-    # 10. operador de transferência infinito
+    # 10. infinite transfer operator
     add("## 10. Operador de transferência infinito: de mod 3^k a Lip(Z₃), Lip(Z₂) e ℓ¹(Z₊)\n")
     c3, _ = transfer.syracuse_w1_coefficient(transfer_k3)
     br3 = transfer.syracuse_branch_contraction_check(min(transfer_k3, 4))

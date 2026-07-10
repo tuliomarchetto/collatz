@@ -1,26 +1,27 @@
 """
-Busca direta de contraexemplos.
+Direct search for counterexamples.
 
-Um contraexemplo da Conjectura de Collatz seria:
-  (a) um ciclo não trivial em inteiros positivos, ou
-  (b) uma órbita divergente.
+A counterexample to the Collatz Conjecture would be:
+  (a) a nontrivial cycle over the positive integers, or
+  (b) a divergent orbit.
 
-Algoritmos deste módulo:
+Algorithms in this module:
 
-* verify_range(N)      — crivo ascendente: prova computacionalmente que todo
-                         n <= N converge a 1 (ou devolve o contraexemplo).
-                         Enquanto verifica, coleta RECORDES de tempo de parada
-                         e de excursão máxima — as estatísticas extremais são
-                         elas próprias uma propriedade estrutural (crescimento
-                         ~ c·log n e ~ n^2 respectivamente).
-* brent_cycle_detect   — detecção de ciclo em órbita (algoritmo de Brent,
-                         memória O(1)): encontra o ciclo se a órbita for
-                         eventualmente periódica.
-* divergence_probe     — sondagem de candidatos a órbita divergente.
+* verify_range(N)      — ascending sieve: computationally proves that
+                         every n <= N converges to 1 (or returns the
+                         counterexample). While verifying, it collects
+                         RECORDS of stopping time and maximum excursion —
+                         the extremal statistics are themselves a
+                         structural property (growth ~ c·log n and ~ n^2
+                         respectively).
+* brent_cycle_detect   — cycle detection on an orbit (Brent's algorithm,
+                         O(1) memory): finds the cycle if the orbit is
+                         eventually periodic.
+* divergence_probe     — probes candidates for a divergent orbit.
 
-Validação: aplicados ao sistema 3n-1 (d=-1), estes algoritmos ENCONTRAM os
-ciclos não triviais {5,7,10} e {17,25,37,...} — evidência de que, se um
-contraexemplo análogo existisse no 3n+1, seria detectado.
+Validation: applied to the sibling system 3n-1 (d=-1), these algorithms
+FIND the nontrivial cycles {5,7,10} and {17,25,37,...} — evidence that,
+if an analogous counterexample existed for 3n+1, it would be detected.
 """
 
 from __future__ import annotations
@@ -36,23 +37,23 @@ class VerifyResult:
     limit: int
     d: int
     all_converge: bool
-    counterexample: Optional[int] = None       # semente que não converge
-    cycle: Optional[Tuple[int, ...]] = None    # ciclo não trivial encontrado
+    counterexample: Optional[int] = None       # seed that does not converge
+    cycle: Optional[Tuple[int, ...]] = None    # nontrivial cycle found
     stopping_records: List[Tuple[int, int]] = field(default_factory=list)
     excursion_records: List[Tuple[int, int]] = field(default_factory=list)
 
 
 def verify_range(limit: int, d: int = 1, max_steps: int = 100_000) -> VerifyResult:
-    """Verifica convergência de todo 2 <= n <= limit sob T (sistema 3n+d).
+    """Verifies convergence of every 2 <= n <= limit under T (system 3n+d).
 
-    Estratégia clássica de crivo ascendente: ao processar n em ordem
-    crescente, basta iterar até a órbita cair abaixo de n (tudo abaixo já
-    está verificado).  Pares caem imediatamente (n/2 < n), então só ímpares
-    são iterados.
+    Classic ascending sieve strategy: when processing n in increasing
+    order, it suffices to iterate until the orbit drops below n (everything
+    below is already verified). Even numbers drop immediately (n/2 < n),
+    so only odd numbers are iterated.
 
-    Se uma órbita retorna à própria semente, um CICLO foi encontrado e é
-    devolvido.  Se exceder max_steps sem cair, é devolvida como candidata a
-    contraexemplo (divergência ou ciclo muito longo).
+    If an orbit returns to its own seed, a CYCLE has been found and is
+    returned. If it exceeds max_steps without dropping, it is returned as
+    a candidate counterexample (divergence or a very long cycle).
     """
     res = VerifyResult(limit=limit, d=d, all_converge=True)
     best_stop = 0
@@ -66,7 +67,7 @@ def verify_range(limit: int, d: int = 1, max_steps: int = 100_000) -> VerifyResu
             steps += 1
             if x > peak:
                 peak = x
-            if x == n:  # órbita fechou: ciclo com menor elemento n
+            if x == n:  # orbit closed: cycle with minimal element n
                 cyc = [n]
                 y = T(n, d)
                 while y != n:
@@ -91,11 +92,11 @@ def verify_range(limit: int, d: int = 1, max_steps: int = 100_000) -> VerifyResu
 
 def brent_cycle_detect(n: int, d: int = 1,
                        max_power: int = 60) -> Optional[Tuple[int, int, int]]:
-    """Algoritmo de Brent para detecção de ciclo na órbita de n sob T.
+    """Brent's algorithm for cycle detection on the orbit of n under T.
 
-    Devolve (mu, lam, menor_elemento_do_ciclo) — índice de entrada no ciclo,
-    comprimento do ciclo e seu menor elemento — ou None se nenhum ciclo for
-    fechado dentro de 2^max_power passos (órbita possivelmente divergente).
+    Returns (mu, lam, cycle_min_element) — entry index into the cycle,
+    cycle length, and its smallest element — or None if no cycle closes
+    within 2^max_power steps (orbit possibly divergent).
     """
     f: Callable[[int], int] = lambda x: T(x, d)
     power = lam = 1
@@ -110,7 +111,7 @@ def brent_cycle_detect(n: int, d: int = 1,
             lam = 0
         hare = f(hare)
         lam += 1
-    # comprimento lam conhecido; encontra mu
+    # length lam known; find mu
     tortoise = hare = n
     for _ in range(lam):
         hare = f(hare)
@@ -119,7 +120,7 @@ def brent_cycle_detect(n: int, d: int = 1,
         tortoise = f(tortoise)
         hare = f(hare)
         mu += 1
-    # menor elemento do ciclo
+    # smallest element of the cycle
     x = tortoise
     lo = x
     for _ in range(lam):
@@ -131,10 +132,10 @@ def brent_cycle_detect(n: int, d: int = 1,
 
 def divergence_probe(n: int, d: int = 1, ceiling_bits: int = 4096,
                      max_steps: int = 1_000_000) -> dict:
-    """Sondagem de divergência: segue a órbita de n e reporta se ela
-    ultrapassa 2^ceiling_bits (candidata FORTE a divergência) ou se converge
-    / entra em ciclo.  Nenhum algoritmo pode PROVAR divergência por
-    simulação finita; este classifica candidatos para análise posterior."""
+    """Divergence probe: follows the orbit of n and reports whether it
+    exceeds 2^ceiling_bits (STRONG candidate for divergence) or whether it
+    converges / enters a cycle. No algorithm can PROVE divergence by
+    finite simulation; this classifies candidates for later analysis."""
     x = n
     peak = n
     for i in range(max_steps):

@@ -12,8 +12,8 @@ def test_rows_sum_to_one_exactly():
 
 
 def test_uniform_is_NOT_stationary():
-    # achado estrutural: a medida invariante da cadeia de Syracuse não é
-    # a uniforme — mod 3 ela é (1/3, 2/3)
+    # structural finding: the invariant measure of the Syracuse chain is
+    # not the uniform one — mod 3 it is (1/3, 2/3)
     assert not stationary_uniform_check(1)
     pi = stationary_exact(1)
     assert pi == {1: Fraction(1, 3), 2: Fraction(2, 3)}
@@ -40,7 +40,7 @@ def test_power_iteration_agrees_with_exact():
 
 def test_gap_is_nontrivial():
     lam2 = spectral_gap(2)
-    assert 0.0 <= lam2 < 0.99   # cadeia mistura: |lambda_2| < 1
+    assert 0.0 <= lam2 < 0.99   # chain mixes: |lambda_2| < 1
 
 
 def test_memory_loss_rank_collapse():

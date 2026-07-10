@@ -21,13 +21,13 @@ def test_transient_mod3():
 
 def test_conserved_partition_mod8_refines_fully():
     blocks = conserved_partition(8)
-    assert all(len(b) == 1 for b in blocks)  # sem invariante discreto oculto
+    assert all(len(b) == 1 for b in blocks)  # no hidden discrete invariant
 
 
 def test_karp_finds_minus_one_obstruction():
     mean, cyc = karp_max_mean_cycle(7)
     assert abs(mean - (math.log2(3) - 1)) < 1e-9
-    assert cyc == [127] or set(cyc) == {127}  # residuo -1 mod 2^7
+    assert cyc == [127] or set(cyc) == {127}  # residue -1 mod 2^7
 
 
 def test_lyapunov_impossible():
@@ -38,7 +38,7 @@ def test_lyapunov_impossible():
 
 def test_drift_negative_at_depth():
     dr = drift_by_class(2, depth=12)
-    # deriva média global = log2(3)/2 - 1 por passo, vezes 12 passos
+    # global mean drift = log2(3)/2 - 1 per step, times 12 steps
     expected = 12 * (math.log2(3) / 2 - 1)
     mean = sum(dr.values()) / len(dr)
     assert abs(mean - expected) < 1e-9

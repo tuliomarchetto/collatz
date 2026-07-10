@@ -1,29 +1,30 @@
 """
-Árvore inversa (grafo de pré-imagens de 1).
+Inverse tree (preimage graph of 1).
 
-A conjectura equivale a: a árvore inversa do mapa acelerado T, enraizada
-em 1 (excluindo o laço 1->2->1), cobre TODOS os inteiros positivos.
-Pré-imagens de m sob T:
+The conjecture is equivalent to: the inverse tree of the accelerated map
+T, rooted at 1 (excluding the loop 1->2->1), covers ALL positive
+integers. Preimages of m under T:
 
-    2m               (sempre — desfaz um passo par),
-    (2m - 1)/3       (quando inteiro e ímpar — desfaz um passo ímpar).
+    2m               (always — undoes an even step),
+    (2m - 1)/3       (when it is an integer and odd — undoes an odd step).
 
-Um contraexemplo seria exatamente um inteiro fora da árvore.
+A counterexample would be exactly an integer outside the tree.
 
-Algoritmos:
-* inverse_tree(depth)      — BFS exata até a profundidade dada.
-* coverage_density(X, ..)  — fração dos n <= X alcançados; deve tender a 1
-                             (Krasikov–Lagarias provam densidade >= X^0.84
-                             para o conjunto alcançado).
-* growth_rate(depth)       — nº de nós por nível; o fator assintótico
-                             previsto pela heurística de ramificação é
-                             (1 + 1/3)·... ~ 4/3 por nível para os nós que
-                             admitem o ramo ímpar (2m-1 ≡ 0 mod 3 ocorre
-                             para 1/3 dos m; o algoritmo mede o fator real).
-* missing_below(X, depth)  — os menores inteiros AINDA não alcançados na
-                             profundidade dada (candidatos estruturais a
-                             estudar; todos desaparecem ao aprofundar sse a
-                             conjectura vale).
+Algorithms:
+* inverse_tree(depth)      — exact BFS up to the given depth.
+* coverage_density(X, ..)  — fraction of n <= X reached; should tend to 1
+                             (Krasikov-Lagarias prove density >= X^0.84
+                             for the reached set).
+* growth_rate(depth)       — number of nodes per level; the asymptotic
+                             factor predicted by the branching heuristic
+                             is (1 + 1/3)·... ~ 4/3 per level for nodes
+                             that admit the odd branch (2m-1 ≡ 0 mod 3
+                             occurs for 1/3 of the m; the algorithm
+                             measures the actual factor).
+* missing_below(X, depth)  — the smallest integers STILL not reached at
+                             the given depth (structural candidates
+                             worth studying; all disappear when going
+                             deeper iff the conjecture holds).
 """
 
 from __future__ import annotations
@@ -32,7 +33,7 @@ from typing import Dict, List, Set, Tuple
 
 
 def inverse_children(m: int) -> List[int]:
-    """Pré-imagens de m sob T em inteiros positivos."""
+    """Preimages of m under T over the positive integers."""
     kids = [2 * m]
     q, r = divmod(2 * m - 1, 3)
     if r == 0 and q % 2 == 1 and q > 0:
@@ -41,12 +42,12 @@ def inverse_children(m: int) -> List[int]:
 
 
 def inverse_tree(depth: int, cap: int | None = None) -> Tuple[Set[int], List[int]]:
-    """BFS da árvore inversa a partir de 1.  Devolve (nós alcançados,
-    nº de nós novos por nível).
+    """BFS of the inverse tree starting from 1. Returns (reached nodes,
+    number of new nodes per level).
 
-    `cap`: nós maiores que o teto são registrados mas NÃO expandidos —
-    poda que mantém o custo O(cap) e permite grandes profundidades.  A
-    cobertura reportada é então um MINORANTE da cobertura verdadeira."""
+    `cap`: nodes larger than the cap are recorded but NOT expanded —
+    pruning that keeps the cost O(cap) and allows large depths. The
+    reported coverage is then a LOWER BOUND on the true coverage."""
     reached: Set[int] = {1, 2}
     frontier = [2]
     levels = [1]
@@ -66,10 +67,10 @@ def inverse_tree(depth: int, cap: int | None = None) -> Tuple[Set[int], List[int
 
 
 def coverage_density(X: int, depth: int, cap: int | None = None) -> float:
-    """Fração dos inteiros 1..X alcançados pela árvore inversa até a
-    profundidade dada.  Convergência a 1 quando depth cresce <=> conjectura
-    (restrita a n <= X).  cap padrão: 1000·X (a excursão máxima de órbitas
-    pequenas excede muito X — p.ex. 703 sobe a 125252 sob T)."""
+    """Fraction of the integers 1..X reached by the inverse tree up to
+    the given depth. Convergence to 1 as depth grows <=> conjecture
+    (restricted to n <= X). Default cap: 1000·X (the maximum excursion
+    of small orbits far exceeds X — e.g. 703 rises to 125252 under T)."""
     if cap is None:
         cap = max(1_000_000, 1000 * X)
     reached, _ = inverse_tree(depth, cap=cap)
@@ -78,14 +79,14 @@ def coverage_density(X: int, depth: int, cap: int | None = None) -> float:
 
 
 def growth_rate(depth: int) -> List[float]:
-    """Fator de crescimento nível a nível do nº de nós novos (sem poda).
-    Heurística de ramificação prevê fator ~ 4/3 por nível."""
+    """Level-by-level growth factor of the number of new nodes (no
+    pruning). The branching heuristic predicts a factor ~ 4/3 per level."""
     _, levels = inverse_tree(depth)
     return [levels[i + 1] / levels[i] for i in range(1, len(levels) - 1) if levels[i]]
 
 
 def missing_below(X: int, depth: int, cap: int | None = None) -> List[int]:
-    """Menores inteiros <= X ainda fora da árvore na profundidade dada."""
+    """Smallest integers <= X still outside the tree at the given depth."""
     if cap is None:
         cap = max(1_000_000, 1000 * X)
     reached, _ = inverse_tree(depth, cap=cap)
@@ -93,23 +94,25 @@ def missing_below(X: int, depth: int, cap: int | None = None) -> List[int]:
 
 
 def required_depth(X: int) -> int:
-    """Profundidade EXATA mínima da árvore inversa para cobrir todos os
-    inteiros de 1 a X.  Equivalente ao tempo de parada total máximo (sob o
-    mapa acelerado T) entre todos os n em 1..X.
+    """EXACT minimum depth of the inverse tree needed to cover all
+    integers from 1 to X. Equivalent to the maximum total stopping time
+    (under the accelerated map T) among all n in 1..X.
 
-    A conjectura é equivalente a: required_depth(X) é finito para todo X."""
+    The conjecture is equivalent to: required_depth(X) is finite for
+    every X."""
     from .core import total_stopping_time
     return max(total_stopping_time(n) for n in range(1, X + 1))
 
 
 def empirical_bounds(depth: int) -> List[Tuple[int, int]]:
-    """Para cada nível 0..depth da árvore inversa, devolve (min_nó, max_nó)
-    dentre os nós NOVOS naquele nível.
+    """For each level 0..depth of the inverse tree, returns (min_node,
+    max_node) among the NEW nodes at that level.
 
-    O nível 0 contém {1, 2} (raiz + ciclo trivial).  O max em cada nível é
-    exatamente 2^k (o ramo par dobra o max anterior); o min desce
-    gradualmente conforme o ramo ímpar (2m-1)/3 produz nós menores — a
-    difusão para trás da árvore inversa capturando inteiros pequenos."""
+    Level 0 contains {1, 2} (root + trivial cycle). The max at each level
+    is exactly 2^k (the even branch doubles the previous max); the min
+    gradually decreases as the odd branch (2m-1)/3 produces smaller
+    nodes — the backward diffusion of the inverse tree capturing small
+    integers."""
     reached: Set[int] = {1, 2}
     frontier = [2]
     bounds: List[Tuple[int, int]] = [(1, 2)]

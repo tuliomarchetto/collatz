@@ -14,11 +14,11 @@ from collatz.transfer import (absorption_profile, finite_section_nilpotency,
 
 def test_wasserstein_point_masses():
     one = Fraction(1)
-    # mesmas medidas -> 0
+    # same measures -> 0
     assert wasserstein_padic({4: one}, {4: one}, 3, 2) == 0
-    # x=1, y=2 diferem mod 3 (v=0): distância 1
+    # x=1, y=2 differ mod 3 (v=0): distance 1
     assert wasserstein_padic({1: one}, {2: one}, 3, 2) == 1
-    # x=1, y=4 congruentes mod 3, diferem mod 9 (v=1): distância 1/3
+    # x=1, y=4 congruent mod 3, differ mod 9 (v=1): distance 1/3
     assert wasserstein_padic({1: one}, {4: one}, 3, 2) == Fraction(1, 3)
 
 
@@ -27,8 +27,8 @@ def test_syracuse_branches_contract_by_exactly_one_third():
 
 
 def test_syracuse_w1_coefficient_below_one_third_and_sharpening():
-    # cota uniforme tau_k <= 1/3 (a lacuna espectral do operador infinito),
-    # com valores exatos crescendo para 1/3
+    # uniform bound tau_k <= 1/3 (the spectral gap of the infinite operator),
+    # with exact values increasing toward 1/3
     c2, _ = syracuse_w1_coefficient(2)
     c3, _ = syracuse_w1_coefficient(3)
     assert c2 == Fraction(5, 21)
@@ -37,7 +37,7 @@ def test_syracuse_w1_coefficient_below_one_third_and_sharpening():
 
 
 def test_stationary_measures_are_projective():
-    # pi_k projeta em pi_{k-1}: os pi_k são os cilindros de UMA medida em Z_3
+    # pi_k projects onto pi_{k-1}: the pi_k are the cylinders of A SINGLE measure on Z_3
     for k in (2, 3):
         assert stationary_projective_check(k)
 
@@ -45,7 +45,7 @@ def test_stationary_measures_are_projective():
 def test_koopman_decay_and_finite_time_equidistribution():
     prof = koopman_decay_profile(3)
     assert prof["decay"]                # dev_n <= Lip(f)/3^n
-    assert prof["finite_time"]          # U^k f = pi(f) EXATAMENTE
+    assert prof["finite_time"]          # U^k f = pi(f) EXACTLY
     assert prof["devs"][-1] == 0
 
 
@@ -61,7 +61,7 @@ def test_transfer_2adic_doubly_stochastic():
         assert sum(row.values()) == 1
         for y, w in row.items():
             col[y] += w
-    assert all(c == 1 for c in col.values())   # Haar é invariante
+    assert all(c == 1 for c in col.values())   # Haar is invariant
 
 
 def test_transfer_2adic_w1_coefficient_is_exactly_one_half():
@@ -79,13 +79,13 @@ def test_finite_section_is_nilpotent_for_collatz():
     assert r["acyclic"]
     assert r["cycle"] is None
     assert r["index"] > 0
-    # o índice cresce ~ c log N
+    # the index grows ~ c log N
     r2 = finite_section_nilpotency(50_000)
     assert r2["acyclic"] and r2["index"] > r["index"]
 
 
 def test_finite_section_detects_cycle_in_3n_minus_1():
-    # validação do detector no sistema irmão: espectro NÃO trivial
+    # detector validation on the sibling system: NON-trivial spectrum
     r = finite_section_nilpotency(1000, d=-1)
     assert not r["acyclic"]
     assert r["cycle"] == [5, 7, 10]

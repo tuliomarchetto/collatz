@@ -11,7 +11,7 @@ def test_negation_conjugates_3n1_and_3nm1():
 def test_scaling_selfsimilarity():
     assert semiconjugacy_multiples(5)
     assert semiconjugacy_multiples(7)
-    # e como conjugação afim 3n+1 -> 3n+5 com phi(x) = 5x
+    # and as an affine conjugacy 3n+1 -> 3n+5 with phi(x) = 5x
     found = affine_conjugacy_search(1, 5, max_a=6, max_b=3)
     assert (5, 0) in found
 

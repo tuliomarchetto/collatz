@@ -1,30 +1,33 @@
 """
-Busca de simetrias: conjugações entre sistemas 3n+d e automorfismos dos
-grafos de transição modulares.
+Symmetry search: conjugacies between 3n+d systems and automorphisms of
+the modular transition graphs.
 
-1. CONJUGAÇÕES AFINS EXATAS — affine_conjugacy_search(d, d'):
-   procura mapas φ(x) = a·x + b (a, b inteiros) com
+1. EXACT AFFINE CONJUGACIES — affine_conjugacy_search(d, d'):
+   searches for maps φ(x) = a·x + b (a, b integers) with
 
-       φ(T_d(x)) = T_{d'}(φ(x))   para todo x,
+       φ(T_d(x)) = T_{d'}(φ(x))   for all x,
 
-   isto é, φ transporta a dinâmica do sistema 3n+d na do 3n+d'.
-   Achados estruturais que o algoritmo redescobre sozinho:
-     * φ(x) = -x  conjuga 3n+1 com 3n-1: o problema "3n-1 em positivos"
-       (que TEM ciclos não triviais) é exatamente o "3n+1 em negativos".
-       Toda simetria de reflexão do problema está aí.
-     * φ(x) = d·x conjuga 3n+1 com a restrição de 3n+d aos múltiplos de d
-       (auto-similaridade da família).
-   Consequência metodológica: contraexemplos dos sistemas irmãos são
-   imagens de simetrias — a busca por contraexemplo do 3n+1 deve procurar
-   estruturas que quebrem essas simetrias, não que as repitam.
+   i.e. φ carries the dynamics of the system 3n+d to that of 3n+d'.
+   Structural findings the algorithm rediscovers on its own:
+     * φ(x) = -x  conjugates 3n+1 with 3n-1: the problem "3n-1 over the
+       positives" (which DOES have nontrivial cycles) is exactly "3n+1
+       over the negatives". Every reflection symmetry of the problem is
+       there.
+     * φ(x) = d·x conjugates 3n+1 with the restriction of 3n+d to the
+       multiples of d (self-similarity of the family).
+   Methodological consequence: counterexamples of the sibling systems
+   are images of symmetries — the search for a 3n+1 counterexample
+   should look for structures that BREAK these symmetries, not repeat
+   them.
 
-2. AUTOMORFISMOS AFINS DO GRAFO MODULAR — modular_affine_automorphisms(m):
-   permutações afins x -> ax+b de Z/m que preservam a relação de transição
-   de T.  Grupo trivial = a dinâmica projetada é "rígida" módulo m.
+2. AFFINE AUTOMORPHISMS OF THE MODULAR GRAPH — modular_affine_automorphisms(m):
+   affine permutations x -> ax+b of Z/m that preserve T's transition
+   relation. A trivial group means the projected dynamics is "rigid"
+   modulo m.
 
-O teste de conjugação é exato: T é afim por paridade com período 2 em n,
-e φ é afim; a identidade vale para todo x sse vale num intervalo de
-comprimento > 2·|a|·2 (verificamos com folga)."""
+The conjugacy test is exact: T is affine per parity with period 2 in n,
+and φ is affine; the identity holds for all x iff it holds on an
+interval of length > 2·|a|·2 (verified with margin)."""
 
 from __future__ import annotations
 
@@ -34,10 +37,10 @@ from .core import T
 
 
 def _is_conjugacy(a: int, b: int, d1: int, d2: int, test_range: int = 200) -> bool:
-    """Verifica φ(T_{d1}(x)) == T_{d2}(φ(x)) para x em [-R, R].  Como ambos
-    os lados são funções afins por classes de x mod 2 (e φ afeta paridade
-    com período 2), igualdade em 4·|a|+8 pontos consecutivos por classe
-    implica igualdade global; test_range=200 dá folga para |a| <= 20."""
+    """Verifies φ(T_{d1}(x)) == T_{d2}(φ(x)) for x in [-R, R]. Since both
+    sides are affine functions per class of x mod 2 (and φ affects parity
+    with period 2), equality on 4·|a|+8 consecutive points per class
+    implies global equality; test_range=200 gives margin for |a| <= 20."""
     for x in range(-test_range, test_range + 1):
         lhs = a * T(x, d1) + b
         rhs = T(a * x + b, d2)
@@ -48,8 +51,8 @@ def _is_conjugacy(a: int, b: int, d1: int, d2: int, test_range: int = 200) -> bo
 
 def affine_conjugacy_search(d1: int, d2: int, max_a: int = 20,
                             max_b: int = 40) -> List[Tuple[int, int]]:
-    """Todas as conjugações afins φ(x)=ax+b (0<|a|<=max_a, |b|<=max_b) do
-    sistema 3n+d1 no 3n+d2."""
+    """All affine conjugacies φ(x)=ax+b (0<|a|<=max_a, |b|<=max_b) from
+    the system 3n+d1 to 3n+d2."""
     found = []
     for a in [i for i in range(-max_a, max_a + 1) if i != 0]:
         for b in range(-max_b, max_b + 1):
@@ -59,7 +62,7 @@ def affine_conjugacy_search(d1: int, d2: int, max_a: int = 20,
 
 
 def semiconjugacy_multiples(d: int) -> bool:
-    """Verifica a auto-similaridade x -> d·x: T_d(d·x) == d·T_1(x)?"""
+    """Verifies the self-similarity x -> d·x: T_d(d·x) == d·T_1(x)?"""
     return all(T(d * x, d) == d * T(x, 1) for x in range(-100, 101))
 
 
@@ -71,9 +74,9 @@ def _edges_mod(m: int, d: int = 1) -> Set[Tuple[int, int]]:
 
 
 def modular_affine_automorphisms(m: int, d: int = 1) -> List[Tuple[int, int]]:
-    """Automorfismos afins x -> ax+b de Z/m que preservam o conjunto de
-    arestas do grafo de transição de T mod m.  Devolve a lista de (a, b);
-    (1, 0) — a identidade — está sempre presente."""
+    """Affine automorphisms x -> ax+b of Z/m that preserve the edge set
+    of T's transition graph mod m. Returns the list of (a, b);
+    (1, 0) — the identity — is always present."""
     edges = _edges_mod(m, d)
     from math import gcd
     autos = []

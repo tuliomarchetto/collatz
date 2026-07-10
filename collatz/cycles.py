@@ -1,41 +1,42 @@
 """
-Teoria exata de ciclos: enumeração por vetores de paridade e exclusão por
-frações contínuas.
+Exact cycle theory: enumeration via parity vectors and exclusion via
+continued fractions.
 
-FATO ESTRUTURAL CENTRAL.  Para o mapa acelerado T do sistema 3n+d, após L
-passos com vetor de paridade p = (p_0,...,p_{L-1}) contendo k uns:
+CENTRAL STRUCTURAL FACT. For the accelerated map T of the system 3n+d,
+after L steps with parity vector p = (p_0,...,p_{L-1}) containing k ones:
 
     T^L(n) = (3^k · n + b(p)) / 2^L,
 
-onde b(p) é o inteiro dado pela recorrência
-    b_0 = 0;  b_{i+1} = 3·b_i + d·2^i  se p_i = 1,  senão  b_{i+1} = b_i.
+where b(p) is the integer given by the recurrence
+    b_0 = 0;  b_{i+1} = 3·b_i + d·2^i  if p_i = 1,  else  b_{i+1} = b_i.
 
-Um ciclo de comprimento L é exatamente um ponto fixo T^L(n) = n, ou seja
+A cycle of length L is exactly a fixed point T^L(n) = n, i.e.
 
     n = b(p) / (2^L - 3^k).                                   (*)
 
-Isto reduz a busca de ciclos a um problema ARITMÉTICO exato:
+This reduces the search for cycles to an exact ARITHMETIC problem:
 
-* find_cycles          — enumera todos os ciclos de comprimento <= L_max do
-                         sistema 3n+d em Z (positivos e negativos), testando
-                         a integralidade de (*) para cada vetor de paridade.
-                         Encontra os ciclos negativos famosos (-1, -5, -17)
-                         e os ciclos não triviais de 3n-1 e 3n+5.
-* cycle_exclusion_bound — dado que todo n <= N converge (verificado), deriva
-                         um LIMITE INFERIOR RIGOROSO para o número de passos
-                         ímpares k de qualquer ciclo não trivial, usando os
-                         convergentes da fração contínua de alpha = log2(3).
+* find_cycles          — enumerates all cycles of length <= L_max of the
+                         system 3n+d in Z (positive and negative), testing
+                         the integrality of (*) for each parity vector.
+                         Finds the famous negative cycles (-1, -5, -17)
+                         and the nontrivial cycles of 3n-1 and 3n+5.
+* cycle_exclusion_bound — given that every n <= N converges (verified),
+                         derives a RIGOROUS LOWER BOUND on the number of
+                         odd steps k of any nontrivial cycle, using the
+                         continued-fraction convergents of alpha = log2(3).
 
-A exclusão usa a identidade multiplicativa em torno do ciclo:
-    2^L = prod_{passos ímpares} (3 + d/x_i)                    (**)
-com todos os x_i > N, o que força
+The exclusion uses the multiplicative identity around the cycle:
+    2^L = prod_{odd steps} (3 + d/x_i)                    (**)
+with all x_i > N, which forces
     0 < L - k·alpha <= k·eps,   eps = log2(1 + 1/(3N)),
-isto é, L/k aproxima alpha por CIMA com erro ~ 1/(3N·ln2).  Pela teoria das
-melhores aproximações racionais, para q_i <= k < q_{i+1} (denominadores dos
-convergentes de alpha) vale ||k·alpha|| >= ||q_i·alpha|| > 1/(q_i + q_{i+1});
-logo um ciclo exige k > 1/(eps·(q_i + q_{i+1})).  Varremos os intervalos
-entre denominadores consecutivos e devolvemos o maior K tal que TODO
-k <= K é impossível.  (Método na linha de Eliahou 1993 / Simons–de Weger.)
+i.e. L/k approximates alpha from ABOVE with error ~ 1/(3N·ln2). By the
+theory of best rational approximations, for q_i <= k < q_{i+1}
+(denominators of the convergents of alpha) we have
+||k·alpha|| >= ||q_i·alpha|| > 1/(q_i + q_{i+1}); hence a cycle requires
+k > 1/(eps·(q_i + q_{i+1})). We sweep the intervals between consecutive
+denominators and return the largest K such that EVERY k <= K is
+impossible. (Method along the lines of Eliahou 1993 / Simons-de Weger.)
 """
 
 from __future__ import annotations
@@ -48,11 +49,11 @@ from .core import T
 
 
 # ----------------------------------------------------------------------
-# Enumeração exata de ciclos
+# Exact enumeration of cycles
 # ----------------------------------------------------------------------
 
 def _fixed_point(parity: Tuple[int, ...], d: int) -> Optional[int]:
-    """Resolve (*) para o vetor de paridade dado; devolve n inteiro ou None."""
+    """Solve (*) for the given parity vector; return integer n or None."""
     L = len(parity)
     k = sum(parity)
     b = 0
@@ -68,8 +69,8 @@ def _fixed_point(parity: Tuple[int, ...], d: int) -> Optional[int]:
 
 
 def _realizes(n: int, parity: Tuple[int, ...], d: int) -> bool:
-    """Confere que a órbita real de n tem exatamente esse vetor de paridade
-    e retorna a n (ciclo genuíno, não só solução algébrica)."""
+    """Check that the actual orbit of n has exactly this parity vector
+    and returns to n (a genuine cycle, not just an algebraic solution)."""
     x = n
     for p in parity:
         if (x & 1) != p:
@@ -80,17 +81,17 @@ def _realizes(n: int, parity: Tuple[int, ...], d: int) -> bool:
 
 def find_cycles(d: int = 1, max_len: int = 20,
                 include_negative: bool = True) -> List[Tuple[int, ...]]:
-    """Enumera TODOS os ciclos do mapa acelerado T (sistema 3n+d) com
-    comprimento <= max_len, em inteiros (positivos e, opcionalmente,
-    negativos e zero).
+    """Enumerates ALL cycles of the accelerated map T (system 3n+d) with
+    length <= max_len, over the integers (positive and, optionally,
+    negative and zero).
 
-    Correção: todo ciclo contém ao menos um passo ímpar (exceto o ponto
-    fixo 0), logo pode ser rotacionado para começar em p_0 = 1; enumeramos
-    apenas vetores com p_0 = 1 e deduplicamos pelo conjunto de elementos.
+    Correctness: every cycle contains at least one odd step (except the
+    fixed point 0), so it can be rotated to start at p_0 = 1; we enumerate
+    only vectors with p_0 = 1 and deduplicate by the set of elements.
 
-    Para d=1 o resultado esperado (e conjecturado completo em positivos) é
-    apenas o ciclo trivial {1,2}; em negativos aparecem os ciclos de
-    -1, -5 e -17 — prova de que o detector funciona.
+    For d=1 the expected result (and conjectured to be complete over the
+    positives) is just the trivial cycle {1,2}; among the negatives the
+    cycles of -1, -5, and -17 appear — proof that the detector works.
     """
     seen: Set[frozenset] = set()
     cycles: List[Tuple[int, ...]] = []
@@ -120,42 +121,43 @@ def find_cycles(d: int = 1, max_len: int = 20,
 
 
 # ----------------------------------------------------------------------
-# Frações contínuas de log2(3) e exclusão de ciclos
+# Continued fractions of log2(3) and cycle exclusion
 # ----------------------------------------------------------------------
 
 def log2_3_convergents(max_den: int = 10 ** 30,
                        exact_certificate_upto: int = 10 ** 5) -> List[Tuple[int, int]]:
-    """Convergentes p/q de alpha = log2(3), com denominador <= max_den.
+    """Convergents p/q of alpha = log2(3), with denominator <= max_den.
 
-    Os quocientes parciais são extraídos de uma aproximação decimal com 120
-    dígitos.  Certificação:
-    * para q <= exact_certificate_upto, cada convergente é verificado
-      EXATAMENTE comparando os inteiros 2^p e 3^q (alternância acima/abaixo
-      de alpha) — aritmética inteira pura;
-    * para q maiores, a expansão permanece correta enquanto q^2 for muito
-      menor que 10^prec (o erro da aproximação decimal, ~10^-120, é menor
-      que 1/(2·q_i·q_{i+1}), condição clássica para a FC de uma aproximação
-      coincidir com a do número); o laço para antes desse limite."""
+    The partial quotients are extracted from a 120-digit decimal
+    approximation. Certification:
+    * for q <= exact_certificate_upto, each convergent is verified
+      EXACTLY by comparing the integers 2^p and 3^q (above/below
+      alternation of alpha) — pure integer arithmetic;
+    * for larger q, the expansion remains correct as long as q^2 stays
+      much smaller than 10^prec (the decimal approximation error,
+      ~10^-120, is smaller than 1/(2·q_i·q_{i+1}), the classical
+      condition for the CF of an approximation to match that of the
+      number); the loop stops before that limit."""
     getcontext().prec = 120
     alpha = Decimal(3).ln() / Decimal(2).ln()
     x = alpha
-    p0, q0, p1, q1 = 1, 0, 0, 1  # convergentes anteriores
+    p0, q0, p1, q1 = 1, 0, 0, 1  # previous convergents
     out: List[Tuple[int, int]] = []
     for _ in range(200):
         a = int(x)
         p0, q0, p1, q1 = a * p0 + p1, a * q0 + q1, p0, q0
         if q0 > max_den or q0 * q0 > 10 ** 100:
             break
-        expected_above = (len(out) % 2 == 1)  # 1/1 abaixo, 2/1 acima, 3/2 abaixo...
+        expected_above = (len(out) % 2 == 1)  # 1/1 below, 2/1 above, 3/2 below...
         if q0 <= exact_certificate_upto:
-            # certificado exato: p0/q0 > alpha  <=>  2^p0 > 3^q0
+            # exact certificate: p0/q0 > alpha  <=>  2^p0 > 3^q0
             above = (1 << p0) > 3 ** q0
             if above != expected_above:
-                raise ArithmeticError("expansão contínua inconsistente (certificado exato)")
+                raise ArithmeticError("inconsistent continued-fraction expansion (exact certificate)")
         else:
             above = Fraction(p0, q0) > Fraction(str(alpha))
             if above != expected_above:
-                raise ArithmeticError("precisão decimal insuficiente para os convergentes")
+                raise ArithmeticError("insufficient decimal precision for the convergents")
         out.append((p0, q0))
         frac = x - a
         if frac == 0:
@@ -165,40 +167,40 @@ def log2_3_convergents(max_den: int = 10 ** 30,
 
 
 def cycle_exclusion_bound(verified_limit: int) -> Dict[str, int]:
-    """Limite inferior rigoroso para ciclos não triviais do 3n+1.
+    """Rigorous lower bound for nontrivial cycles of 3n+1.
 
-    Hipótese: todo 2 <= n <= verified_limit converge (p.ex. o resultado de
-    verify_range, ou o limite computacional publicado ~2^71, Barina).
+    Hypothesis: every 2 <= n <= verified_limit converges (e.g. the result
+    of verify_range, or the published computational limit ~2^71, Barina).
 
-    Devolve {'min_odd_steps': K, 'min_length': L, 'min_elements': ...}:
-    qualquer ciclo não trivial em positivos tem MAIS de K passos ímpares e
-    comprimento (em passos de T) maior que L.
+    Returns {'min_odd_steps': K, 'min_length': L, 'min_elements': ...}:
+    any nontrivial cycle over the positives has MORE than K odd steps and
+    length (in T steps) greater than L.
 
-    Derivação (ver docstring do módulo): um ciclo com k passos ímpares e
-    todos os elementos > N satisfaz 0 < L - k·alpha <= k·eps com
-    eps = log2(1 + 1/(3N)); para q_i <= k < q_{i+1} vale
-    dist(k·alpha, Z) > 1/(q_i + q_{i+1}); logo k > 1/(eps·(q_i+q_{i+1})).
+    Derivation (see the module docstring): a cycle with k odd steps and
+    all elements > N satisfies 0 < L - k·alpha <= k·eps with
+    eps = log2(1 + 1/(3N)); for q_i <= k < q_{i+1} we have
+    dist(k·alpha, Z) > 1/(q_i + q_{i+1}); hence k > 1/(eps·(q_i+q_{i+1})).
     """
     N = verified_limit
     getcontext().prec = 120
     ln2 = Decimal(2).ln()
     eps_dec = (1 + Decimal(1) / (3 * N)).ln() / ln2
-    # eps como fração superior segura
+    # eps as a safe upper-bound fraction
     eps = Fraction(int(eps_dec * 10 ** 60) + 1, 10 ** 60)
 
     convs = log2_3_convergents()
-    K = 0  # todo k <= K está excluído
+    K = 0  # every k <= K is excluded
     for i in range(len(convs) - 1):
         _, qi = convs[i]
         _, qi1 = convs[i + 1]
-        # dentro de [qi, qi1): exclui k <= 1/(eps*(qi+qi1))
+        # within [qi, qi1): excludes k <= 1/(eps*(qi+qi1))
         cap = int(Fraction(1, 1) / (eps * (qi + qi1)))
         if cap >= qi1 - 1:
-            K = max(K, qi1 - 1)      # intervalo inteiro excluído; continua
+            K = max(K, qi1 - 1)      # whole interval excluded; continue
         else:
             K = max(K, min(cap, qi1 - 1))
             break
-    # comprimento L > k*alpha > K*1.58; elementos do ciclo = L (todos distintos)
+    # length L > k*alpha > K*1.58; cycle elements = L (all distinct)
     min_len = int(K * Fraction(158, 100))
     return {
         "verified_limit": N,

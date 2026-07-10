@@ -1,4 +1,4 @@
-"""Smoke tests para a CLI (__main__.py): cada subcomando roda sem travar."""
+"""Smoke tests for the CLI (__main__.py): each subcommand runs without crashing."""
 
 from collatz.__main__ import main
 

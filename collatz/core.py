@@ -1,18 +1,18 @@
 """
-Núcleo: mapas de Collatz e ferramentas de trajetória.
+Core: Collatz maps and trajectory tools.
 
-Três formas do mapa são usadas na literatura e aqui:
+Three forms of the map are used in the literature and here:
 
-* Mapa original      C(n) = n/2 se n par;  3n+d se n ímpar.
-* Mapa acelerado     T(n) = n/2 se n par;  (3n+d)/2 se n ímpar.
-  (cada passo divide por 2 exatamente uma vez; é a forma canônica para
-  análise 2-ádica e para a teoria de ciclos)
-* Mapa de Syracuse   S(n) = (3n+d) / 2^v2(3n+d), definido de ímpares em
-  ímpares (usado no operador de transferência mod 3^k).
+* Original map       C(n) = n/2 if n even;  3n+d if n odd.
+* Accelerated map    T(n) = n/2 if n even;  (3n+d)/2 if n odd.
+  (each step divides by 2 exactly once; this is the canonical form for
+  2-adic analysis and for cycle theory)
+* Syracuse map       S(n) = (3n+d) / 2^v2(3n+d), defined from odd to
+  odd (used in the mod 3^k transfer operator).
 
-O parâmetro d (ímpar, padrão +1) permite estudar os sistemas irmãos 3n-1 e
-3n+5, que POSSUEM ciclos não triviais — servindo de bancada de validação
-para os algoritmos de busca de contraexemplo.
+The parameter d (odd, default +1) allows studying the sibling systems 3n-1
+and 3n+5, which DO have nontrivial cycles — serving as a validation bench
+for the counterexample-search algorithms.
 """
 
 from __future__ import annotations
@@ -21,34 +21,34 @@ from typing import Iterator, List, Tuple
 
 
 def v2(n: int) -> int:
-    """Valuação 2-ádica: maior a com 2^a | n (n != 0)."""
+    """2-adic valuation: largest a with 2^a | n (n != 0)."""
     if n == 0:
-        raise ValueError("v2(0) é infinita")
+        raise ValueError("v2(0) is infinite")
     return (n & -n).bit_length() - 1
 
 
 def collatz_step(n: int, d: int = 1) -> int:
-    """Mapa original C(n) para o sistema 3n+d."""
+    """Original map C(n) for the system 3n+d."""
     return n // 2 if n % 2 == 0 else 3 * n + d
 
 
 def T(n: int, d: int = 1) -> int:
-    """Mapa acelerado T(n) para o sistema 3n+d."""
+    """Accelerated map T(n) for the system 3n+d."""
     return n // 2 if n % 2 == 0 else (3 * n + d) // 2
 
 
 def syracuse(n: int, d: int = 1) -> int:
-    """Mapa de Syracuse (ímpar -> ímpar): remove TODAS as potências de 2."""
+    """Syracuse map (odd -> odd): removes ALL powers of 2."""
     if n % 2 == 0:
-        raise ValueError("syracuse é definido apenas para ímpares")
+        raise ValueError("syracuse is only defined for odd numbers")
     m = 3 * n + d
     return m >> v2(m)
 
 
 def trajectory(n: int, d: int = 1, max_steps: int = 10_000,
                accelerated: bool = True) -> List[int]:
-    """Trajetória de n sob T (ou C), até atingir 1, um valor repetido
-    localmente (ciclo curto) ou max_steps."""
+    """Trajectory of n under T (or C), until reaching 1, a locally
+    repeated value (short cycle), or max_steps."""
     step = T if accelerated else collatz_step
     out = [n]
     x = n
@@ -57,13 +57,13 @@ def trajectory(n: int, d: int = 1, max_steps: int = 10_000,
             break
         x = step(x, d)
         out.append(x)
-        if x == n:  # fechou ciclo
+        if x == n:  # cycle closed
             break
     return out
 
 
 def orbit(n: int, d: int = 1, accelerated: bool = True) -> Iterator[int]:
-    """Iterador infinito da órbita de n."""
+    """Infinite iterator over the orbit of n."""
     step = T if accelerated else collatz_step
     x = n
     while True:
@@ -72,11 +72,11 @@ def orbit(n: int, d: int = 1, accelerated: bool = True) -> Iterator[int]:
 
 
 def parity_vector(n: int, k: int, d: int = 1) -> Tuple[int, ...]:
-    """Vetor de paridade (p_0,...,p_{k-1}) com p_i = paridade de T^i(n).
+    """Parity vector (p_0,...,p_{k-1}) with p_i = parity of T^i(n).
 
-    Teorema de Terras (1976): para o mapa acelerado, n mod 2^k determina e é
-    determinado pelo vetor de paridade de comprimento k — uma bijeção
-    Z/2^k <-> {0,1}^k.  Verificada computacionalmente em `padic`.
+    Terras's theorem (1976): for the accelerated map, n mod 2^k determines
+    and is determined by the length-k parity vector — a bijection
+    Z/2^k <-> {0,1}^k. Verified computationally in `padic`.
     """
     ps = []
     x = n
@@ -88,9 +88,9 @@ def parity_vector(n: int, k: int, d: int = 1) -> Tuple[int, ...]:
 
 
 def stopping_time(n: int, d: int = 1, max_steps: int = 10_000) -> int:
-    """Menor i >= 1 com T^i(n) < n ('tempo de parada'); -1 se não ocorrer
-    em max_steps.  A conjectura equivale a: todo n >= 2 tem tempo de parada
-    finito."""
+    """Smallest i >= 1 with T^i(n) < n (the "stopping time"); -1 if it does
+    not occur within max_steps. The conjecture is equivalent to: every
+    n >= 2 has a finite stopping time."""
     x = n
     for i in range(1, max_steps + 1):
         x = T(x, d)
@@ -100,7 +100,7 @@ def stopping_time(n: int, d: int = 1, max_steps: int = 10_000) -> int:
 
 
 def total_stopping_time(n: int, d: int = 1, max_steps: int = 10_000_000) -> int:
-    """Número de passos de T até atingir 1; -1 se não atingir em max_steps."""
+    """Number of T steps until reaching 1; -1 if not reached within max_steps."""
     x = n
     for i in range(max_steps):
         if x == 1:
@@ -110,7 +110,7 @@ def total_stopping_time(n: int, d: int = 1, max_steps: int = 10_000_000) -> int:
 
 
 def max_excursion(n: int, d: int = 1, max_steps: int = 10_000_000) -> int:
-    """Maior valor atingido pela órbita de n antes de chegar a 1."""
+    """Largest value reached by the orbit of n before reaching 1."""
     x = n
     hi = n
     for _ in range(max_steps):

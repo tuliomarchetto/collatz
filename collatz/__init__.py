@@ -1,34 +1,34 @@
 """
-collatz — Laboratório computacional para a Conjectura de Collatz.
+collatz — Computational laboratory for the Collatz Conjecture.
 
-Um conjunto de algoritmos para buscar invariantes, simetrias e propriedades
-estruturais da dinâmica 3n+1 que possam apontar para uma prova ou para um
-contraexemplo da conjectura.
+A set of algorithms to search for invariants, symmetries, and structural
+properties of the 3n+1 dynamics that might point to a proof or a
+counterexample to the conjecture.
 
-Módulos
+Modules
 -------
-core        Mapas (Collatz, acelerado T, Syracuse), trajetórias, tempos de parada.
-search      Busca direta de contraexemplos: crivo de verificação, detecção de
-            ciclos (Brent), sondagem de divergência, recordes.
-cycles      Enumeração EXATA de ciclos via vetores de paridade (ponto fixo
-            racional) e exclusão de ciclos via frações contínuas de log2(3).
-padic       Estrutura 2-ádica: bijeção de Terras Q_k, conjugação com o shift,
-            censo binomial de paridades.
-invariants  Invariantes modulares (mapas induzidos, partições conservadas),
-            deriva (drift) por classe de resíduo, busca de função de Lyapunov
-            via ciclo de média máxima (algoritmo de Karp).
-symmetries  Busca de conjugações afins entre sistemas 3n+d e automorfismos
-            afins dos grafos de transição modulares.
-spectral    Operador de transferência de Syracuse em (Z/3^k)*: distribuição
-            estacionária exata e lacuna espectral.
-transfer    Operador de transferência INFINITO: Koopman da cadeia de Syracuse
-            em Lip(Z_3) (contração de Wasserstein <= 1/3, uniforme em k),
-            transferência de T em Lip(Z_2) (contração 1/2, Haar invariante)
-            e a face Z_+ (seções nilpotentes, obstrução a pesos n^theta,
-            contração em densidade).
-tree        Árvore inversa (pré-imagens de 1): densidade de cobertura e taxa
-            de crescimento.
-report      Orquestra todos os módulos e produz um relatório de achados.
+core        Maps (Collatz, accelerated T, Syracuse), trajectories, stopping times.
+search      Direct counterexample search: verification sieve, cycle
+            detection (Brent), divergence probing, records.
+cycles      EXACT enumeration of cycles via parity vectors (rational
+            fixed point) and cycle exclusion via continued fractions of log2(3).
+padic       2-adic structure: Terras bijection Q_k, conjugacy with the shift,
+            binomial census of parities.
+invariants  Modular invariants (induced maps, conserved partitions),
+            drift by residue class, search for a Lyapunov function
+            via maximum mean cycle (Karp's algorithm).
+symmetries  Search for affine conjugacies between 3n+d systems and affine
+            automorphisms of the modular transition graphs.
+spectral    Syracuse transfer operator on (Z/3^k)*: exact stationary
+            distribution and spectral gap.
+transfer    INFINITE transfer operator: Koopman operator of the Syracuse
+            chain on Lip(Z_3) (Wasserstein contraction <= 1/3, uniform in k),
+            transfer operator of T on Lip(Z_2) (contraction 1/2, Haar invariant)
+            and the Z_+ face (nilpotent sections, obstruction to n^theta
+            weights, density contraction).
+tree        Inverse tree (preimages of 1): coverage density and growth
+            rate.
+report      Orchestrates all modules and produces a report of findings.
 """
 
 __version__ = "0.1.0"

@@ -1,5 +1,7 @@
 # Relatório: Estrutura, Invariantes e Obstruções na Dinâmica de Collatz
 
+*Este é o documento canônico (português do Brasil). Uma tradução para o inglês está disponível em [`REPORT.md`](REPORT.md). Licença: este documento é distribuído sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt_BR) (Creative Commons Atribuição 4.0 Internacional). O código-fonte do laboratório (`collatz/`) é distribuído separadamente sob a licença MIT — ver `LICENSE`.*
+
 Este documento formaliza a investigação sobre a Conjectura de Collatz (dinâmica $3n+1$) e sistemas afins ($3n+d$). O relatório está dividido em três partes estritas:
 1. **Parte I: Resultados Matemáticos**, contendo teoremas com provas puramente analíticas (sem dependência de computação). O foco central é a caracterização topológica da falha das funções de Lyapunov modulares.
 2. **Parte II: Descrição dos Algoritmos**, descrevendo os métodos computacionais exatos projetados para investigar o sistema (álgebra exata, grafos modulares, métrica Wasserstein).
