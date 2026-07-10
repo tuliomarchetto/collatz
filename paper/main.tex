@@ -4,12 +4,14 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage[hidelinks]{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{cd, arrows.meta, positioning}
 
 \emergencystretch=1.5em
+\raggedbottom
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -88,7 +90,7 @@ The theorem identifies a structural obstruction within this finite-modular frame
 We maintain a strict separation between the two kinds of statement in this paper.
 \begin{itemize}
 \item \emph{Theorems} (Sections~\ref{sec:main}--\ref{sec:algorithms}) are proved analytically; none of their proofs depends on a computation.
-\item \emph{Verifications} (Section~\ref{sec:results}) are outputs of the algorithms of Section~\ref{sec:algorithms}, reported with their exact sweep limits. They serve two purposes: validating the implementations against known ground truth (the negative cycles of $3n+1$, the nontrivial cycles of $3n-1$ and $3n+5$), and instantiating the theorems at finite levels (the Karp analysis locating $-1 \bmod 2^j$, the coefficients $\tau_k$ increasing towards the bound $1/3$).
+\item \emph{Verifications} (Section~\ref{sec:results}) are outputs of the algorithms of Section~\ref{sec:algorithms}, reported with their exact sweep limits. They serve two purposes: validating the implementations against known ground truth (the negative cycles of $3n+1$, the nontrivial cycles of $3n-1$ and $3n+5$), and instantiating the theorems at finite levels (the Karp analysis locating $-1 \bmod 2^j$ and the computed coefficients $\tau_k$).
 \end{itemize}
 In particular, our convergence sieve ($n \le 2\cdot 10^5$) makes no claim of novelty --- the published record is $2^{68}$ \cite{barina2021} --- and is used only as a self-contained hypothesis for the exclusion bounds of Section~\ref{sec:results-exclusion}, which we then also evaluate at the literature's limit.
 
@@ -159,16 +161,18 @@ Since $w$ has finite domain, it is bounded, and on the integers it acts as a per
 \begin{figure}[h]
     \centering
     \begin{tikzpicture}[
+        scale=0.87,
+        transform shape,
         node distance=2.5cm,
         every node/.style={circle, draw, minimum size=1.2cm},
         edge/.style={->, >=stealth, thick}
         ]
         
-        \node (even) {$even$};
+        \node[minimum size=1.55cm] (even) {$even$};
         \node[right=of even, xshift=1cm] (odd) {$odd$};
         \node[right=of odd, xshift=1cm, fill=gray!20] (minusone) {$-1$};
         
-        \draw[edge] (even) edge[loop left] node[auto, swap, draw=none, rectangle] {$-1$} (even);
+        \draw[edge] (even) edge[loop left] node[auto, swap, draw=none, rectangle, xshift=-8pt] {$-1$} (even);
         \draw[edge] (even) to[bend left] node[auto, draw=none, rectangle] {$-1$} (odd);
         \draw[edge] (odd) to[bend left] node[auto, draw=none, rectangle] {$\approx 0.58$} (even);
         \draw[edge] (odd) edge[loop above] node[auto, draw=none, rectangle] {$\approx 0.58$} (odd);
@@ -328,7 +332,7 @@ The remaining assertions follow from Lemma~\ref{lem:dobrushin} with $\tau = 1/3$
 \end{proof}
 
 \begin{remark}\label{rem:tauk}
-The bound $\tau(P_k) \le 1/3$ is uniform in $k$, unlike the $\ell^2$ spectral gap of the finite sections, which is trivial (Section~\ref{sec:results-spectral}: the projected chain loses all memory modulo $3^k$ in exactly $k$ steps, so all eigenvalues beyond $\lambda_1 = 1$ vanish). The exact values of $\tau(P_k)$, computed in rational arithmetic in Section~\ref{sec:results-wasserstein}, are $\tau_2 = 5/21$, $\tau_3 = 455/1387$ and $\tau_4 = 7635497415/22906579627 \approx 0.33333206$, increasing towards the uniform bound: at finite levels, couplings across distinct branches still help, but their advantage vanishes as $k \to \infty$.
+The bound $\tau(P_k) \le 1/3$ is uniform in $k$. The exact finite-level values computed in rational arithmetic in Section~\ref{sec:results-wasserstein} are $\tau_2 = 5/21$, $\tau_3 = 455/1387$, and $\tau_4 = 7635497415/22906579627 \approx 0.33333206$; they satisfy $\tau_2 < \tau_3 < \tau_4 \le 1/3$. These three calculations do not by themselves establish an asymptotic limit for $\tau(P_k)$.
 \end{remark}
 
 We now turn to the dual chain on $\Ztwo$. The accelerated map $T$ extends continuously to $\Ztwo$ and preserves Haar measure; it is conjugate to the one-sided Bernoulli shift \cite{terras1976,lagarias1985}. Its transfer (backward) chain is driven by the two inverse branches of $T$ on $\Ztwo$:
@@ -508,7 +512,7 @@ Every number in this section is regenerated and checked by the reproduction scri
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lll}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.60\textwidth}c@{}}
 \toprule
 Claim & Verified by & Exact? \\
 \midrule
@@ -551,20 +555,20 @@ Proposition~\ref{prop:exclusion} with the certified convergents of $\alpha$:
 Hypothesis (all $n \le N$ converge) & odd steps $k$ of any cycle & elements \\
 \midrule
 $N = 2\cdot 10^5$ (verified here, R1) & $k > 428$ & $> 676$ \\
-$N = 2^{71}$ (cf.\ \cite{barina2021}) & $k > 65{,}470{,}613{,}320$ & $> 103{,}443{,}569{,}045$ \\
+$N = 2^{68}$ (published in \cite{barina2021}) & $k > 8{,}517{,}411{,}709$ & $> 13{,}457{,}510{,}500$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-The second row uses the verification limit reported by the ongoing project of \cite{barina2021}; with the published $2^{68}$ the bound is of the same order. These reproduce the method of \cite{eliahou1993,simonsdeweger2005}.
+The second row uses the published verification limit of \cite{barina2021}. These reproduce the method of \cite{eliahou1993,simonsdeweger2005}.
 
 \subsection{Locating the obstruction (R4)}\label{sec:results-karp}
-Karp's algorithm on $G_j$ for $j = 5,\dots,10$: in every run the maximum mean equals $\log_2 3 - 1 = 0.5849625\ldots$ (float agreement $< 2\cdot10^{-15}$; value certified symbolically per Section~\ref{sec:methodology}), and the optimal cycle returned is \emph{unique and equal to the self-loop at $-1 \bmod 2^j$} predicted by Proposition~\ref{prop:karpfeas} --- the finite-level fingerprint of Theorem~\ref{thm:main}.
+Karp's algorithm on $G_j$ for $j = 5,\dots,10$ returns the self-loop at $-1 \bmod 2^j$ as an optimal cycle in every run, with maximum mean $\log_2 3 - 1 = 0.5849625\ldots$ (float agreement $< 2\cdot10^{-15}$; value certified symbolically per Section~\ref{sec:methodology}). This is the finite-level fingerprint of Theorem~\ref{thm:main}; the computation is not used to claim uniqueness of the optimal cycle.
 
 \subsection{Inverse tree of the trivial cycle (R5)}\label{sec:results-tree}
 The conjecture is equivalent to the statement that the preimage tree of $1$ under $T$ (edges $m \to 2m$ and, when integral and odd, $m \to (2m-1)/3$) covers $\Z_+$. Exact BFS gives: the minimum depth at which the tree rooted at $1$ covers all of $\{1,\dots,1000\}$ is $113$ (the depth of $n = 871$, equivalently the maximum total stopping time in the range); and at level $30$ the new nodes span exactly the interval of values $[123,\ 2^{31}]$ (minimum and maximum new node). Growth per level is $\approx 4/3$, consistent with the branching heuristic; Krasikov--Lagarias prove the reached set below $X$ has cardinality $\ge X^{0.84}$ \cite{krasikovlagarias2003}.
 
 \subsection{Finite-level Syracuse spectra (R6)}\label{sec:results-spectral}
-For the projected kernel $P_k$ (exact rationals, Section~\ref{sec:transfer-alg}): the uniform measure is \emph{not} stationary; the exact stationary measure modulo $3$ is $\pi(1) = 1/3$, $\pi(2) = 2/3$ --- Syracuse iterates fall on $2 \bmod 3$ twice as often as on $1 \bmod 3$, an exact consequence of $(3n+1)/2^a \equiv (-1)^a \pmod 3$ with $\Pr[a \text{ odd}] = 2/3$ under Lemma~\ref{lem:geometric}. Moreover $P_k^{\,k} = \mathbf{1}\pi_k$ \emph{exactly} (rank collapse verified in rational arithmetic for the tested $k$): the chain loses all memory modulo $3^k$ in exactly $k$ steps, so the $\ell^2$ spectrum beyond $\lambda_1 = 1$ is $\{0\}$ --- which is why the surviving contraction structure must be sought in the Wasserstein geometry (Theorem~\ref{thm:z3}), not in finite $\ell^2$ sections.
+For the projected kernel $P_k$ (exact rationals, Section~\ref{sec:transfer-alg}), the uniform measure is \emph{not} stationary; the exact stationary measure modulo $3$ is $\pi(1) = 1/3$, $\pi(2) = 2/3$ --- Syracuse iterates fall on $2 \bmod 3$ twice as often as on $1 \bmod 3$, an exact consequence of $(3n+1)/2^a \equiv (-1)^a \pmod 3$ with $\Pr[a \text{ odd}] = 2/3$ under Lemma~\ref{lem:geometric}. At the reproduced level $k=3$, $P_3^{\,3} = \mathbf{1}\pi_3$ exactly in rational arithmetic. This finite rank-collapse check complements the Wasserstein contraction result of Theorem~\ref{thm:z3}; it does not substitute for a general spectral statement about all finite sections.
 
 \subsection{Exact Wasserstein coefficients (R7)}\label{sec:results-wasserstein}
 Lemma~\ref{lem:w1formula} applied to the exact kernels:
@@ -581,7 +585,7 @@ $2^6$ on $\Ztwo$ (Theorem~\ref{thm:z2}) & $1/2$ (exact) & $0.5$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-The coefficients increase monotonically towards the uniform bound $1/3$, and each branch-contraction identity, the projective coherence of the family $\pi_k$, and the finite-time Haar averaging $L^k f = \int f\,\mathrm{d}\lambda$ of Theorem~\ref{thm:z2}(3) are verified in exact arithmetic at the tested levels. On the other side of Remark~\ref{rem:scope}, the finite sections of the pushforward operator on $[1, N] \subset \Z_+$ are exactly nilpotent (acyclic transition structure) for the tested $N \le 10^5$, and the weight $n^\theta$ fails to contract uniformly on the classes $n \equiv -1 \bmod 2^t$, as predicted by Theorem~\ref{thm:main}.
+At the computed levels, $\tau_2 < \tau_3 < \tau_4 \le 1/3$. Each branch-contraction identity, the projective coherence of the family $\pi_k$, and the finite-time Haar averaging $L^k f = \int f\,\mathrm{d}\lambda$ of Theorem~\ref{thm:z2}(3) are verified in exact arithmetic at the tested levels. On the other side of Remark~\ref{rem:scope}, the finite sections of the pushforward operator on $[1, N] \subset \Z_+$ are exactly nilpotent (acyclic transition structure) for the tested $N \le 10^5$, and the weight $n^\theta$ fails to contract uniformly on the classes $n \equiv -1 \bmod 2^t$, as predicted by Theorem~\ref{thm:main}.
 
 \subsection{Structural cross-checks (R8)}\label{sec:results-structure}
 Terras's bijection (parity vector bijective on $\Z/2^{14}\Z$) verified exactly; the affine conjugation $\varphi(x) = -x$ between $3n+1$ and $3n-1$, and the embedding $\varphi(x) = 5x$ of $3n+1$ into $3n+5$, verified exactly on the tested ranges.

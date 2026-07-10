@@ -16,7 +16,7 @@ from typing import List
 
 from . import cycles, invariants, padic, search, spectral, symmetries, transfer, tree
 
-KNOWN_VERIFIED = 2**71  # published computational limit (Barina et al.)
+KNOWN_VERIFIED = 2**68  # published computational limit (Barina 2021)
 
 
 def _fmt_cycle(c) -> str:
@@ -51,7 +51,7 @@ def run_all(
     if res.all_converge:
         add(
             f"- Todo n ≤ {verify_limit:,} converge a 1 (verificado agora; "
-            "literatura: ≈ 2^71). Nenhum contraexemplo."
+            "literatura: 2^68). Nenhum contraexemplo."
         )
         n_rec, s_rec = res.stopping_records[-1]
         add(
@@ -117,7 +117,7 @@ def run_all(
         f"(> {bound_local['min_length_T_steps']:,} elementos)."
     )
     add(
-        f"- Com o limite da literatura (N = 2^71): > {bound_lit['min_odd_steps']:,} "
+        f"- Com o limite publicado (N = 2^68): > {bound_lit['min_odd_steps']:,} "
         f"passos ímpares, ou seja, > {bound_lit['min_length_T_steps']:,} elementos — "
         "um ciclo contraexemplo teria dezenas de bilhões de termos."
     )
