@@ -23,7 +23,7 @@ report:
 	$(PYTHON) -m collatz all
 
 paper:
-	cd paper && latexmk -pdf main.tex
+	cd paper && tectonic main.tex
 
 clean:
 	rm -rf build dist *.egg-info collatz/__pycache__ tests/__pycache__ .pytest_cache

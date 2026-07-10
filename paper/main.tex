@@ -59,6 +59,8 @@ This paper has two aims. The first is to prove a nonexistence theorem for a natu
 \item \textbf{An exact computational laboratory} (Sections~\ref{sec:algorithms}--\ref{sec:results}). Cycle enumeration via the closed form $n = b(p)/(2^L-3^k)$; cycle exclusion via certified convergents of $\log_2 3$, reproducing the method of Eliahou and Simons--de Weger \cite{eliahou1993,simonsdeweger2005}; identification of the obstruction of Theorem~\ref{thm:main} at every finite level $j$ by Karp's maximum-mean-cycle algorithm \cite{karp1978}; and exact rational evaluation of the Wasserstein coefficients $\tau_k$ of Section~\ref{sec:wasserstein}.
 \end{enumerate}
 
+The scientific significance of Theorem~\ref{thm:main} is that it identifies a structural barrier to a highly natural proof strategy. Because the parity vector of length $j$ is determined precisely by the residue modulo $2^j$, a vast amount of heuristic and rigorous work implicitly seeks a convergence certificate (a Lyapunov function) whose corrections depend only on finite-dimensional modular data. Our theorem establishes that all such attempts face an insurmountable topological obstruction: the difficulty is not that the correct modular weights have not yet been found, but that the $2$-adic fixed point $-1$ projects a strictly positive logarithmic gain into every finite quotient, unconditionally breaking any such function even when the domain is strictly restricted to the positive integers.
+
 \subsection{Theorems versus verifications}\label{sec:sep}
 
 We maintain a strict separation between the two kinds of statement in this paper.
@@ -100,10 +102,10 @@ the infimum over couplings of $\mu$ and $\nu$ \cite[Ch.~6]{villani2009}. For a M
 The standard consequences we use are collected in the next lemma.
 
 \begin{lemma}\label{lem:dobrushin}
-Let $P$ be a Markov kernel on a compact metric space $(X,d)$ with $\tau = \tau(P) < 1$. Then:
+Let $P$ be a Markov kernel on a compact (hence complete separable) metric space $(X,d)$ with $\tau = \tau(P) < 1$. Then:
 \begin{enumerate}
 \item $\dW(\mu P, \nu P) \le \tau\, \dW(\mu,\nu)$ for all Borel probability measures $\mu,\nu$;
-\item $P$ has a unique invariant measure $\pi$, and $\dW(\mu P^n, \pi) \le \tau^n\, \dW(\mu, \pi)$ for every $\mu$;
+\item $P$ has a unique invariant Borel probability measure $\pi$, and for every $\mu$, the sequence $\mu P^n$ converges to $\pi$ in the Wasserstein metric, with $\dW(\mu P^n, \pi) \le \tau^n\, \dW(\mu, \pi)$;
 \item the Koopman operator $Uf(x) = \int f\,\mathrm{d}P(x,\cdot)$ satisfies $\Lip(Uf) \le \tau \Lip(f)$; hence on the quotient of the Lipschitz space by the constants, the spectral radius of $U$ is at most $\tau$, i.e.\ $\operatorname{spec}\bigl(U|_{\Lip}\bigr) \subseteq \{1\} \cup \{z : |z| \le \tau\}$.
 \end{enumerate}
 \end{lemma}
@@ -184,7 +186,7 @@ which forces $3^k < 2^k$, false for every $k \ge 1$.
 \end{proof}
 
 \begin{remark}[Relation to the literature]\label{rem:originality}
-That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$; see Section~\ref{sec:results-cycles}), and a strictly decreasing $V$ defined on all of $\Z\setminus\{0\}$ would forbid them. The content of Theorem~\ref{thm:main} is sharper: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional, caused by the projection of the single $2$-adic point $-1$ rather than by any actual cycle in the domain of the hypothesis. We have not located this statement or its proof in the classical or contemporary literature we consulted \cite{terras1976,lagarias1985,eliahou1993,krasikovlagarias2003,simonsdeweger2005,lagarias2010,tao2022}; we state this as a bibliographic observation, not as a claim of certainty. Section~\ref{sec:karp} recasts the theorem as the infeasibility of a system of difference constraints and Section~\ref{sec:results-karp} locates the obstruction computationally at every level $5 \le j \le 10$.
+That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$; see Section~\ref{sec:results-cycles}), and a strictly decreasing $V$ defined on all of $\Z\setminus\{0\}$ would forbid them. The content of Theorem~\ref{thm:main} is sharper: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional, caused by the projection of the single $2$-adic point $-1$ rather than by any actual cycle in the domain of the hypothesis. To the best of our knowledge, we have not found this explicit formulation or its proof in the classical or contemporary literature we consulted \cite{terras1976,lagarias1985,eliahou1993,krasikovlagarias2003,simonsdeweger2005,lagarias2010,tao2022}. We state this merely as a bibliographic observation. Section~\ref{sec:karp} recasts the theorem as the infeasibility of a system of difference constraints and Section~\ref{sec:results-karp} locates the obstruction computationally at every level $5 \le j \le 10$.
 \end{remark}
 
 \section{Wasserstein contraction of the transfer structure}\label{sec:wasserstein}
