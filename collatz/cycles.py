@@ -47,10 +47,10 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from .core import T
 
-
 # ----------------------------------------------------------------------
 # Exact enumeration of cycles
 # ----------------------------------------------------------------------
+
 
 def _fixed_point(parity: Tuple[int, ...], d: int) -> Optional[int]:
     """Solve (*) for the given parity vector; return integer n or None."""
@@ -62,7 +62,7 @@ def _fixed_point(parity: Tuple[int, ...], d: int) -> Optional[int]:
         if p:
             b = 3 * b + d * pw
         pw <<= 1
-    den = (1 << L) - 3 ** k
+    den = (1 << L) - 3**k
     if den == 0 or b % den != 0:
         return None
     return b // den
@@ -79,8 +79,9 @@ def _realizes(n: int, parity: Tuple[int, ...], d: int) -> bool:
     return x == n
 
 
-def find_cycles(d: int = 1, max_len: int = 20,
-                include_negative: bool = True) -> List[Tuple[int, ...]]:
+def find_cycles(
+    d: int = 1, max_len: int = 20, include_negative: bool = True
+) -> List[Tuple[int, ...]]:
     """Enumerates ALL cycles of the accelerated map T (system 3n+d) with
     length <= max_len, over the integers (positive and, optionally,
     negative and zero).
@@ -124,8 +125,10 @@ def find_cycles(d: int = 1, max_len: int = 20,
 # Continued fractions of log2(3) and cycle exclusion
 # ----------------------------------------------------------------------
 
-def log2_3_convergents(max_den: int = 10 ** 30,
-                       exact_certificate_upto: int = 10 ** 5) -> List[Tuple[int, int]]:
+
+def log2_3_convergents(
+    max_den: int = 10**30, exact_certificate_upto: int = 10**5
+) -> List[Tuple[int, int]]:
     """Convergents p/q of alpha = log2(3), with denominator <= max_den.
 
     The partial quotients are extracted from a 120-digit decimal
@@ -146,18 +149,22 @@ def log2_3_convergents(max_den: int = 10 ** 30,
     for _ in range(200):
         a = int(x)
         p0, q0, p1, q1 = a * p0 + p1, a * q0 + q1, p0, q0
-        if q0 > max_den or q0 * q0 > 10 ** 100:
+        if q0 > max_den or q0 * q0 > 10**100:
             break
-        expected_above = (len(out) % 2 == 1)  # 1/1 below, 2/1 above, 3/2 below...
+        expected_above = len(out) % 2 == 1  # 1/1 below, 2/1 above, 3/2 below...
         if q0 <= exact_certificate_upto:
             # exact certificate: p0/q0 > alpha  <=>  2^p0 > 3^q0
-            above = (1 << p0) > 3 ** q0
+            above = (1 << p0) > 3**q0
             if above != expected_above:
-                raise ArithmeticError("inconsistent continued-fraction expansion (exact certificate)")
+                raise ArithmeticError(
+                    "inconsistent continued-fraction expansion (exact certificate)"
+                )
         else:
             above = Fraction(p0, q0) > Fraction(str(alpha))
             if above != expected_above:
-                raise ArithmeticError("insufficient decimal precision for the convergents")
+                raise ArithmeticError(
+                    "insufficient decimal precision for the convergents"
+                )
         out.append((p0, q0))
         frac = x - a
         if frac == 0:
@@ -186,7 +193,7 @@ def cycle_exclusion_bound(verified_limit: int) -> Dict[str, int]:
     ln2 = Decimal(2).ln()
     eps_dec = (1 + Decimal(1) / (3 * N)).ln() / ln2
     # eps as a safe upper-bound fraction
-    eps = Fraction(int(eps_dec * 10 ** 60) + 1, 10 ** 60)
+    eps = Fraction(int(eps_dec * 10**60) + 1, 10**60)
 
     convs = log2_3_convergents()
     K = 0  # every k <= K is excluded
@@ -196,7 +203,7 @@ def cycle_exclusion_bound(verified_limit: int) -> Dict[str, int]:
         # within [qi, qi1): excludes k <= 1/(eps*(qi+qi1))
         cap = int(Fraction(1, 1) / (eps * (qi + qi1)))
         if cap >= qi1 - 1:
-            K = max(K, qi1 - 1)      # whole interval excluded; continue
+            K = max(K, qi1 - 1)  # whole interval excluded; continue
         else:
             K = max(K, min(cap, qi1 - 1))
             break

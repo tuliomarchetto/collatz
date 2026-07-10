@@ -29,7 +29,7 @@ Algorithms:
 
 from __future__ import annotations
 
-from typing import Dict, List, Set, Tuple
+from typing import List, Set, Tuple
 
 
 def inverse_children(m: int) -> List[int]:
@@ -101,6 +101,7 @@ def required_depth(X: int) -> int:
     The conjecture is equivalent to: required_depth(X) is finite for
     every X."""
     from .core import total_stopping_time
+
     return max(total_stopping_time(n) for n in range(1, X + 1))
 
 

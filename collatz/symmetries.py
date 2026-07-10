@@ -31,7 +31,7 @@ interval of length > 2·|a|·2 (verified with margin)."""
 
 from __future__ import annotations
 
-from typing import Dict, List, Set, Tuple
+from typing import List, Set, Tuple
 
 from .core import T
 
@@ -49,8 +49,9 @@ def _is_conjugacy(a: int, b: int, d1: int, d2: int, test_range: int = 200) -> bo
     return True
 
 
-def affine_conjugacy_search(d1: int, d2: int, max_a: int = 20,
-                            max_b: int = 40) -> List[Tuple[int, int]]:
+def affine_conjugacy_search(
+    d1: int, d2: int, max_a: int = 20, max_b: int = 40
+) -> List[Tuple[int, int]]:
     """All affine conjugacies φ(x)=ax+b (0<|a|<=max_a, |b|<=max_b) from
     the system 3n+d1 to 3n+d2."""
     found = []
@@ -79,6 +80,7 @@ def modular_affine_automorphisms(m: int, d: int = 1) -> List[Tuple[int, int]]:
     (1, 0) — the identity — is always present."""
     edges = _edges_mod(m, d)
     from math import gcd
+
     autos = []
     for a in range(1, m):
         if gcd(a, m) != 1:

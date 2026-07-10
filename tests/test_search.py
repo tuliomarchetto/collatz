@@ -18,12 +18,12 @@ def test_verify_finds_3n_minus_1_cycle():
 
 def test_brent_reaches_trivial_cycle():
     mu, lam, lo = brent_cycle_detect(27)
-    assert (lam, lo) == (2, 1)          # cycle {1,2} of the T map
+    assert (lam, lo) == (2, 1)  # cycle {1,2} of the T map
 
 
 def test_brent_finds_negative_cycle():
     mu, lam, lo = brent_cycle_detect(-30)  # -30 -> -15 -> -22 -> -11 -> ...
-    assert lo in (-1, -10, -136)           # falls into one of the three negative cycles
+    assert lo in (-1, -10, -136)  # falls into one of the three negative cycles
     assert lam in (1, 3, 11)
 
 

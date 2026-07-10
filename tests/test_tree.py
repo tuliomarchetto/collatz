@@ -1,16 +1,22 @@
-from collatz.tree import (coverage_density, empirical_bounds, growth_rate,
-                          inverse_children, inverse_tree, missing_below,
-                          required_depth)
+from collatz.tree import (
+    coverage_density,
+    empirical_bounds,
+    growth_rate,
+    inverse_children,
+    missing_below,
+    required_depth,
+)
 
 
 def test_inverse_children():
     assert inverse_children(2) == [4, 1]
     assert inverse_children(5) == [10, 3]
-    assert inverse_children(4) == [8]      # (8-1)/3 is not an integer
+    assert inverse_children(4) == [8]  # (8-1)/3 is not an integer
 
 
 def test_inverse_is_consistent_with_T():
     from collatz.core import T
+
     for m in range(1, 200):
         for c in inverse_children(m):
             assert T(c) == m
@@ -20,7 +26,7 @@ def test_coverage_grows_to_full():
     c1 = coverage_density(100, 20)
     c2 = coverage_density(100, 90)
     assert c2 >= c1
-    assert c2 == 1.0                       # all of 1..100 reached
+    assert c2 == 1.0  # all of 1..100 reached
 
 
 def test_missing_shrinks():
@@ -69,4 +75,3 @@ def test_empirical_bounds_max_is_power_of_2():
         if lo == 0:
             break
         assert hi & (hi - 1) == 0, f"level {i}: max {hi} is not a power of 2"
-

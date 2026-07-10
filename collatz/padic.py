@@ -31,7 +31,7 @@ Algorithms:
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 from .core import parity_vector
 
@@ -48,6 +48,7 @@ def shift_conjugacy_check(k: int) -> bool:
     """Verifies the conjugacy with the shift: for every n mod 2^k, the
     parity vector of T(n) (length k-1) is the shift of the vector of n."""
     from .core import T
+
     for n in range(1 << k):
         pv = parity_vector(n, k)
         pv_shift = parity_vector(T(n), k - 1)

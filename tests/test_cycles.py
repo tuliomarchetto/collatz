@@ -1,14 +1,13 @@
 from collatz.core import T
-from collatz.cycles import (cycle_exclusion_bound, find_cycles,
-                            log2_3_convergents)
+from collatz.cycles import cycle_exclusion_bound, find_cycles, log2_3_convergents
 
 
 def test_trivial_and_negative_cycles_3n1():
     cs = find_cycles(d=1, max_len=12)
     sets = [frozenset(c) for c in cs]
-    assert frozenset({1, 2}) in sets                       # trivial cycle
-    assert frozenset({-1}) in sets                         # -1 is a fixed point of T
-    assert frozenset({-5, -7, -10}) in sets                # cycle of -5
+    assert frozenset({1, 2}) in sets  # trivial cycle
+    assert frozenset({-1}) in sets  # -1 is a fixed point of T
+    assert frozenset({-5, -7, -10}) in sets  # cycle of -5
     assert frozenset({-17, -25, -37, -55, -82, -41, -61, -91, -136, -68, -34}) in sets
     # no nontrivial positive cycle
     assert all(min(c) < 0 or 1 in c for c in cs)
@@ -42,13 +41,13 @@ def test_convergents_of_log2_3():
     assert (19, 12) in convs and (65, 41) in convs
     # exact alternation certificate
     for i, (p, q) in enumerate(convs[:10]):
-        above = (1 << p) > 3 ** q
+        above = (1 << p) > 3**q
         assert above == (i % 2 == 1)
 
 
 def test_exclusion_bound_grows_with_N():
-    b1 = cycle_exclusion_bound(10 ** 6)
-    b2 = cycle_exclusion_bound(2 ** 71)
-    assert b1["min_odd_steps"] >= 10          # already excludes short cycles
+    b1 = cycle_exclusion_bound(10**6)
+    b2 = cycle_exclusion_bound(2**71)
+    assert b1["min_odd_steps"] >= 10  # already excludes short cycles
     assert b2["min_odd_steps"] > b1["min_odd_steps"]
-    assert b2["min_odd_steps"] > 10 ** 9      # billions of odd steps
+    assert b2["min_odd_steps"] > 10**9  # billions of odd steps

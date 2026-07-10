@@ -1,8 +1,12 @@
 from fractions import Fraction
 
-from collatz.spectral import (spectral_gap, stationary_distribution,
-                              stationary_exact, stationary_uniform_check,
-                              syracuse_transfer_matrix)
+from collatz.spectral import (
+    spectral_gap,
+    stationary_distribution,
+    stationary_exact,
+    stationary_uniform_check,
+    syracuse_transfer_matrix,
+)
 
 
 def test_rows_sum_to_one_exactly():
@@ -40,10 +44,11 @@ def test_power_iteration_agrees_with_exact():
 
 def test_gap_is_nontrivial():
     lam2 = spectral_gap(2)
-    assert 0.0 <= lam2 < 0.99   # chain mixes: |lambda_2| < 1
+    assert 0.0 <= lam2 < 0.99  # chain mixes: |lambda_2| < 1
 
 
 def test_memory_loss_rank_collapse():
     from collatz.spectral import memory_loss_check
+
     for k in (1, 2, 3):
         assert memory_loss_check(k)

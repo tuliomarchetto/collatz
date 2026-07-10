@@ -1,15 +1,19 @@
 from fractions import Fraction
 
-from collatz.transfer import (absorption_profile, finite_section_nilpotency,
-                              haar_mixing_check_2adic,
-                              inverse_branches_check_2adic,
-                              koopman_decay_profile, power_weight_obstruction,
-                              stationary_projective_check,
-                              syracuse_branch_contraction_check,
-                              syracuse_w1_coefficient,
-                              transfer_2adic_matrix,
-                              transfer_2adic_w1_coefficient,
-                              wasserstein_padic)
+from collatz.transfer import (
+    absorption_profile,
+    finite_section_nilpotency,
+    haar_mixing_check_2adic,
+    inverse_branches_check_2adic,
+    koopman_decay_profile,
+    power_weight_obstruction,
+    stationary_projective_check,
+    syracuse_branch_contraction_check,
+    syracuse_w1_coefficient,
+    transfer_2adic_matrix,
+    transfer_2adic_w1_coefficient,
+    wasserstein_padic,
+)
 
 
 def test_wasserstein_point_masses():
@@ -44,8 +48,8 @@ def test_stationary_measures_are_projective():
 
 def test_koopman_decay_and_finite_time_equidistribution():
     prof = koopman_decay_profile(3)
-    assert prof["decay"]                # dev_n <= Lip(f)/3^n
-    assert prof["finite_time"]          # U^k f = pi(f) EXACTLY
+    assert prof["decay"]  # dev_n <= Lip(f)/3^n
+    assert prof["finite_time"]  # U^k f = pi(f) EXACTLY
     assert prof["devs"][-1] == 0
 
 
@@ -61,7 +65,7 @@ def test_transfer_2adic_doubly_stochastic():
         assert sum(row.values()) == 1
         for y, w in row.items():
             col[y] += w
-    assert all(c == 1 for c in col.values())   # Haar is invariant
+    assert all(c == 1 for c in col.values())  # Haar is invariant
 
 
 def test_transfer_2adic_w1_coefficient_is_exactly_one_half():
@@ -96,7 +100,7 @@ def test_power_weight_obstruction_witness():
         w = power_weight_obstruction(t)
         assert w["all_odd"]
         assert w["ratio_matches_formula"]
-        assert w["ratio"] == Fraction(3 ** t - 1, 2 ** t - 1) > 1
+        assert w["ratio"] == Fraction(3**t - 1, 2**t - 1) > 1
 
 
 def test_absorption_profile_decays():

@@ -38,14 +38,14 @@ Three families of algorithms:
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Tuple, Set
 
 from .core import T
-
 
 # ----------------------------------------------------------------------
 # 1. Induced maps modulo m
 # ----------------------------------------------------------------------
+
 
 def induced_map_exists(m1: int, m2: int, d: int = 1) -> bool:
     """True iff n mod m1 determines T(n) mod m2 (exact test: it suffices
@@ -75,6 +75,7 @@ def induced_map_search(max_m: int = 64, d: int = 1) -> List[Tuple[int, int]]:
 # ----------------------------------------------------------------------
 # 2. Conserved partition (bisimulation) and transient classes
 # ----------------------------------------------------------------------
+
 
 def _successors_mod(m: int, d: int = 1) -> Dict[int, Set[int]]:
     """Transition relation on Z/m: r -> {T(n) mod m : n ≡ r (mod m)}.
@@ -130,13 +131,13 @@ def transient_classes(m: int, d: int = 1) -> Set[int]:
     for r, ss in succ.items():
         for s in ss:
             incoming[s].add(r)
-    return {r for r in range(m)
-            if incoming[r] <= {r} and (succ[r] - {r})}
+    return {r for r in range(m) if incoming[r] <= {r} and (succ[r] - {r})}
 
 
 # ----------------------------------------------------------------------
 # 3. Maximum mean cycle (Karp) — obstruction to the modular Lyapunov function
 # ----------------------------------------------------------------------
+
 
 def transition_graph_mod2j(j: int) -> Tuple[List[List[int]], List[float]]:
     """Transition graph on Z/2^j for T. Each residue r has exactly two
@@ -182,10 +183,7 @@ def karp_max_mean_cycle(j: int) -> Tuple[float, List[int]]:
     for v in range(M):
         if F[M][v] == NEG:
             continue
-        val = min(
-            (F[M][v] - F[t][v]) / (M - t)
-            for t in range(M) if F[t][v] > NEG
-        )
+        val = min((F[M][v] - F[t][v]) / (M - t) for t in range(M) if F[t][v] > NEG)
         if val > best:
             best, best_v = val, v
     # reconstructs a walk and extracts a cycle
@@ -199,7 +197,7 @@ def karp_max_mean_cycle(j: int) -> Tuple[float, List[int]]:
     cyc: List[int] = []
     for i, v in enumerate(walk):
         if v in last:
-            cyc = walk[last[v]:i]
+            cyc = walk[last[v] : i]
             break
         last[v] = i
     return best, cyc
@@ -224,6 +222,7 @@ def lyapunov_verdict(j: int) -> Dict[str, object]:
 # ----------------------------------------------------------------------
 # Expected drift by residue class
 # ----------------------------------------------------------------------
+
 
 def drift_by_class(m: int, depth: int, d: int = 1) -> Dict[int, float]:
     """Mean log2 drift after `depth` steps, conditioned on n mod m,

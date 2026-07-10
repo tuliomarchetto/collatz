@@ -105,6 +105,7 @@ def _vp_fraction(q: Fraction, p: int) -> int:
 # Exact Wasserstein distance in p-adic ultrametrics
 # ---------------------------------------------------------------------------
 
+
 def wasserstein_padic(mu: Measure, nu: Measure, p: int, k: int) -> Fraction:
     """EXACT (rational) Wasserstein W1 distance between measures of equal
     mass on Z/p^k with the p-adic metric d(x, y) = p^{-v_p(x-y)}.
@@ -120,22 +121,23 @@ def wasserstein_padic(mu: Measure, nu: Measure, p: int, k: int) -> Fraction:
     simultaneously.)"""
     W = Fraction(0)
     for j in range(1, k + 1):
-        pj = p ** j
+        pj = p**j
         cells: Dict[int, Fraction] = {}
         for r, m in mu.items():
             cells[r % pj] = cells.get(r % pj, Fraction(0)) + m
         for r, m in nu.items():
             cells[r % pj] = cells.get(r % pj, Fraction(0)) - m
-        m_j = sum(abs(v) for v in cells.values()) / 2
+        m_j = sum(abs(v) for v in cells.values()) * Fraction(1, 2)
         if j < k:
-            W += (Fraction(1, p ** (j - 1)) - Fraction(1, p ** j)) * m_j
+            W += (Fraction(1, p ** (j - 1)) - Fraction(1, p**j)) * m_j
         else:
             W += Fraction(1, p ** (k - 1)) * m_j
     return W
 
 
-def w1_contraction_coefficient(P: Dict[int, Measure], p: int, k: int
-                               ) -> Tuple[Fraction, Optional[Tuple[int, int]]]:
+def w1_contraction_coefficient(
+    P: Dict[int, Measure], p: int, k: int
+) -> Tuple[Fraction, Optional[Tuple[int, int]]]:
     """EXACT Wasserstein (Dobrushin) contraction coefficient of the
     kernel P at level p^k:
 
@@ -152,7 +154,7 @@ def w1_contraction_coefficient(P: Dict[int, Measure], p: int, k: int
     best = Fraction(0)
     arg: Optional[Tuple[int, int]] = None
     for i, x in enumerate(states):
-        for y in states[i + 1:]:
+        for y in states[i + 1 :]:
             d = Fraction(1, p ** _vp(x - y, p))
             ratio = wasserstein_padic(P[x], P[y], p, k) / d
             if ratio > best:
@@ -164,6 +166,7 @@ def w1_contraction_coefficient(P: Dict[int, Measure], p: int, k: int
 # 1. The infinite operator on Z_3 (Syracuse chain)
 # ---------------------------------------------------------------------------
 
+
 def syracuse_branch_contraction_check(k: int, amax: int = 6) -> bool:
     """Verifies EXACTLY that each branch phi_a(x) = (3x+1)/2^a of the
     Syracuse chain contracts the 3-adic metric by exactly a factor 1/3:
@@ -174,11 +177,11 @@ def syracuse_branch_contraction_check(k: int, amax: int = 6) -> bool:
     values phi_a(x) are 2-integral rationals, hence elements of Z_3; the
     check uses exact rational arithmetic.) This is the fact that makes
     the chain a uniformly contractive IFS on Z_3."""
-    states = [r for r in range(3 ** k) if r % 3 != 0]
+    states = [r for r in range(3**k) if r % 3 != 0]
     for a in range(1, amax + 1):
         for i, x in enumerate(states):
-            for y in states[i + 1:]:
-                diff = Fraction(3 * x + 1, 2 ** a) - Fraction(3 * y + 1, 2 ** a)
+            for y in states[i + 1 :]:
+                diff = Fraction(3 * x + 1, 2**a) - Fraction(3 * y + 1, 2**a)
                 if _vp_fraction(diff, 3) != _vp(x - y, 3) + 1:
                     return False
     return True
@@ -233,23 +236,28 @@ def koopman_decay_profile(k: int, f: Optional[Dict[int, Fraction]] = None) -> Di
         f = {r: Fraction((r * r + 1) % 11, 11) for r in states}
     lip = Fraction(0)
     for i, x in enumerate(states):
-        for y in states[i + 1:]:
+        for y in states[i + 1 :]:
             lip = max(lip, abs(f[x] - f[y]) * 3 ** _vp(x - y, 3))
     mean = sum(pi[r] * f[r] for r in states)
     devs: List[Fraction] = []
     g = f
     for _ in range(k):
-        g = {x: sum(w * g[y] for y, w in P[x].items()) for x in states}
+        g = {x: sum((w * g[y] for y, w in P[x].items()), Fraction(0)) for x in states}
         devs.append(max(abs(g[x] - mean) for x in states))
-    decay = all(dev <= lip * Fraction(1, 3 ** (n + 1))
-                for n, dev in enumerate(devs))
-    return {"lipschitz": lip, "mean": mean, "devs": devs,
-            "decay": decay, "finite_time": devs[-1] == 0}
+    decay = all(dev <= lip * Fraction(1, 3 ** (n + 1)) for n, dev in enumerate(devs))
+    return {
+        "lipschitz": lip,
+        "mean": mean,
+        "devs": devs,
+        "decay": decay,
+        "finite_time": devs[-1] == 0,
+    }
 
 
 # ---------------------------------------------------------------------------
 # 2. The infinite operator on Z_2 (transfer operator of the accelerated map T)
 # ---------------------------------------------------------------------------
+
 
 def inverse_branches_check_2adic(k: int) -> bool:
     """Verifies EXACTLY, mod 2^k, that the two branches of the transfer
@@ -258,11 +266,11 @@ def inverse_branches_check_2adic(k: int) -> bool:
 
         T(2x) = x;   y = (2x-1)/3 is odd in Z_2 and T(y) = x;
         v_2(branch(x) - branch(y)) = v_2(x - y) + 1."""
-    M2 = 1 << (k + 1)                       # work mod 2^{k+1} to see v+1
+    M2 = 1 << (k + 1)  # work mod 2^{k+1} to see v+1
     inv3 = pow(3, -1, M2)
     for x in range(1 << k):
         y = ((2 * x - 1) * inv3) % M2
-        if y % 2 == 0:                       # (2x-1)/3 must be odd in Z_2
+        if y % 2 == 0:  # (2x-1)/3 must be odd in Z_2
             return False
         if (3 * y + 1) // 2 % (1 << k) != x:  # T(y) = x mod 2^k
             return False
@@ -320,13 +328,14 @@ def haar_mixing_check_2adic(k: int, f: Optional[Dict[int, Fraction]] = None) -> 
     mean = sum(f.values()) / M
     g = f
     for _ in range(k):
-        g = {x: sum(w * g[y] for y, w in P[x].items()) for x in range(M)}
+        g = {x: sum((w * g[y] for y, w in P[x].items()), Fraction(0)) for x in range(M)}
     return all(v == mean for v in g.values())
 
 
 # ---------------------------------------------------------------------------
 # 3. Where the conjecture lives: the pushforward on ℓ¹(Z_+)
 # ---------------------------------------------------------------------------
+
 
 def finite_section_nilpotency(N: int, d: int = 1) -> Dict:
     """Finite section [1, N] of T's pushforward operator (system 3n+d):
@@ -350,7 +359,7 @@ def finite_section_nilpotency(N: int, d: int = 1) -> Dict:
     while x not in triv:
         triv.add(x)
         x = T(x, d)
-    depth = {}
+    depth: Dict[int, int] = {}
     for start in range(1, N + 1):
         if start in triv or start in depth:
             continue
@@ -363,15 +372,19 @@ def finite_section_nilpotency(N: int, d: int = 1) -> Dict:
                 depth[n] = 1 + depth.get(t, 0) if t in depth else 1
                 stack.pop()
                 onstack.discard(n)
-            elif t in onstack:                      # nontrivial cycle!
+            elif t in onstack:  # nontrivial cycle!
                 cyc = []
                 i = len(stack) - 1
                 while stack[i] != t:
                     cyc.append(stack[i])
                     i -= 1
                 cyc.append(t)
-                return {"acyclic": False, "index": None,
-                        "witness": None, "cycle": sorted(cyc)}
+                return {
+                    "acyclic": False,
+                    "index": None,
+                    "witness": None,
+                    "cycle": sorted(cyc),
+                }
             elif t in depth:
                 depth[n] = 1 + depth[t]
                 stack.pop()
@@ -381,9 +394,8 @@ def finite_section_nilpotency(N: int, d: int = 1) -> Dict:
                 onstack.add(t)
     if not depth:
         return {"acyclic": True, "index": 0, "witness": None, "cycle": None}
-    witness = max(depth, key=depth.get)
-    return {"acyclic": True, "index": depth[witness],
-            "witness": witness, "cycle": None}
+    witness = max(depth, key=lambda k: depth[k])
+    return {"acyclic": True, "index": depth[witness], "witness": witness, "cycle": None}
 
 
 def power_weight_obstruction(t: int) -> Dict:
@@ -402,17 +414,22 @@ def power_weight_obstruction(t: int) -> Dict:
     the SAME obstruction as Karp's maximum mean cycle (`invariants`):
     the 2-adic periodic point −1. Contraction on Z_+ cannot be
     uniform — only 'in density' (absorption_profile)."""
-    n = 2 ** t - 1
+    n = 2**t - 1
     x = n
     parities = []
     for _ in range(t):
         parities.append(x & 1)
         x = T(x)
     ratio = Fraction(x, n)
-    return {"t": t, "n": n, "all_odd": all(p == 1 for p in parities),
-            "endpoint": x, "ratio": ratio,
-            "ratio_matches_formula": ratio == Fraction(3 ** t - 1, 2 ** t - 1),
-            "limit_ratio": (1.5) ** t}
+    return {
+        "t": t,
+        "n": n,
+        "all_odd": all(p == 1 for p in parities),
+        "endpoint": x,
+        "ratio": ratio,
+        "ratio_matches_formula": ratio == Fraction(3**t - 1, 2**t - 1),
+        "limit_ratio": (1.5) ** t,
+    }
 
 
 def absorption_profile(N: int, stride: int = 20) -> Dict:
@@ -446,6 +463,11 @@ def absorption_profile(N: int, stride: int = 20) -> Dict:
     rate = (m[t2] / m[t1]) ** (1.0 / (t2 - t1)) if t2 > t1 and m[t2] > 0 else None
     theta = 1 / math.log2(3)
     H = -theta * math.log2(theta) - (1 - theta) * math.log2(1 - theta)
-    return {"tmax": tmax, "profile": profile, "rate": rate,
-            "t_10pct": t1, "t_01pct": t2,
-            "reference_rate": 2 ** (-(1 - H))}
+    return {
+        "tmax": tmax,
+        "profile": profile,
+        "rate": rate,
+        "t_10pct": t1,
+        "t_01pct": t2,
+        "reference_rate": 2 ** (-(1 - H)),
+    }

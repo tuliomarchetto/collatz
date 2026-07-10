@@ -5,6 +5,21 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    name: Code Quality (Flake8 & Mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install linters
+        run: python -m pip install flake8 mypy
+      - name: Run Flake8
+        run: flake8 collatz/ tests/
+      - name: Run Mypy
+        run: mypy collatz/ tests/
+
   test:
     name: Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}

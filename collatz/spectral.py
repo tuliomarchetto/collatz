@@ -38,27 +38,29 @@ from typing import Dict, List, Tuple
 
 
 def _states(k: int) -> List[int]:
-    return [r for r in range(3 ** k) if r % 3 != 0]
+    return [r for r in range(3**k) if r % 3 != 0]
 
 
-def syracuse_transfer_matrix(k: int) -> Tuple[List[int], Dict[int, Dict[int, Fraction]]]:
+def syracuse_transfer_matrix(
+    k: int,
+) -> Tuple[List[int], Dict[int, Dict[int, Fraction]]]:
     """Exact transition matrix of the Syracuse chain on {r mod 3^k, 3∤r}.
 
     Returns (states, P) with P[r][r'] an exact rational."""
-    M = 3 ** k
+    M = 3**k
     states = _states(k)
-    ord_ = 2 * 3 ** (k - 1)          # order of 2 mod 3^k (2 is a primitive root)
+    ord_ = 2 * 3 ** (k - 1)  # order of 2 mod 3^k (2 is a primitive root)
     assert pow(2, ord_, M) == 1
     inv2 = pow(2, -1, M)
-    norm = Fraction(1) - Fraction(1, 2 ** ord_)
+    norm = Fraction(1) - Fraction(1, 2**ord_)
     P: Dict[int, Dict[int, Fraction]] = {r: {} for r in states}
     for r in states:
         target = (3 * r + 1) % M
         t = target
         for a in range(1, ord_ + 1):
-            t = (t * inv2) % M       # t = (3r+1)·inv(2^a)
-            if t % 3 != 0:           # always true: (3r+1)/2^a ≢ 0 mod 3
-                w = Fraction(1, 2 ** a) / norm
+            t = (t * inv2) % M  # t = (3r+1)·inv(2^a)
+            if t % 3 != 0:  # always true: (3r+1)/2^a ≢ 0 mod 3
+                w = Fraction(1, 2**a) / norm
                 P[r][t] = P[r].get(t, Fraction(0)) + w
     return states, P
 
@@ -113,8 +115,9 @@ def stationary_exact(k: int) -> Dict[int, Fraction]:
     return {r: A[idx[r]][n] for r in states}
 
 
-def stationary_distribution(k: int, iters: int = 2000,
-                            tol: float = 1e-13) -> Dict[int, float]:
+def stationary_distribution(
+    k: int, iters: int = 2000, tol: float = 1e-13
+) -> Dict[int, float]:
     """Stationary distribution via power iteration (float)."""
     states, P = syracuse_transfer_matrix(k)
     Pf = {r: {s: float(w) for s, w in row.items()} for r, row in P.items()}
@@ -143,7 +146,7 @@ def memory_loss_check(k: int) -> bool:
     retains no long-term memory; no obstruction to convergence can live
     in finite 3-adic arithmetic — only the 2-adic/global structure
     remains."""
-    M = 3 ** k
+    M = 3**k
     states, P = syracuse_transfer_matrix(k)
     if k == 1:
         pairs = [(1, 2)]
@@ -176,6 +179,6 @@ def spectral_gap(k: int, iters: int = 400) -> float:
         norm = math.sqrt(sum(v * v for v in g.values()))
         if norm == 0.0:
             return 0.0
-        lam = norm            # ||P f|| with ||f|| = 1
+        lam = norm  # ||P f|| with ||f|| = 1
         f = {r: v / norm for r, v in g.items()}
     return lam

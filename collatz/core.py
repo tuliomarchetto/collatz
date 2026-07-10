@@ -45,8 +45,9 @@ def syracuse(n: int, d: int = 1) -> int:
     return m >> v2(m)
 
 
-def trajectory(n: int, d: int = 1, max_steps: int = 10_000,
-               accelerated: bool = True) -> List[int]:
+def trajectory(
+    n: int, d: int = 1, max_steps: int = 10_000, accelerated: bool = True
+) -> List[int]:
     """Trajectory of n under T (or C), until reaching 1, a locally
     repeated value (short cycle), or max_steps."""
     step = T if accelerated else collatz_step

@@ -45,15 +45,15 @@ def test_run_all_contains_all_sections():
         transfer_N=1_000,
     )
     expected_sections = [
-        "## 1.",   # direct search
-        "## 2.",   # exact cycles
-        "## 3.",   # Diophantine exclusion
-        "## 4.",   # 2-adic symmetry
-        "## 5.",   # modular invariants
-        "## 6.",   # Lyapunov / Karp
-        "## 7.",   # symmetries
-        "## 8.",   # spectral mod 3^k
-        "## 9.",   # inverse tree
+        "## 1.",  # direct search
+        "## 2.",  # exact cycles
+        "## 3.",  # Diophantine exclusion
+        "## 4.",  # 2-adic symmetry
+        "## 5.",  # modular invariants
+        "## 6.",  # Lyapunov / Karp
+        "## 7.",  # symmetries
+        "## 8.",  # spectral mod 3^k
+        "## 9.",  # inverse tree
         "## 10.",  # infinite operator
     ]
     for sec in expected_sections:

@@ -1,8 +1,10 @@
-import math
-
-from collatz.padic import (bad_set_measure, census_is_binomial,
-                           parity_census, shift_conjugacy_check,
-                           terras_bijection_check)
+from collatz.padic import (
+    bad_set_measure,
+    census_is_binomial,
+    parity_census,
+    shift_conjugacy_check,
+    terras_bijection_check,
+)
 
 
 def test_terras_bijection():

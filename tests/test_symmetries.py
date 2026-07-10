@@ -1,6 +1,8 @@
-from collatz.symmetries import (affine_conjugacy_search,
-                                modular_affine_automorphisms,
-                                semiconjugacy_multiples)
+from collatz.symmetries import (
+    affine_conjugacy_search,
+    modular_affine_automorphisms,
+    semiconjugacy_multiples,
+)
 
 
 def test_negation_conjugates_3n1_and_3nm1():

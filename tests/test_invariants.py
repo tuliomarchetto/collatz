@@ -1,9 +1,14 @@
 import math
 
-from collatz.invariants import (conserved_partition, drift_by_class,
-                                induced_map_exists, induced_map_search,
-                                karp_max_mean_cycle, lyapunov_verdict,
-                                transient_classes)
+from collatz.invariants import (
+    conserved_partition,
+    drift_by_class,
+    induced_map_exists,
+    induced_map_search,
+    karp_max_mean_cycle,
+    lyapunov_verdict,
+    transient_classes,
+)
 
 
 def test_induced_maps_are_2adic():

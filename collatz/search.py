@@ -37,8 +37,8 @@ class VerifyResult:
     limit: int
     d: int
     all_converge: bool
-    counterexample: Optional[int] = None       # seed that does not converge
-    cycle: Optional[Tuple[int, ...]] = None    # nontrivial cycle found
+    counterexample: Optional[int] = None  # seed that does not converge
+    cycle: Optional[Tuple[int, ...]] = None  # nontrivial cycle found
     stopping_records: List[Tuple[int, int]] = field(default_factory=list)
     excursion_records: List[Tuple[int, int]] = field(default_factory=list)
 
@@ -90,8 +90,9 @@ def verify_range(limit: int, d: int = 1, max_steps: int = 100_000) -> VerifyResu
     return res
 
 
-def brent_cycle_detect(n: int, d: int = 1,
-                       max_power: int = 60) -> Optional[Tuple[int, int, int]]:
+def brent_cycle_detect(
+    n: int, d: int = 1, max_power: int = 60
+) -> Optional[Tuple[int, int, int]]:
     """Brent's algorithm for cycle detection on the orbit of n under T.
 
     Returns (mu, lam, cycle_min_element) — entry index into the cycle,
@@ -130,8 +131,9 @@ def brent_cycle_detect(n: int, d: int = 1,
     return mu, lam, lo
 
 
-def divergence_probe(n: int, d: int = 1, ceiling_bits: int = 4096,
-                     max_steps: int = 1_000_000) -> dict:
+def divergence_probe(
+    n: int, d: int = 1, ceiling_bits: int = 4096, max_steps: int = 1_000_000
+) -> dict:
     """Divergence probe: follows the orbit of n and reports whether it
     exceeds 2^ceiling_bits (STRONG candidate for divergence) or whether it
     converges / enters a cycle. No algorithm can PROVE divergence by
@@ -142,7 +144,12 @@ def divergence_probe(n: int, d: int = 1, ceiling_bits: int = 4096,
         if x == 1:
             return {"n": n, "verdict": "converge", "steps": i, "peak": peak}
         if x.bit_length() > ceiling_bits:
-            return {"n": n, "verdict": "explode", "steps": i, "peak_bits": x.bit_length()}
+            return {
+                "n": n,
+                "verdict": "explode",
+                "steps": i,
+                "peak_bits": x.bit_length(),
+            }
         x = T(x, d)
         if x > peak:
             peak = x
