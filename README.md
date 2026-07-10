@@ -18,7 +18,7 @@ pip install -e ".[test]"                  # install (runtime needs stdlib only)
 python -m collatz all                     # full findings report
 python -m collatz verify --limit 1000000  # counterexample sieve
 python -m collatz cycles --d -1           # exact cycle enumeration (3n-1)
-python -m collatz exclude --limit-bits 71 # Diophantine cycle exclusion
+python -m collatz exclude --limit-bits 68 # Diophantine cycle exclusion
 python -m collatz lyapunov --j 10         # Lyapunov function obstruction
 python -m collatz spectral --k 4          # transfer operator mod 3^k
 python -m collatz transfer --k3 3 --k2 6  # infinite transfer operator
@@ -60,11 +60,12 @@ elements > N, it follows that `0 < L − k·log₂3 ≤ k·log₂(1 + 1/3N)`: th
 ratio L/k approaches log₂3 *from above* with error ~ 1/(3N ln 2). The
 theory of best rational approximations (convergents of the continued
 fraction of log₂3, certified exactly by comparing `2^p` with `3^q`)
-forbids this for small k. With N = 2⁷¹ (published computational
+forbids this for small k. With N = 2⁶⁸ (Barina's published computational
 verification), **any non-trivial cycle has billions of odd steps** —
-Eliahou/Simons–de Weger's method. This is the canonical example of a
-*structural invariant (Diophantine approximation) that constrains
-counterexamples*.
+Eliahou/Simons–de Weger's method (the current state of the art, Hercher
+2023, sharpens this further via constraints on the number of local
+minima). This is the canonical example of a *structural invariant
+(Diophantine approximation) that constrains counterexamples*.
 
 ### 4. `padic` — the fundamental symmetry: 2-adic conjugation with the shift
 Exactly verifies Terras's theorem: the length-k parity vector is a
@@ -99,7 +100,8 @@ graph on ℤ/2^j is strictly negative.
 
 **The exact characterization of the obstruction:** the Karp algorithm not
 only confirms the non-existence of `w` (maximum mean = `log₂3 − 1 > 0`), it
-relentlessly isolates the residue `−1 mod 2^j` as the topological culprit.
+returns the self-loop at the residue `−1 mod 2^j` as an optimal cycle at
+every tested level (uniqueness of the optimal cycle is not claimed).
 Why `-1`? Under the accelerated map `T(n) = (3n+1)/2` (for odds), the
 integer `-1` is a **fixed point** (`T(-1) = -1`). In the transition graph
 modulo `2^j`, this shows up as a **self-loop** on node `2^j - 1`, whose
@@ -127,15 +129,20 @@ is rigid.
 
 ### 8. `spectral` — Syracuse transfer operator mod 3^k
 Exact Markov chain (rational arithmetic, using that 2 is a primitive root
-mod 3^k) of the Syracuse map projected onto (ℤ/3^k)*. **Finding discovered
-by the code itself:** the uniform measure is *not* stationary — the exact
+mod 3^k) of the Syracuse map projected onto (ℤ/3^k)*. **First exact
+computation:** the uniform measure is *not* stationary — the exact
 invariant measure mod 3 is π(1) = 1/3, π(2) = 2/3 (Syracuse iterates land
 on 2 mod 3 twice as often as on 1, since `(3n+1)/2^a ≡ (−1)^a mod 3` with
 `P(a odd) = 2/3`); `stationary_exact` computes the rational invariant
-measure for every 3^k. **Second exact finding:** the spectrum beyond
-λ₁ = 1 is `{0}` — rows of P coincide for `r ≡ r' (mod 3^{k-1})`, so P^k has
-rank 1 (`memory_loss_check` verifies this in rational arithmetic): the
-chain loses all memory mod 3^k in exactly k steps. Structurally, the
+measure for every 3^k. These chains and their non-uniform stationary
+vectors go back to Matthews–Watts (1984/85); the mod-3 measure is implicit
+in Tao (2019) — the code reproduces them exactly rather than discovering
+them. **Second result (proved for every k in the paper's rank-collapse
+proposition):** the
+spectrum beyond λ₁ = 1 is `{0}` — rows of P coincide for `r ≡ r'
+(mod 3^{k-1})`, so P^k has rank 1 (`memory_loss_check` verifies this in
+rational arithmetic at k = 3): the chain loses all memory mod 3^k in
+exactly k steps. Structurally, the
 nilpotency of this projection suggests that obstructions to convergence
 cannot be detected by finite 3-adic arithmetic alone; the modular memory
 dissipates, leaving the global/2-adic structure as the likely driver of the
@@ -155,7 +162,9 @@ trivial, so it says nothing in the limit. This module identifies the norm
 in which the gap survives: each branch contracts the 3-adic metric by
 **exactly 1/3** (exact check: the chain is a uniformly contractive IFS on
 ℤ₃), and the **Wasserstein contraction coefficient is τ_k ≤ 1/3 uniformly
-in k** (exact values: τ₂ = 5/21, τ₃ = 455/1387, τ₄ ≈ 0.33333206 ↗ 1/3).
+in k** (exact values: τ₂ = 5/21, τ₃ = 455/1387, τ₄ ≈ 0.33333206; the
+values are increasing and ≤ 1/3, but the finite computations do not by
+themselves establish a limit).
 Hence `spec(U|Lip(ℤ₃)) ⊆ {1} ∪ {|z| ≤ 1/3}`: **global contraction** (Banach
 in W₁) — a *unique* invariant measure on ℤ₃ (Tao's Syracuse measure; the
 π_k form a projective family, exactly verified), equidistribution at rate
@@ -198,12 +207,15 @@ elementary way, into conclusions about individual orbits.
 
 ## References
 * R. Terras, *A stopping time problem on the positive integers*, Acta Arith. 30 (1976).
+* C. J. Everett, *Iteration of the number-theoretic function f(2n)=n, f(2n+1)=3n+2*, Adv. Math. 25 (1977).
+* K. R. Matthews, A. M. Watts, *A generalization of Hasse's generalization of the Syracuse algorithm*, Acta Arith. 43 (1984); *A Markov approach to the generalized Syracuse algorithm*, Acta Arith. 45 (1985).
 * J. C. Lagarias, *The 3x+1 problem and its generalizations*, Amer. Math. Monthly 92 (1985).
 * S. Eliahou, *The 3x+1 problem: new lower bounds on nontrivial cycle lengths*, Discrete Math. 118 (1993).
 * J. Simons, B. de Weger, *Theoretical and computational bounds for m-cycles of the 3n+1 problem*, Acta Arith. (2005).
 * I. Krasikov, J. C. Lagarias, *Bounds for the 3x+1 problem using difference inequalities*, Acta Arith. 109 (2003).
 * T. Tao, *Almost all orbits of the Collatz map attain almost bounded values*, Forum Math. Pi 10 (2022).
-* D. Barina, *Convergence verification of the Collatz problem*, J. Supercomputing 77 (2021) — verification ≈ 2⁷¹.
+* D. Barina, *Convergence verification of the Collatz problem*, J. Supercomputing 77 (2021) — published verification of all n ≤ 2⁶⁸.
+* C. Hercher, *There are no Collatz m-cycles with m ≤ 91*, J. Integer Seq. 26 (2023).
 
 ## Report and paper
 The full mathematical report is available in [`RELATORIO.md`](RELATORIO.md)
