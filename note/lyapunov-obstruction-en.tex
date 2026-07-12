@@ -1,0 +1,140 @@
+% Self-contained note (2 pages): the 2-adic obstruction to modular Lyapunov
+% functions for the 3n+1 problem. English version (translation of
+% nota-obstrucao-lyapunov-pt.tex, which is canonical).
+% Build: tectonic lyapunov-obstruction-en.tex  (or latexmk -pdf)
+% Extracted from the full manuscript in ../paper/main.tex.
+\documentclass[10pt]{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage[margin=2cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Ztwo}{\Z_2}
+
+\begin{document}
+
+\title[A $2$-adic obstruction to modular Lyapunov functions]{A $2$-adic obstruction to modular Lyapunov functions for the $3n+1$ problem}
+
+\author{Tulio Marchetto}
+\email{tuliomarchetto@usp.br}
+
+\date{\today}
+
+\begin{abstract}
+Let $T$ be the accelerated Collatz map: $T(n)=n/2$ for even $n$, $T(n)=(3n+1)/2$ for odd $n$. We prove, by an elementary and self-contained argument, that for every $j\ge 1$ no function of the form $V(n)=\log_2 n+w(n\bmod 2^j)$, with $w:\Z/2^j\Z\to\R$ arbitrary, decreases strictly at every positive odd integer. The obstruction comes from the fixed point $-1\in\Z_2$: its projection at every finite level carries positive representatives with logarithmic gain $\log_2 3-1>0$, while the modular correction cancels. The conclusion persists with finite exceptions, non-strict inequality, and blocks of $k$ iterations. The hypothesis is imposed only on $\Z_+$, where no cycle other than $\{1,2\}$ is known. \textbf{Question:} does this positive-integer formulation appear explicitly in the literature?
+\end{abstract}
+
+\maketitle
+
+\section{Statement and proof}
+
+Let $T:\Z\to\Z$ be the accelerated Collatz map, $T(n)=n/2$ for $n$ even and $T(n)=(3n+1)/2$ for $n$ odd. The Collatz conjecture asserts that every $n\ge 1$ reaches the cycle $\{1,2\}$ under iteration of $T$ \cite{lagarias1985,lagarias2010}. Since the length-$k$ parity vector is determined by the residue modulo $2^k$ \cite{terras1976}, finite periodic corrections to the logarithmic scale form a natural class of candidate descent certificates. The result below shows that this class is empty.
+
+\begin{definition}[Modular Lyapunov function]\label{def:lyap}
+Fix $j \ge 1$. A \emph{modular Lyapunov function of level $j$} is a function
+\[
+V(n) \;=\; \log_2 n + w(n \bmod 2^j), \qquad w : \Z/2^j\Z \to \R \text{ arbitrary},
+\]
+such that $V(T(n)) < V(n)$ for every odd integer $n > 0$.
+\end{definition}
+
+Since $w$ has finite domain, it is bounded and acts on the integers as a periodic potential of period $2^j$. If such a $V$ existed, no positive orbit could diverge.
+
+\begin{theorem}[Modular obstruction]\label{thm:main}
+For every $j\ge 1$ and every $w:\Z/2^j\Z\to\R$, the function $V(n)=\log_2 n+w(n\bmod 2^j)$ is not strictly decreasing along the odd steps of $T$ in $\Z_+$. Specifically, the projection of the $2$-adic fixed point $-1\in\Ztwo$ onto $\Z/2^j\Z$ induces, on the class $-1\bmod 2^j$, a loop of logarithmic gain $\log_2 3-1>0$ that no potential $w$ compensates.
+\end{theorem}
+
+\begin{proof}
+Suppose, for contradiction, that there is $w : \Z/2^j\Z \to \R$ such that, for every odd $n > 0$,
+\begin{equation}\label{eq:lyapineq}
+w\bigl(T(n) \bmod 2^j\bigr) - w\bigl(n \bmod 2^j\bigr) \;<\; -\log_2 \frac{T(n)}{n}.
+\end{equation}
+Consider the family $n_m = 2^{j+1}m - 1$, $m \ge 1$. Since $j \ge 1$ we have $n_m \ge 3$; every $n_m$ is therefore a strictly positive odd integer, contained in the domain where \eqref{eq:lyapineq} is assumed. The accelerated step evaluates exactly:
+\[
+T(n_m) \;=\; \frac{3(2^{j+1}m-1)+1}{2} \;=\; 3\cdot 2^j m - 1 .
+\]
+Reducing modulo $2^j$,
+\[
+n_m = 2^j(2m) - 1 \equiv -1, \qquad
+T(n_m) = 2^j(3m) - 1 \equiv -1 \pmod{2^j}.
+\]
+Substituting $n_m$ into \eqref{eq:lyapineq}, the potential terms cancel identically, leaving, for every $m \ge 1$,
+\[
+0 \;<\; -\log_2 \frac{3\cdot 2^j m - 1}{2\cdot 2^j m - 1}.
+\]
+This requires the argument of the logarithm to be strictly less than $1$; since numerator and denominator are positive, that means $3\cdot 2^j m - 1 < 2\cdot 2^j m - 1$, i.e.\ $3 < 2$ --- a contradiction.
+\end{proof}
+
+\begin{remark}[The mechanism]\label{rem:mechanism}
+In $\Ztwo$ the integer $-1$ is an odd fixed point of the accelerated map: $T(-1) = (3\cdot(-1)+1)/2 = -1$. Any function of the residues modulo $2^j$ is blind to the difference between the positive integers $n_m \equiv -1 \pmod{2^{j+1}}$, which we want to control, and the point $-1 \in \Ztwo$ they approach $2$-adically, on which the dynamics genuinely gains $\log_2 \tfrac32 = \log_2 3 - 1 > 0$ per step. The family $n_m$ transports this stationary gain into $\Z_+$, where the potential cancels and only the gain remains. The obstruction is therefore \emph{structural}: it does not depend on the combinatorics of $w$, only on the existence of the $2$-adic fixed point.
+\end{remark}
+
+\section{Robustness}
+
+\begin{corollary}[Robustness]\label{cor:robust}
+The obstruction of Theorem~\ref{thm:main} persists under each of the following relaxations of Definition~\ref{def:lyap}.
+\begin{enumerate}
+\item \emph{Finite exceptions.} If \eqref{eq:lyapineq} is only required outside a finite set $E \subset \Z_+$, no such $V$ exists.
+\item \emph{Non-strict decrease.} If the requirement is weakened to $V(T(n)) \le V(n)$, no such $V$ exists.
+\item \emph{Blocks of $k$ iterations.} If the requirement is $V(T^k(n)) < V(n)$ for a fixed $k \ge 1$, no such $V$ exists.
+\item \emph{Restricted domains.} If the decrease is required only on a subset $D \subseteq \Z_+$ of the odd integers, then either $D$ omits infinitely many terms of some family $n_m = 2^{j+1}m-1$ --- in which case $V$ cannot certify global convergence --- or $D$ contains infinitely many of them, and no such $V$ exists.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+(1) The family $\{n_m\}_{m \ge 1}$ is infinite; for any finite $E$ there is $m$ with $n_m \notin E$, and the proof of Theorem~\ref{thm:main} applies verbatim to that $m$.
+
+(2) With $\le$ in place of $<$, the final inequality becomes $3 \le 2$, still false.
+
+(3) Parametrize the deeper family $n_m = 2^{j+k}m - 1$, $m\ge1$. By induction, $T^i(n_m) = 3^i\, 2^{j+k-i} m - 1$ for $0 \le i \le k$, each of the first $k$ steps being odd: if $i < k$, then $j+k-i \ge j+1 \ge 2$, so $3^i 2^{j+k-i}m$ is even, $T^i(n_m)$ is odd, and
+\[
+T^{i+1}(n_m) = \frac{3\bigl(3^i 2^{j+k-i}m - 1\bigr)+1}{2} = 3^{i+1} 2^{j+k-i-1} m - 1 .
+\]
+Hence $T^k(n_m) = 3^k 2^j m - 1 \equiv -1 \equiv n_m \pmod{2^j}$: the potentials cancel in the block inequality, leaving $0 < -\log_2 \frac{3^k 2^j m - 1}{2^k 2^j m - 1}$, which forces $3^k < 2^k$, false for every $k \ge 1$.
+
+(4) If $D$ contains infinitely many $n_m$, run the proof of Theorem~\ref{thm:main} on those; if it omits all but finitely many, the orbits through the omitted integers are left entirely unconstrained by $V$.
+\end{proof}
+
+\section{Relation to the literature, and the question}
+
+That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$), and a strictly decreasing $V$ on $\Z\setminus\{0\}$ would forbid them. Moreover, the underlying phenomenon is folklore: it has been understood since the stopping-time analyses of Terras \cite{terras1976} and Everett \cite{everett1977} that the residue class $-1 \bmod 2^k$ rises for $k$ consecutive accelerated steps (e.g.\ $n = 2^k-1$), so no descent argument reading only a fixed finite dyadic residue can be uniform.
+
+The content of Theorem~\ref{thm:main} is the precise packaging of this phenomenon as a \emph{nonexistence} statement for the class of Definition~\ref{def:lyap}: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional --- caused by the projection of the single $2$-adic point $-1$, not by any cycle in the domain of the hypothesis. We make no claim of priority; we regard the theorem as a formalization of a known heuristic, in the spirit of the average-descent results of \cite{terras1976,tao2022}.
+
+\textbf{The question motivating this note:} is this formulation --- nonexistence of a strictly decreasing $V(n)=\log_2 n + w(n \bmod 2^j)$ \emph{on the positive odd integers}, with the robustness of Corollary~\ref{cor:robust} --- stated explicitly anywhere in the $3x+1$ literature? References or corrections are most welcome.
+
+The full manuscript (with additional Wasserstein-contraction results and a reproducible exact-arithmetic computational laboratory) is available at \url{https://github.com/tuliomarchetto/collatz}.
+
+\begin{thebibliography}{9}
+
+\bibitem{everett1977}
+C.~J. Everett, \emph{Iteration of the number-theoretic function $f(2n)=n$, $f(2n+1)=3n+2$}, Advances in Mathematics \textbf{25} (1977), 42--45.
+
+\bibitem{lagarias1985}
+J.~C. Lagarias, \emph{The $3x+1$ problem and its generalizations}, American Mathematical Monthly \textbf{92} (1985), 3--23.
+
+\bibitem{lagarias2010}
+J.~C. Lagarias (ed.), \emph{The Ultimate Challenge: The $3x+1$ Problem}, American Mathematical Society, Providence, RI, 2010.
+
+\bibitem{tao2022}
+T.~Tao, \emph{Almost all orbits of the Collatz map attain almost bounded values}, Forum of Mathematics, Pi \textbf{10} (2022), e12.
+
+\bibitem{terras1976}
+R.~Terras, \emph{A stopping time problem on the positive integers}, Acta Arithmetica \textbf{30} (1976), 241--252.
+
+\end{thebibliography}
+
+\end{document}
