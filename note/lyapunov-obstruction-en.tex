@@ -112,9 +112,9 @@ Hence $T^k(n_m) = 3^k 2^j m - 1 \equiv -1 \equiv n_m \pmod{2^j}$: the potentials
 
 That \emph{some} obstruction to modular Lyapunov functions must exist over all of $\Z$ is unsurprising: the negative integers contain genuine cycles ($-1$; $-5 \to -7 \to -10$; and the cycle of $-17$), and a strictly decreasing $V$ on $\Z\setminus\{0\}$ would forbid them. Moreover, the underlying phenomenon is folklore: it has been understood since the stopping-time analyses of Terras \cite{terras1976} and Everett \cite{everett1977} that the residue class $-1 \bmod 2^k$ rises for $k$ consecutive accelerated steps (e.g.\ $n = 2^k-1$), so no descent argument reading only a fixed finite dyadic residue can be uniform.
 
-The content of Theorem~\ref{thm:main} is the precise packaging of this phenomenon as a \emph{nonexistence} statement for the class of Definition~\ref{def:lyap}: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional --- caused by the projection of the single $2$-adic point $-1$, not by any cycle in the domain of the hypothesis. We make no claim of priority; we regard the theorem as a formalization of a known heuristic, in the spirit of the average-descent results of \cite{terras1976,tao2022}.
+The content of Theorem~\ref{thm:main} is the precise packaging of this phenomenon as a \emph{nonexistence} statement for the class of Definition~\ref{def:lyap}: the hypothesis is imposed \emph{only on $\Z_+$}, where no cycle other than $\{1,2\}$ is known, and the failure is nevertheless unconditional --- caused by the projection of the single $2$-adic point $-1$, not by any cycle in the domain of the hypothesis. We make no claim of priority; we regard the theorem as a formalization of a known heuristic, in the spirit of the average-descent results of \cite{terras1976,tao2022}. The closest reputable relative is a no-go of a different kind: Kohl \cite{kohl2008} shows the permutation conjugating an almost-contracting residue-class-wise affine map cannot itself be such a map --- a statement about a \emph{conjugacy}, not an additive $\log_2 n + w(n\bmod 2^j)$ potential.
 
-\textbf{The question motivating this note:} is this formulation --- nonexistence of a strictly decreasing $V(n)=\log_2 n + w(n \bmod 2^j)$ \emph{on the positive odd integers}, with the robustness of Corollary~\ref{cor:robust} --- stated explicitly anywhere in the $3x+1$ literature? References or corrections are most welcome.
+\textbf{The question motivating this note:} is this formulation --- nonexistence of a strictly decreasing $V(n)=\log_2 n + w(n \bmod 2^j)$ \emph{on the positive odd integers}, with the robustness of Corollary~\ref{cor:robust} --- stated explicitly anywhere in the $3x+1$ literature? A systematic search (Lagarias's bibliographies, arXiv, citation chasing) did not locate it; we ask for a pointer to any source it missed. References or corrections are most welcome.
 
 The full manuscript (with additional Wasserstein-contraction results and a reproducible exact-arithmetic computational laboratory) is available at \url{https://github.com/tuliomarchetto/collatz}.
 
@@ -128,6 +128,9 @@ J.~C. Lagarias, \emph{The $3x+1$ problem and its generalizations}, American Math
 
 \bibitem{lagarias2010}
 J.~C. Lagarias (ed.), \emph{The Ultimate Challenge: The $3x+1$ Problem}, American Mathematical Society, Providence, RI, 2010.
+
+\bibitem{kohl2008}
+S.~Kohl, \emph{On conjugates of Collatz-type mappings}, International Journal of Number Theory \textbf{4} (2008), no.~1, 117--120.
 
 \bibitem{tao2022}
 T.~Tao, \emph{Almost all orbits of the Collatz map attain almost bounded values}, Forum of Mathematics, Pi \textbf{10} (2022), e12.
