@@ -87,11 +87,11 @@ def main() -> int:
           b["min_odd_steps"], 428)
     check("N = 200,000: minimum cycle length (T steps)",
           b["min_length_T_steps"], 676)
-    b68 = cycles.cycle_exclusion_bound(2 ** 68)
-    check("N = 2^68 (published verification): minimum odd steps",
-          b68["min_odd_steps"], 8_517_411_709)
-    check("N = 2^68: minimum cycle elements (~13 billion)",
-          b68["min_elements"], 13_457_510_500)
+    b68 = cycles.cycle_exclusion_bound(2 ** 71)
+    check("N = 2^71 (published verification): minimum odd steps",
+          b68["min_odd_steps"], 65_470_613_320)
+    check("N = 2^71: minimum cycle elements (~103 billion)",
+          b68["min_elements"], 103_443_569_045)
 
     # ------------------------------------------------------------------
     section("R4. Karp maximum mean cycle mod 2^j: the -1 obstruction"

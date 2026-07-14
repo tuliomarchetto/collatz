@@ -177,7 +177,7 @@ def cycle_exclusion_bound(verified_limit: int) -> Dict[str, int]:
     """Rigorous lower bound for nontrivial cycles of 3n+1.
 
     Hypothesis: every 2 <= n <= verified_limit converges (e.g. the result
-    of verify_range, or the published computational limit 2^68, Barina 2021).
+    of verify_range, or the published computational limit 2^71, Barina 2025).
 
     Returns {'min_odd_steps': K, 'min_length': L, 'min_elements': ...}:
     any nontrivial cycle over the positives has MORE than K odd steps and

@@ -5,7 +5,7 @@ Examples:
     python -m collatz all                      # full report
     python -m collatz verify --limit 1000000   # counterexample sieve
     python -m collatz cycles --d -1 --max-len 16
-    python -m collatz exclude --limit-bits 68  # cycle exclusion (N = 2^68, Barina 2021)
+    python -m collatz exclude --limit-bits 71  # cycle exclusion (N = 2^71, Barina 2025)
     python -m collatz lyapunov --j 10
     python -m collatz spectral --k 4
     python -m collatz transfer --k3 3 --k2 6 --n 100000
@@ -56,9 +56,9 @@ def main(argv=None) -> int:
     p.add_argument(
         "--limit-bits",
         type=int,
-        default=68,
+        default=71,
         help="assume every n <= 2^bits has been verified "
-        "(68 = published record, Barina 2021)",
+        "(71 = published record, Barina 2025)",
     )
 
     p = sub.add_parser("lyapunov", help="maximum mean cycle (Karp) mod 2^j")

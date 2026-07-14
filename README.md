@@ -60,7 +60,7 @@ elements > N, it follows that `0 < L − k·log₂3 ≤ k·log₂(1 + 1/3N)`: th
 ratio L/k approaches log₂3 *from above* with error ~ 1/(3N ln 2). The
 theory of best rational approximations (convergents of the continued
 fraction of log₂3, certified exactly by comparing `2^p` with `3^q`)
-forbids this for small k. With N = 2⁶⁸ (Barina's published computational
+forbids this for small k. With N = 2⁷¹ (Barina's published computational
 verification), **any non-trivial cycle has billions of odd steps** —
 Eliahou/Simons–de Weger's method (the current state of the art, Hercher
 2023, sharpens this further via constraints on the number of local
@@ -215,6 +215,7 @@ elementary way, into conclusions about individual orbits.
 * I. Krasikov, J. C. Lagarias, *Bounds for the 3x+1 problem using difference inequalities*, Acta Arith. 109 (2003).
 * T. Tao, *Almost all orbits of the Collatz map attain almost bounded values*, Forum Math. Pi 10 (2022).
 * D. Barina, *Convergence verification of the Collatz problem*, J. Supercomputing 77 (2021) — published verification of all n ≤ 2⁶⁸.
+* D. Barina, *Improved verification limit for the convergence of the Collatz conjecture*, J. Supercomputing 81:810 (2025) — extends the verified limit to n ≤ 2⁷¹.
 * C. Hercher, *There are no Collatz m-cycles with m ≤ 91*, J. Integer Seq. 26 (2023).
 
 ## Report and paper

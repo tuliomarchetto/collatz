@@ -193,13 +193,60 @@ def syracuse_w1_coefficient(k: int) -> Tuple[Fraction, Optional[Tuple[int, int]]
     FINDING: tau_k <= 1/3 for EVERY k (bound proved by coupling equal
     `a` + the 1/3 contraction of the branches; computed exactly here),
     with exact values tau_2 = 5/21, tau_3 = 455/1387,
-    tau_4 = 7635497415/22906579627 ≈ 0.33333206 ↗ 1/3: in the finite
-    sections, couplings between distinct branches still help, but in the
-    limit the coefficient of the infinite operator is exactly 1/3. The
-    uniform bound tau <= 1/3 is the spectral gap that survives as
-    k → ∞: spec(U|Lip(Z_3)) ⊆ {1} ∪ {|z| <= 1/3}."""
+    tau_4 = 7635497415/22906579627 ≈ 0.33333206, tau_5 ≈ 0.333333333333333
+    (gap 1/3 - tau_5 ≈ 1.85e-17): the sequence is PROVED nondecreasing
+    and bounded above by 1/3 (see `syracuse_kernel_projective_check`),
+    hence convergent to some limit L <= 1/3. Whether L = 1/3 exactly
+    (i.e. whether the bound in Theorem 4.3 is sharp on the full space
+    Z_3) is NOT established here and is the open content of Remark 4.4;
+    do not read this docstring's numerics as a proof of that limit."""
     _, P = syracuse_transfer_matrix(k)
     return w1_contraction_coefficient(P, 3, k)
+
+
+def syracuse_kernel_projective_check(k: int) -> bool:
+    """Verifies EXACTLY that the finite kernel P_k is the pushforward of
+    P_{k+1} under reduction modulo 3^k: for every state s mod 3^{k+1}
+    (a lift of r = s mod 3^k), pushing P_{k+1}(s, ·) forward under
+    x -> x mod 3^k gives exactly P_k(r, ·).
+
+    Proof: both P_k(r,·) and P_{k+1}(s,·) are built from the SAME
+    target residue 3s+1 (mod 3^{k+1}), since 3s+1 (mod 3^k) depends
+    only on s (mod 3^k) = r; the branch weights 2^{-a} are summed over
+    a periodic in a with period ord_{k+1} = 3·ord_k, so grouping the
+    level-(k+1) sum by residues mod ord_k reproduces exactly the
+    level-k weights after reducing targets mod 3^k. Hence pushing
+    forward P_{k+1}(s,·) mod 3^k reconstructs P_k(r,·) term by term.
+
+    Consequence (a genuine corollary of this exact identity, not merely
+    observed numerically): reduction mod 3^k is 1-Lipschitz for the
+    3-adic metric, and pushforward under a 1-Lipschitz map cannot
+    increase the Wasserstein distance of a coupling; hence for any
+    r != s mod 3^k with lifts x, y mod 3^{k+1},
+
+        W1(P_k(r,·), P_k(s,·)) <= W1(P_{k+1}(x,·), P_{k+1}(y,·))
+
+    and, since the mod-3^k distance of r,s equals the mod-3^{k+1}
+    distance of their canonical lifts x,y, taking the sup over pairs
+    gives tau(P_k) <= tau(P_{k+1}) for every k >= 1: the Dobrushin
+    coefficients tau_k are a PROVED nondecreasing sequence, bounded
+    above by 1/3 (Theorem 4.3), hence convergent. The same pushforward
+    argument against the infinite operator P gives tau(P_k) <= tau(P)
+    for every k, so tau(P) >= lim_k tau(P_k). This is the rigorous part
+    of the sharpening of Remark 4.4; whether the limit is exactly 1/3
+    remains open."""
+    states_k, P_k = syracuse_transfer_matrix(k)
+    states_k1, P_k1 = syracuse_transfer_matrix(k + 1)
+    Mk = 3**k
+    for s in states_k1:
+        r = s % Mk
+        push: Measure = {}
+        for t, w in P_k1[s].items():
+            tk = t % Mk
+            push[tk] = push.get(tk, Fraction(0)) + w
+        if push != P_k[r]:
+            return False
+    return True
 
 
 def stationary_projective_check(k: int) -> bool:

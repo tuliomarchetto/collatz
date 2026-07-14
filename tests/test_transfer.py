@@ -1,5 +1,6 @@
 from fractions import Fraction
 
+from collatz.spectral import memory_loss_check, syracuse_transfer_matrix
 from collatz.transfer import (
     absorption_profile,
     finite_section_nilpotency,
@@ -9,6 +10,7 @@ from collatz.transfer import (
     power_weight_obstruction,
     stationary_projective_check,
     syracuse_branch_contraction_check,
+    syracuse_kernel_projective_check,
     syracuse_w1_coefficient,
     transfer_2adic_matrix,
     transfer_2adic_w1_coefficient,
@@ -38,6 +40,39 @@ def test_syracuse_w1_coefficient_below_one_third_and_sharpening():
     assert c2 == Fraction(5, 21)
     assert c3 == Fraction(455, 1387)
     assert c2 < c3 <= Fraction(1, 3)
+
+
+def test_syracuse_kernel_projective_check():
+    # P_k is EXACTLY the pushforward of P_{k+1} under reduction mod 3^k
+    assert syracuse_kernel_projective_check(2)
+    assert syracuse_kernel_projective_check(3)
+    assert syracuse_kernel_projective_check(4)
+
+
+def test_tau_k_is_provably_nondecreasing():
+    # Corollary of syracuse_kernel_projective_check (pushforward under a
+    # 1-Lipschitz map cannot increase W1): tau_k <= tau_{k+1} for all k.
+    taus = [syracuse_w1_coefficient(k)[0] for k in range(2, 6)]
+    assert taus == sorted(taus)
+    assert all(t <= Fraction(1, 3) for t in taus)
+
+
+def test_finest_resolution_pairs_have_exactly_zero_w1_cost():
+    # Direct consequence of spectral.memory_loss_check: P_k(r,.) depends
+    # only on r mod 3^{k-1}, so pairs at the finest resolution
+    # v_3(r-s) = k-1 have IDENTICAL transition laws, hence W1 = 0. This
+    # is why the maximizing pair of tau_k can never sit at that finest
+    # resolution (it is observed at v_3 = k-2 instead, see
+    # todo/tau_k_data.csv).
+    for k in (2, 3, 4):
+        assert memory_loss_check(k)
+        states, P = syracuse_transfer_matrix(k)
+        step = 3 ** (k - 1)
+        M = 3**k
+        for r in states:
+            s = (r + step) % M
+            if s % 3 != 0:
+                assert wasserstein_padic(P[r], P[s], 3, k) == 0
 
 
 def test_stationary_measures_are_projective():

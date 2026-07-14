@@ -47,14 +47,14 @@ def test_convergents_of_log2_3():
 
 def test_exclusion_bound_grows_with_N():
     b1 = cycle_exclusion_bound(10**6)
-    b2 = cycle_exclusion_bound(2**68)
+    b2 = cycle_exclusion_bound(2**71)
     assert b1["min_odd_steps"] >= 10  # already excludes short cycles
     assert b2["min_odd_steps"] > b1["min_odd_steps"]
     assert b2["min_odd_steps"] > 10**9  # billions of odd steps
 
 
 def test_exclusion_bound_at_published_verification_limit():
-    bound = cycle_exclusion_bound(2**68)
-    assert bound["min_odd_steps"] == 8_517_411_709
-    assert bound["min_length_T_steps"] == 13_457_510_500
-    assert bound["min_elements"] == 13_457_510_500
+    bound = cycle_exclusion_bound(2**71)
+    assert bound["min_odd_steps"] == 65_470_613_320
+    assert bound["min_length_T_steps"] == 103_443_569_045
+    assert bound["min_elements"] == 103_443_569_045
