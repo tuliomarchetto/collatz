@@ -18,12 +18,14 @@ which the spectral gap survives the limit — and is uniform in k.
        |phi_a(x) − phi_a(y)|_3 = (1/3)·|x − y|_3      (exact, since
        phi_a(x) − phi_a(y) = 3·2^{-a}(x−y) and |2|_3 = 1, |3|_3 = 1/3).
 
-   Spectral consequences (verified exactly here at finite levels):
+   Spectral consequences (proved, and verified exactly at finite levels):
    * The Wasserstein (Dobrushin) contraction coefficient of the kernel
-     is <= 1/3 at EVERY level 3^k — a bound uniform in k, unlike the
-     ℓ² gap (exact values: 5/21, 455/1387, ... ↗ 1/3). Hence, on the
-     space Lip(Z_3), U = Pi + R with Pi = rank-1 projection onto the
-     invariant measure and spectral radius of R <= 1/3.
+     has the EXACT closed form tau_k = (1/3)(1-q^2)/(1+q+q^2) with
+     q = 2^{-2·3^{k-2}} at every level 3^k (values 5/21, 455/1387, ...,
+     strictly increasing to 1/3), and tau(P) = 1/3 exactly on Z_3 —
+     the coupling bound is sharp (`syracuse_tau_closed_form`). Hence,
+     on the space Lip(Z_3), U = Pi + R with Pi = rank-1 projection onto
+     the invariant measure and the norm of R exactly 1/3.
    * Global contraction (Banach fixed point in Wasserstein): there
      exists a UNIQUE invariant measure mu on Z_3 — the "Syracuse
      measure" (Tao 2019) — and every initial measure converges
@@ -188,20 +190,116 @@ def syracuse_branch_contraction_check(k: int, amax: int = 6) -> bool:
 
 
 def syracuse_w1_coefficient(k: int) -> Tuple[Fraction, Optional[Tuple[int, int]]]:
-    """Exact Wasserstein coefficient of the Syracuse chain at level 3^k.
+    """Exact Wasserstein coefficient of the Syracuse chain at level 3^k,
+    computed by brute force over all pairs of states.
 
-    FINDING: tau_k <= 1/3 for EVERY k (bound proved by coupling equal
-    `a` + the 1/3 contraction of the branches; computed exactly here),
-    with exact values tau_2 = 5/21, tau_3 = 455/1387,
-    tau_4 = 7635497415/22906579627 ≈ 0.33333206, tau_5 ≈ 0.333333333333333
-    (gap 1/3 - tau_5 ≈ 1.85e-17): the sequence is PROVED nondecreasing
-    and bounded above by 1/3 (see `syracuse_kernel_projective_check`),
-    hence convergent to some limit L <= 1/3. Whether L = 1/3 exactly
-    (i.e. whether the bound in Theorem 4.3 is sharp on the full space
-    Z_3) is NOT established here and is the open content of Remark 4.4;
-    do not read this docstring's numerics as a proof of that limit."""
+    THEOREM (proved, not merely computed — see `syracuse_tau_closed_form`
+    for the proof sketch): for every k >= 2,
+
+        tau_k = (1/3)·(1 - q^2)/(1 + q + q^2),   q = 2^{-2·3^{k-2}},
+
+    attained exactly on the pairs x != y with v_3(x - y) = k - 2 (all of
+    which realize the same ratio), e.g. the family (1, 1 + 3^{k-2}).
+    Exact values: tau_2 = 5/21, tau_3 = 455/1387,
+    tau_4 = 7635497415/22906579627 ≈ 0.33333206; the gap satisfies
+    0 < 1/3 - tau_k < 2^{-2·3^{k-2}} (doubly exponential collapse), and
+    tau_k ↑ tau(P) = 1/3: the 1/3 bound of Theorem 4.3 is SHARP. This
+    brute-force evaluator is kept as an independent certificate that the
+    closed form matches the definition at small k."""
     _, P = syracuse_transfer_matrix(k)
     return w1_contraction_coefficient(P, 3, k)
+
+
+def syracuse_tau_closed_form(k: int) -> Fraction:
+    """EXACT closed form of the Dobrushin-Wasserstein coefficient of the
+    Syracuse chain at level 3^k (k >= 2):
+
+        tau_k = (1/3)·(1 - q^2)/(1 + q + q^2),   q = 2^{-2·3^{k-2}}.
+
+    Proof sketch (full proof in the paper, Theorem `thm:tausharp`).
+    Write c = 2·3^{k-2}, so ord(2 mod 3^k) = 3c and the row of a state x
+    is P_k(x,·) = sum_a w_a·delta[(3x+1)·2^{-a}], w_a = 2^{-a}/(1-2^{-3c}),
+    a = 1..3c, with 3c pairwise distinct atoms.
+
+    1. Cube-root lemma: 2^c ≡ 1 + 3^{k-1} (mod 3^k) (induction on k by
+       cubing; base 2^2 = 1 + 3). Hence 2^{2c} ≡ 1 + 2·3^{k-1}.
+    2. Collision structure: for y = x + 3^{k-2}·u (3 ∤ u), the atoms of
+       the two rows satisfy u_a = t_a + (-1)^a·u·3^{k-1} (mod 3^k), since
+       2^{-a} ≡ (-1)^a (mod 3). Reduced mod 3^{k-1} the rows COINCIDE;
+       at full level, t_b = u_a iff b - a ≡ m* (mod 3c) with m* = 2c if
+       u ≡ 1, m* = c if u ≡ 2 (mod 3): matching valuations forces
+       v_3(2^{b-a} - 1) = k - 1, and the unit parts mod 3 (via lemma 1)
+       select exactly one shift class.
+    3. Overlap of the geometric weights under the rotation a -> a + m*
+       of Z/3c: sum of min(w_a, w_{a+m*}) = (q + q^2 - 2q^3)/(1 - q^3)
+       for both m* ∈ {c, 2c}; hence the total-variation discrepancy at
+       full level is (1-q)(1-q^2)/(1-q^3) = (1-q^2)/(1+q+q^2), and the
+       ultrametric closed form for W1 (`wasserstein_padic`, with all
+       coarser discrepancies zero) gives, for EVERY pair at valuation
+       k-2 (independently of x and u),
+
+           W1(P_k(x,·), P_k(y,·)) = 3^{-(k-1)}·(1-q^2)/(1+q+q^2),
+
+       i.e. ratio rho_k = (1/3)(1-q^2)/(1+q+q^2) over d(x,y) = 3^{-(k-2)}.
+    4. Maximality: pairs at valuation k-1 have identical rows (ratio 0);
+       pairs at valuation v <= k-3 have, by step 3 applied at level v+2
+       plus projectivity (`syracuse_kernel_projective_check`), ratio at
+       most 1/3 - (2/9)·omega_v with omega_v = (q'+q'^2-2q'^3)/(1-q'^3),
+       q' = 2^{-2·3^v}, and (2/9)·omega_v > 1/3 - rho_k for all v <= k-3
+       (since omega_v >= (3/4)q' and q'^3 <= q). Hence tau_k = rho_k.
+
+    Consequences: tau_k is strictly increasing with
+    0 < 1/3 - tau_k = q(1+2q)/(3(1+q+q^2)) < q = 2^{-2·3^{k-2}}, so
+    tau_k -> 1/3; combined with tau_k <= tau(P) <= 1/3 (pushforward
+    monotonicity + Theorem 4.3) this proves tau(P) = 1/3 EXACTLY: the
+    synchronous-coupling bound is sharp on Z_3. The supremum defining
+    tau(P) is attained by no single pair of Z_3 (every pair at valuation
+    v has ratio <= 1/3 - (2/9)·omega_v < 1/3); the sphere pairs
+    (1, 1 + 3^{k-2}) are an explicit maximizing family."""
+    if k < 2:
+        raise ValueError("closed form requires k >= 2")
+    q = Fraction(1, 2 ** (2 * 3 ** (k - 2)))
+    return Fraction(1, 3) * (1 - q**2) / (1 + q + q**2)
+
+
+def syracuse_extremal_sphere_check(k: int) -> bool:
+    """Verifies EXACTLY, at level 3^k, the two computational claims of
+    the sharpness theorem (`syracuse_tau_closed_form`):
+
+    (i) for EVERY state x and every u ∈ {1, 2}, the pair
+        y = x + u·3^{k-2} (when y is a state) satisfies
+
+            W1(P_k(x,·), P_k(y,·)) = 3^{-(k-1)}·(1-q^2)/(1+q+q^2),
+
+        q = 2^{-2·3^{k-2}} — the same value for every pair on the
+        sphere v_3(x-y) = k-2, hence ratio exactly tau_k;
+    (ii) the two rows coincide exactly when pushed forward mod 3^{k-1}
+        (the shift ±3^{k-1} between matched atoms dies one level down).
+    """
+    states, P = syracuse_transfer_matrix(k)
+    M = 3**k
+    Mprev = 3 ** (k - 1)
+    step = 3 ** (k - 2)
+    q = Fraction(1, 2 ** (2 * 3 ** (k - 2)))
+    w1_expected = Fraction(1, 3 ** (k - 1)) * (1 - q**2) / (1 + q + q**2)
+    for x in states:
+        for u in (1, 2):
+            y = (x + u * step) % M
+            if y % 3 == 0 or y == x:
+                continue
+            if _vp(x - y, 3) != k - 2:
+                return False
+            if wasserstein_padic(P[x], P[y], 3, k) != w1_expected:
+                return False
+            proj_x: Measure = {}
+            proj_y: Measure = {}
+            for t, w in P[x].items():
+                proj_x[t % Mprev] = proj_x.get(t % Mprev, Fraction(0)) + w
+            for t, w in P[y].items():
+                proj_y[t % Mprev] = proj_y.get(t % Mprev, Fraction(0)) + w
+            if proj_x != proj_y:
+                return False
+    return True
 
 
 def syracuse_kernel_projective_check(k: int) -> bool:
@@ -232,9 +330,9 @@ def syracuse_kernel_projective_check(k: int) -> bool:
     coefficients tau_k are a PROVED nondecreasing sequence, bounded
     above by 1/3 (Theorem 4.3), hence convergent. The same pushforward
     argument against the infinite operator P gives tau(P_k) <= tau(P)
-    for every k, so tau(P) >= lim_k tau(P_k). This is the rigorous part
-    of the sharpening of Remark 4.4; whether the limit is exactly 1/3
-    remains open."""
+    for every k, so tau(P) >= lim_k tau(P_k). Combined with the exact
+    closed form tau_k = (1/3)(1-q^2)/(1+q+q^2) -> 1/3 established in
+    `syracuse_tau_closed_form`, this sandwich proves tau(P) = 1/3."""
     states_k, P_k = syracuse_transfer_matrix(k)
     states_k1, P_k1 = syracuse_transfer_matrix(k + 1)
     Mk = 3**k

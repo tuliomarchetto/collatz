@@ -87,11 +87,11 @@ def main() -> int:
           b["min_odd_steps"], 428)
     check("N = 200,000: minimum cycle length (T steps)",
           b["min_length_T_steps"], 676)
-    b68 = cycles.cycle_exclusion_bound(2 ** 71)
+    b71 = cycles.cycle_exclusion_bound(2 ** 71)
     check("N = 2^71 (published verification): minimum odd steps",
-          b68["min_odd_steps"], 65_470_613_320)
+          b71["min_odd_steps"], 65_470_613_320)
     check("N = 2^71: minimum cycle elements (~103 billion)",
-          b68["min_elements"], 103_443_569_045)
+          b71["min_elements"], 103_443_569_045)
 
     # ------------------------------------------------------------------
     section("R4. Karp maximum mean cycle mod 2^j: the -1 obstruction"
@@ -152,10 +152,29 @@ def main() -> int:
     tau3, _ = transfer.syracuse_w1_coefficient(3)
     check("tau_2 (exact fraction)", tau2, Fraction(5, 21))
     check("tau_3 (exact fraction)", tau3, Fraction(455, 1387))
+    # Closed form of Theorem 4.6 (thm:tausharp): tau_k = (1/3)(1-q^2)/(1+q+q^2),
+    # q = 2^{-2*3^{k-2}}. The brute-force maxima above certify it independently.
+    check("closed form matches brute force at k = 2",
+          transfer.syracuse_tau_closed_form(2), tau2)
+    check("closed form matches brute force at k = 3",
+          transfer.syracuse_tau_closed_form(3), tau3)
+    check("extremal sphere v_3 = k-2: every pair realizes the closed-form W1"
+          " and rows coincide mod 3^{k-1} (k = 2, 3, 4)",
+          all(transfer.syracuse_extremal_sphere_check(k) for k in (2, 3, 4)), True)
+    check("gap 1/3 - tau_5 = q(1+2q)/(3(1+q+q^2)), q = 2^-54 (exact rational)",
+          Fraction(1, 3) - transfer.syracuse_tau_closed_form(5),
+          (lambda q: q * (1 + 2 * q) / (3 * (1 + q + q * q)))(Fraction(1, 2**54)))
+    check("gap 1/3 - tau_k < 2^{-2*3^{k-2}} for k = 2..8",
+          all(Fraction(1, 3) - transfer.syracuse_tau_closed_form(k)
+              < Fraction(1, 2 ** (2 * 3 ** (k - 2))) for k in range(2, 9)), True)
     if not args.quick:
         tau4, _ = transfer.syracuse_w1_coefficient(4)
         check("tau_4 (exact fraction)", tau4, Fraction(7_635_497_415, 22_906_579_627))
         check("tau_4 ~ 0.33333206", f"{float(tau4):.8f}", "0.33333206")
+        check("closed form matches brute force at k = 4",
+              transfer.syracuse_tau_closed_form(4), tau4)
+        check("extremal sphere check at k = 5",
+              transfer.syracuse_extremal_sphere_check(5), True)
         check("tau_2 < tau_3 < tau_4 <= 1/3 (monotone ascent to the bound)",
               tau2 < tau3 < tau4 <= Fraction(1, 3), True)
     check("Syracuse branches contract Z_3 by exactly 1/3",

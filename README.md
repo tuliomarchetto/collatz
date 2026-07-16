@@ -13,6 +13,16 @@ A set of algorithms (pure Python, no dependencies) to investigate the
    quantify the ingredients of known partial proofs (Terras 1976, Eliahou
    1993, Krasikov–Lagarias 2003, Tao 2019).
 
+The headline results form an **obstruction map** of the problem, delimiting
+it from both sides: a no-go theorem locating the 2-adic obstruction (the
+fixed point −1) that defeats every modular Lyapunov correction on the
+pointwise side, paired with sharp Wasserstein contraction on the dual,
+measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every
+finite-level coefficient in closed form — and exactly 1/2 on ℤ₂). Neither
+side approaches the conjecture itself: the map charts where convergence
+certificates *cannot* live and where contraction is maximal but blind to
+individual orbits.
+
 ```bash
 pip install -e ".[test]"                  # install (runtime needs stdlib only)
 python -m collatz all                     # full findings report
@@ -161,10 +171,14 @@ Syracuse chain `x ↦ (3x+1)·2^(−a)` acting on `C(ℤ₃)` — and its ℓ² 
 trivial, so it says nothing in the limit. This module identifies the norm
 in which the gap survives: each branch contracts the 3-adic metric by
 **exactly 1/3** (exact check: the chain is a uniformly contractive IFS on
-ℤ₃), and the **Wasserstein contraction coefficient is τ_k ≤ 1/3 uniformly
-in k** (exact values: τ₂ = 5/21, τ₃ = 455/1387, τ₄ ≈ 0.33333206; the
-values are increasing and ≤ 1/3, but the finite computations do not by
-themselves establish a limit).
+ℤ₃), and the **Wasserstein contraction coefficient has the proved closed
+form τ_k = (1/3)(1−q²)/(1+q+q²), q = 2^(−2·3^(k−2))** — exact values
+τ₂ = 5/21, τ₃ = 455/1387, τ₄ ≈ 0.33333206, strictly increasing to 1/3
+with gap 1/3 − τ_k < 2^(−2·3^(k−2)), attained exactly on the pairs at
+3-adic distance 3^(−(k−2)); hence **τ(P) = 1/3 exactly on ℤ₃** (the
+coupling bound is sharp; no single pair attains the supremum). The
+brute-force values certify the closed form independently
+(`syracuse_tau_closed_form`, `syracuse_extremal_sphere_check`).
 Hence `spec(U|Lip(ℤ₃)) ⊆ {1} ∪ {|z| ≤ 1/3}`: **global contraction** (Banach
 in W₁) — a *unique* invariant measure on ℤ₃ (Tao's Syracuse measure; the
 π_k form a projective family, exactly verified), equidistribution at rate
@@ -194,8 +208,8 @@ elementary way, into conclusions about individual orbits.
   theorem.
 * **Directions the toolkit leaves quantified:** the uniform spectral gap
   mod 3^k — **resolved** by the `transfer` module: in W₁/Lip(ℤ₃) it exists
-  and is ≥ 2/3 (coefficient ≤ 1/3), with global contraction and a unique
-  Syracuse measure; large-deviation rates for the "bad" set; inverse-tree
+  and equals exactly 2/3 (coefficient exactly 1/3, sharp, with the τ_k in
+  closed form), with global contraction and a unique Syracuse measure; large-deviation rates for the "bad" set; inverse-tree
   density; and the exact frontier (cycle length, excursion height) where a
   counterexample could still hide. The limits of the spectral approach are
   also made explicit: finite projections (mod 3^k, 2-adic cylinders,
