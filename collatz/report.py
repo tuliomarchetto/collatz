@@ -282,6 +282,8 @@ def run_all(
         "## 10. Operador de transferência infinito: de mod 3^k a Lip(Z₃), Lip(Z₂) e ℓ¹(Z₊)\n"
     )
     c3, _ = transfer.syracuse_w1_coefficient(transfer_k3)
+    closed3 = transfer.syracuse_tau_closed_form(transfer_k3)
+    sphere3 = transfer.syracuse_extremal_sphere_check(transfer_k3)
     br3 = transfer.syracuse_branch_contraction_check(min(transfer_k3, 4))
     proj = transfer.stationary_projective_check(transfer_k3)
     prof = transfer.koopman_decay_profile(transfer_k3)
@@ -292,11 +294,17 @@ def run_all(
         "uniformemente contrativo em Z₃."
     )
     add(
-        f"- ACHADO ESPECTRAL CENTRAL: o coeficiente de contração de Wasserstein é "
-        f"τ_k ≤ 1/3 UNIFORME em k (nível 3^{transfer_k3}: τ = {c3} ≈ {float(c3):.6f}; "
-        "sequência exata 5/21, 455/1387, 7635497415/22906579627 ↗ 1/3).  "
+        f"- ACHADO ESPECTRAL CENTRAL (agora TEOREMA em forma fechada): o coeficiente de "
+        f"contração de Wasserstein é τ_k = (1/3)(1−q²)/(1+q+q²) com q = 2^(−2·3^(k−2)) "
+        f"EXATAMENTE em todo nível (nível 3^{transfer_k3}: força bruta τ = {c3} "
+        f"≈ {float(c3):.6f}; forma fechada {'CONFERE' if c3 == closed3 else '⚠ DIVERGIU'}; "
+        f"esfera extremal v₃ = k−2 {'verificada exata' if sphere3 else '⚠ FALHOU'}), "
+        "sequência 5/21, 455/1387, 7635497415/22906579627 ↗ 1/3 com lacuna "
+        "1/3 − τ_k < 2^(−2·3^(k−2)); o supremo em Z₃ vale τ(P) = 1/3 EXATO (cota "
+        "síncrona atingida no limite, por NENHUM par individual).  "
         "Ao contrário da lacuna ℓ² (trivial, §8), "
-        "esta lacuna SOBREVIVE ao limite: spec(U|Lip(Z₃)) ⊆ {1} ∪ {|z| ≤ 1/3}.  "
+        "esta lacuna SOBREVIVE ao limite: spec(U|Lip(Z₃)) ⊆ {1} ∪ {|z| ≤ 1/3}, com "
+        "norma de U em Lip/constantes exatamente 1/3.  "
         "Contração global (Banach em W₁): medida invariante ÚNICA em Z₃ — a medida de "
         f"Syracuse de Tao; consistência projetiva π_k → π_(k−1) "
         f"{'verificada exata' if proj else '⚠ FALHOU'}; equidistribuição a taxa 3^(−n) "

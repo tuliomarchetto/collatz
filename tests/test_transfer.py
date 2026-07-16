@@ -10,7 +10,9 @@ from collatz.transfer import (
     power_weight_obstruction,
     stationary_projective_check,
     syracuse_branch_contraction_check,
+    syracuse_extremal_sphere_check,
     syracuse_kernel_projective_check,
+    syracuse_tau_closed_form,
     syracuse_w1_coefficient,
     transfer_2adic_matrix,
     transfer_2adic_w1_coefficient,
@@ -40,6 +42,37 @@ def test_syracuse_w1_coefficient_below_one_third_and_sharpening():
     assert c2 == Fraction(5, 21)
     assert c3 == Fraction(455, 1387)
     assert c2 < c3 <= Fraction(1, 3)
+
+
+def test_tau_closed_form_matches_brute_force():
+    # Theorem 4.6 (thm:tausharp): tau_k = (1/3)(1-q^2)/(1+q+q^2) with
+    # q = 2^{-2*3^{k-2}}. The brute-force maximum over all pairs certifies
+    # the closed form independently of the collision analysis.
+    for k in (2, 3, 4):
+        assert syracuse_tau_closed_form(k) == syracuse_w1_coefficient(k)[0]
+
+
+def test_tau_closed_form_literature_values_and_gap():
+    assert syracuse_tau_closed_form(2) == Fraction(5, 21)
+    assert syracuse_tau_closed_form(3) == Fraction(455, 1387)
+    assert syracuse_tau_closed_form(4) == Fraction(7_635_497_415, 22_906_579_627)
+    # gap formula and doubly exponential collapse: 0 < 1/3 - tau_k < q_k
+    for k in range(2, 10):
+        q = Fraction(1, 2 ** (2 * 3 ** (k - 2)))
+        gap = Fraction(1, 3) - syracuse_tau_closed_form(k)
+        assert gap == q * (1 + 2 * q) / (3 * (1 + q + q * q))
+        assert 0 < gap < q
+    # strictly increasing toward the sharp bound tau(P) = 1/3
+    taus = [syracuse_tau_closed_form(k) for k in range(2, 10)]
+    assert all(a < b for a, b in zip(taus, taus[1:]))
+    assert all(t < Fraction(1, 3) for t in taus)
+
+
+def test_extremal_sphere_realizes_closed_form_w1():
+    # Every pair at 3-adic valuation k-2 realizes the same W1 distance
+    # 3^{-(k-1)}(1-q^2)/(1+q+q^2), and its rows coincide pushed mod 3^{k-1}.
+    for k in (2, 3, 4, 5):
+        assert syracuse_extremal_sphere_check(k)
 
 
 def test_syracuse_kernel_projective_check():
