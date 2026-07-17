@@ -287,6 +287,14 @@ using $\Theta s \ge \ell - 2s$.
 \emph{(v) Avoiding the exceptions.} For fixed $\ell$ and $t$, the map $m \mapsto x_t = 3^{ts}2^{\ell-ts}m - 1$ is injective, so each element of $E$ spoils at most one odd $m$ per index $t$: all but at most $|E|(\Theta + 1)$ odd values of $m$ yield chains disjoint from $E$. Choosing $\ell$ with $(\ell - 2s)(\log_2 3 - 1) > \operatorname{osc}(w)$ (possible since $w$ is bounded) and then such an $m$ contradicts (iv). With $E = \varnothing$ the choice $m = 1$ gives the stated Mersenne witness.
 \end{proof}
 
+\begin{corollary}[Sublogarithmic and monotone extensions]\label{cor:sublogarithmic}
+The obstruction of Theorem~\ref{thm:stopping} extends to corrections $w(n)$ with sublogarithmic envelopes and to monotonically non-decreasing corrections.
+\begin{enumerate}
+\item \emph{Sublogarithmic envelope.} If $w(n)$ satisfies $-(p_-/q)\log_2 n - C \le w(n) \le (p_+/q)\log_2 n + C$ for non-negative integers $p_-, p_+, q \ge 1, C$, and $(q-p_-)\log_2 3 > q+p_+$, then the block descent \eqref{eq:blockdescent} fails. The failure is witnessed on the Mersenne family by the exact integer inequality $3^{q-p_-} > 2^{q+p_+}$. In particular, the unrestricted unbounded class is nonempty if and only if there are no nontrivial cycles.
+\item \emph{Monotone corrections.} If $w$ is monotonically non-decreasing, i.e., $w(T(n)) \ge w(n)$, then $w(x_{\mathrm{end}}) \ge w(x_0)$. Since $x_{\mathrm{end}} > x_0$ along the all-ones word $1^s$, the block descent cannot hold, witnessed by the strict growth $x_{\mathrm{end}} > x_0$.
+\end{enumerate}
+\end{corollary}
+
 \begin{corollary}[All everywhere-finite rules are obstructed]\label{cor:koenig}
 If $\sigma_S$ is finite at every point of $\Ztwo$ --- equivalently, $\sigma_S$ is bounded; equivalently, $S$ is a finite maximal prefix code --- then $1^s \in S$ for some $s$, and Theorem~\ref{thm:stopping} applies. In particular, no variable-depth stopping-time potential exists for: the constant rules $\sigma \equiv k$ (recovering Theorem~\ref{thm:main} and Corollary~\ref{cor:robust}(3), strengthened from modular $w$ to arbitrary bounded $w$); the Syracuse renewal rule truncated at any horizon $B$; and Terras's coefficient stopping rule truncated at any horizon $B$.
 \end{corollary}

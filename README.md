@@ -12,8 +12,9 @@ The laboratory investigates the problem from two complementary angles:
 
 Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side — extended past the fixed-depth folklore to **every variable-depth adapted stopping-time scheme** (any rule that ever stops the all-ones parity word admits no bounded correction; the surviving rules must defer their decision beyond depth log₂ n, exactly where Terras's open coefficient stopping time conjecture lives) — paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
 
+The laboratory uses **only the Python standard library** for its execution. You do not need to install anything to run the experiments.
+
 ```bash
-pip install -e ".[test]"                  # install (runtime needs stdlib only)
 python -m collatz all                     # full findings report
 python -m collatz verify --limit 1000000  # counterexample sieve
 python -m collatz cycles --d -1           # exact cycle enumeration (3n-1)
@@ -24,8 +25,14 @@ python -m collatz spectral --k 4          # transfer operator mod 3^k
 python -m collatz transfer --k3 3 --k2 6  # infinite transfer operator
 python -m collatz tree --depth 120        # inverse-tree coverage
 python -m collatz terras --k 18           # 2-adic structure
-python -m pytest tests/                   # test suite
 python reproduce_paper_results.py         # regenerate every number in the paper
+```
+
+If you want to run the test suite (which requires `pytest`), you should set up a virtual environment to avoid PEP 668 system-package errors:
+
+```bash
+make install                              # sets up a .venv and installs testing dependencies
+make test                                 # runs the test suite
 ```
 
 Equivalent `make` targets: `make install`, `make test`, `make reproduce`,
@@ -129,15 +136,19 @@ truncation). The module `collatz/stopping.py` implements the theorem that
 closes this class (paper, Theorem `thm:stopping`): **any rule that stops
 the all-ones parity word — automatic for every bounded rule, by König's
 lemma — admits no bounded correction `w(n)` whatsoever**, modular or not.
-The proof replaces the single-step cancellation by a telescoping chain
-along `n = 2^ℓ·m − 1`, and the module makes it computational: it builds
-the **block graph** of any finite rule (validated by an exact Kraft sum),
-runs Karp on it, and certifies the obstruction cycle by the exact integer
-comparison `3^A > 2^L` — plus explicit Mersenne witnesses `n = 2^ℓ − 1`
-defeating any correction of prescribed oscillation, verified in integer
-arithmetic. Rules escape only by never deciding on the all-ones word
-(`σ(n) > v₂(n+1)` for all n); the first open member of that boundary is
-Terras's coefficient stopping time conjecture, so the no-go is sharp.
+The module extends this impossibility to **any sublogarithmic envelope**
+(checked exactly by the integer inequality `3^(q-p_) > 2^(q+p+)`) and 
+**any monotone correction**. The proof replaces the single-step cancellation 
+by a telescoping chain along `n = 2^ℓ·m − 1`, and the module makes it 
+computational: it builds the **block graph** of any finite rule (validated 
+by an exact Kraft sum), runs Karp on it, and certifies the obstruction cycle 
+by the exact integer comparison `3^A > 2^L` — plus explicit Mersenne witnesses 
+`n = 2^ℓ − 1` defeating any correction of prescribed oscillation or sublogarithmic 
+bounds, verified in exact integer arithmetic. Ultimately, the unrestricted unbounded 
+class is nonempty if and only if there are no nontrivial cycles. Rules escape 
+only by never deciding on the all-ones word (`σ(n) > v₂(n+1)` for all n); the first 
+open member of that boundary is Terras's coefficient stopping time conjecture, 
+so the no-go is sharp.
 
 ### 7. `symmetries` — affine conjugations and rigidity
 Exhaustive search for `φ(x) = ax + b` such that `φ∘T_d = T_{d'}∘φ`.

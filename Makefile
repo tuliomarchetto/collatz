@@ -12,10 +12,13 @@ PYTHON ?= python3
 .PHONY: install test reproduce report paper note clean
 
 install:
-	$(PYTHON) -m pip install -e ".[test]"
+	@echo "Creating virtual environment and installing..."
+	$(PYTHON) -m venv .venv
+	.venv/bin/pip install -e ".[test]"
+	@echo "Done. Virtual environment created at .venv/"
 
 test:
-	$(PYTHON) -m pytest tests/ -q
+	@if [ -d ".venv" ]; then .venv/bin/pytest tests/ -q; else $(PYTHON) -m pytest tests/ -q; fi
 
 reproduce:
 	$(PYTHON) reproduce_paper_results.py
