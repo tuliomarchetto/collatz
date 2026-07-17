@@ -7,7 +7,7 @@ Usage:
     python reproduce_paper_results.py           # full run (~1-2 min)
     python reproduce_paper_results.py --quick   # skip the slowest sections
 
-Each section R1..R8 recomputes one block of results from scratch using
+Each section R1..R9 recomputes one block of results from scratch using
 only the `collatz` package (pure standard-library Python, exact
 arithmetic) and CHECKS the recomputed value against the number printed
 in the paper. The script exits with status 0 only if every check
@@ -25,7 +25,17 @@ import sys
 import time
 from fractions import Fraction
 
-from collatz import cycles, invariants, padic, search, spectral, symmetries, transfer, tree
+from collatz import (
+    cycles,
+    invariants,
+    padic,
+    search,
+    spectral,
+    stopping,
+    symmetries,
+    transfer,
+    tree,
+)
 
 _failures: list[str] = []
 
@@ -196,6 +206,54 @@ def main() -> int:
           (-1, 0) in symmetries.affine_conjugacy_search(1, -1), True)
     check("phi(x) = 5x embeds 3n+1 into 3n+5",
           symmetries.semiconjugacy_multiples(5), True)
+
+    # ------------------------------------------------------------------
+    section("R9. Variable-depth stopping-time potentials: the strengthened no-go"
+            " [paper Theorem thm:stopping + Sect. sec:karp block graphs;"
+            " REPORT Part I 'Variable-Depth' + Part III]"
+            "\n    (Every rule below stops the all-ones parity word, hence lies in the"
+            "\n    no-go class; the obstruction cycle is certified in exact integers.)")
+    rules = [(f"constant depth {k}", stopping.constant_rule(k)) for k in (1, 2, 3)]
+    rules += [(f"Syracuse renewal truncated at B = {b}", stopping.syracuse_rule(b))
+              for b in (3, 4, 5, 6)]
+    rules += [(f"Terras coefficient rule truncated at B = {b}",
+               stopping.coefficient_rule(b)) for b in (3, 4, 5, 6)]
+    for name, S in rules:
+        check(f"{name}: rule is a finite maximal prefix code (exact Kraft sum)",
+              stopping.is_maximal_prefix_code(S), True)
+        s = stopping.sigma_at_minus_one(S)
+        check(f"{name}: sigma(-1) is finite (all-ones stop word present)",
+              s is not None, True)
+        v = stopping.karp_block_verdict(S)
+        # Exact certificate: the optimal block cycle is the all-ones self-loop
+        # at -1 mod 2^m with A = L = sigma(-1) steps, and its total weight is
+        # positive iff 3^A > 2^L -- an integer comparison, no floats trusted.
+        check(f"{name}: Karp optimal cycle = all-ones self-loop at -1",
+              (v["cycle_is_minus_one_loop"], v["cycle_all_odd"]), (True, True))
+        check(f"{name}: cycle steps (A, L) = (s, s) with s = sigma(-1)",
+              (v["cycle_odd_steps"], v["cycle_total_steps"]), (s, s))
+        check(f"{name}: positivity certified exactly by 3^A > 2^L",
+              v["certified_positive"], True)
+        check(f"{name}: float mean/block agrees with s*(log2(3)-1) to 1e-12",
+              abs(v["max_mean_per_block"] - s * (math.log2(3) - 1)) < 1e-12, True)
+        check(f"{name}: no variable-depth potential exists for the rule",
+              v["variable_depth_potential_possible"], False)
+    # Effective telescoping witnesses quoted in the paper: explicit Mersenne
+    # n = 2^ell - 1 defeating ANY correction w with oscillation < 10.
+    for s_blk, ell_expected in ((1, 19), (2, 20), (3, 21)):
+        wtn = stopping.telescoping_witness(s_blk, 10)
+        check(f"telescoping witness for 1^{s_blk} rules, osc < 10: n = 2^ell - 1, ell =",
+              (wtn["ell"], wtn["certified"]), (ell_expected, True))
+    # Boundary of the theorem: the UNTRUNCATED Syracuse and coefficient rules
+    # never stop the all-ones word (last bit is 1; 3^i > 2^i exactly), so they
+    # escape the no-go -- and must: the descent claim for the untruncated
+    # coefficient rule with w = 0 is Terras's coefficient stopping time
+    # conjecture (open). Not a gap in the theorem, but its exact frontier.
+    check("untruncated Syracuse rule: no all-ones stop word up to depth 10,000",
+          stopping.predicate_never_stops_all_ones(stopping.syracuse_stop, 10_000), True)
+    check("untruncated coefficient rule: no all-ones stop word up to depth 10,000",
+          stopping.predicate_never_stops_all_ones(stopping.coefficient_stop, 10_000),
+          True)
 
     # ------------------------------------------------------------------
     dt = time.time() - t0

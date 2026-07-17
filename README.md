@@ -10,7 +10,7 @@ The laboratory investigates the problem from two complementary angles:
 1. **Counterexample (Exact Search & Exclusion)** — systematic exact-arithmetic search for non-trivial cycles and divergent orbits, with detectors *validated on sibling systems that have real counterexamples* (3n−1 and 3n+5). It implements Diophantine cycle exclusion via certified integer convergents.
 2. **Proof Constraints (Formalization of Folklore)** — explicit, rigorous formalization of structural properties that constrain where a counterexample could live.
 
-Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side, paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
+Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side — extended past the fixed-depth folklore to **every variable-depth adapted stopping-time scheme** (any rule that ever stops the all-ones parity word admits no bounded correction; the surviving rules must defer their decision beyond depth log₂ n, exactly where Terras's open coefficient stopping time conjecture lives) — paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
 
 ```bash
 pip install -e ".[test]"                  # install (runtime needs stdlib only)
@@ -19,6 +19,7 @@ python -m collatz verify --limit 1000000  # counterexample sieve
 python -m collatz cycles --d -1           # exact cycle enumeration (3n-1)
 python -m collatz exclude --limit-bits 68 # Diophantine cycle exclusion
 python -m collatz lyapunov --j 10         # Lyapunov function obstruction
+python -m collatz stopping --rule coefficient --depth 6  # variable-depth no-go
 python -m collatz spectral --k 4          # transfer operator mod 3^k
 python -m collatz transfer --k3 3 --k2 6  # infinite transfer operator
 python -m collatz tree --depth 120        # inverse-tree coverage
@@ -116,6 +117,27 @@ fail not because of a technical limitation, but because modular arithmetic
 is "blind" to the difference between ℤ₊ (where we want to prove there is
 no divergence) and the element `-1 ∈ ℤ₂` (where a genuine positive-growth
 cycle exists). Any proof will need to break this 2-adic symmetry.
+
+### 6b. `stopping` — variable-depth stopping-time potentials (strengthened no-go)
+The fixed-depth obstruction above still leaves open the natural next
+strategy: let both the number of steps between descent checkpoints and
+the residue window read by the correction depend on `n` through an
+**adapted stopping rule** (a prefix code of parity words — by Terras's
+bijection, exactly a stopping time of the 2-adic filtration; examples:
+"stop at the first even step", Terras's coefficient stopping time, any
+truncation). The module `collatz/stopping.py` implements the theorem that
+closes this class (paper, Theorem `thm:stopping`): **any rule that stops
+the all-ones parity word — automatic for every bounded rule, by König's
+lemma — admits no bounded correction `w(n)` whatsoever**, modular or not.
+The proof replaces the single-step cancellation by a telescoping chain
+along `n = 2^ℓ·m − 1`, and the module makes it computational: it builds
+the **block graph** of any finite rule (validated by an exact Kraft sum),
+runs Karp on it, and certifies the obstruction cycle by the exact integer
+comparison `3^A > 2^L` — plus explicit Mersenne witnesses `n = 2^ℓ − 1`
+defeating any correction of prescribed oscillation, verified in integer
+arithmetic. Rules escape only by never deciding on the all-ones word
+(`σ(n) > v₂(n+1)` for all n); the first open member of that boundary is
+Terras's coefficient stopping time conjecture, so the no-go is sharp.
 
 ### 7. `symmetries` — affine conjugations and rigidity
 Exhaustive search for `φ(x) = ax + b` such that `φ∘T_d = T_{d'}∘φ`.
@@ -233,9 +255,9 @@ quoted in the report and in the manuscript is regenerated and checked by
 ## Reproducibility
 * No runtime dependencies (standard library only); `pytest` is the only
   development dependency (`requirements.txt` / `pyproject.toml`).
-* `python reproduce_paper_results.py` recomputes results R1–R8 from scratch
+* `python reproduce_paper_results.py` recomputes results R1–R9 from scratch
   in exact arithmetic and exits nonzero if any value differs from the ones
-  quoted in the paper (~2 s; `--quick` skips the slowest sections).
+  quoted in the paper (~3 s; `--quick` skips the slowest sections).
 * CI runs the test suite and the reproduction script on every push.
 
 ## License
