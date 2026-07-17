@@ -7,19 +7,26 @@ from collatz.stopping import (
     block_graph,
     coefficient_rule,
     coefficient_stop,
+    coefficient_words_are_non_expansive,
     constant_rule,
+    expansive_horizon_for_predicate,
     is_maximal_prefix_code,
     karp_block_verdict,
+    log_affine_critical_beta_upper_bound,
+    log_lipschitz_obstructs_expansion,
     predicate_never_stops_all_ones,
     rule_from_predicate,
     sigma_at_minus_one,
     stop_word_of,
+    syracuse_block,
+    syracuse_expansion_witness,
     syracuse_rule,
     syracuse_stop,
     telescoping_witness,
     sublogarithmic_witness,
     monotone_witness,
     unrestricted_potential_exists_iff_no_cycles,
+    word_is_asymptotically_expansive,
 )
 
 
@@ -67,11 +74,133 @@ def test_coefficient_rule_matches_terras_test():
     assert sigma_at_minus_one(coefficient_rule(B)) == B
 
 
-def test_untruncated_rules_escape_the_no_go():
+def test_untruncated_rules_escape_all_ones_criterion():
     # sigma(-1) = infinity for the full Syracuse and coefficient rules:
-    # no all-ones word triggers either stop test (3^i > 2^i; last bit 1)
+    # no all-ones word triggers either stop test (3^i > 2^i; last bit 1).
+    # This escapes thm:stopping but NOT necessarily thm:expansion.
     assert predicate_never_stops_all_ones(syracuse_stop, 5000)
     assert predicate_never_stops_all_ones(coefficient_stop, 5000)
+
+
+def test_syracuse_expansion_witness_exact():
+    # Untruncated Syracuse falls to the single-block expansion theorem:
+    # Gamma -> +infinity on Mersenne numbers, certified in integers.
+    for W in (1, 5, 10, 20):
+        wtn = syracuse_expansion_witness(W)
+        assert wtn["certified"]
+        n, end = wtn["witness"], wtn["endpoint"]
+        assert n == (1 << wtn["ell"]) - 1
+        assert end == (3 ** wtn["ell"] - 1) // 2
+        assert end >= n << W
+        # cross-check the live Syracuse block
+        steps, end2 = syracuse_block(n)
+        assert steps == wtn["sigma"] == wtn["ell"] + 1
+        assert end2 == end
+
+
+def test_syracuse_is_expansive_coefficient_is_not():
+    # Asymptotic word gains separate the two classical untruncated rules.
+    d = expansive_horizon_for_predicate(syracuse_stop, max_depth=12)
+    assert d is not None and d <= 4  # 1^{d-1}0 expansive once 3^{d-1} > 2^d
+    assert expansive_horizon_for_predicate(coefficient_stop, max_depth=20) is None
+    assert coefficient_words_are_non_expansive(8)
+    # Syracuse stop words 1^a 0 become expansive
+    assert word_is_asymptotically_expansive((1, 1, 1, 0))  # a=3,L=4: 27 > 16
+    assert not word_is_asymptotically_expansive((0,))  # a=0,L=1: 1 < 2
+
+
+def test_log_lipschitz_and_log_affine_criteria():
+    # L = 1/2 < 1 and Gamma > 0 => obstructed
+    assert log_lipschitz_obstructs_expansion(1, 2, 1, 1) is True
+    # L = 1 not strictly less than 1 => criterion does not fire
+    assert log_lipschitz_obstructs_expansion(1, 1, 1, 1) is False
+    # L = 3/2 > 1 => not obstructed by this criterion
+    assert log_lipschitz_obstructs_expansion(3, 2, 5, 1) is False
+    assert log_affine_critical_beta_upper_bound() == Fraction(-1)
+
+
+def test_affine_block_constants_match_T():
+    from collatz.stopping import affine_block_constants
+
+    for word in ((1,), (1, 0), (1, 1, 0), (1, 0, 1, 0), (1, 1, 1, 1, 0)):
+        a, b, L = affine_block_constants(word)
+        # Terras: some r mod 2^L has this parity word
+        found = False
+        for r in range(1 << L):
+            x, bits = r, []
+            for _ in range(L):
+                bits.append(x & 1)
+                x = T(x)
+            if tuple(bits) == word:
+                for k in range(3):
+                    n = r + k * (1 << L)
+                    if n <= 0:
+                        continue
+                    end = (3 ** a * n + b) // (1 << L)
+                    y = n
+                    for _ in range(L):
+                        y = T(y)
+                    assert y == end
+                found = True
+                break
+        assert found
+
+
+def test_expansion_rate_finite_and_predicate():
+    from collatz.stopping import (
+        expansion_rate_of_rule,
+        expansion_rate_of_predicate,
+        characterize_bounded_w_obstruction,
+    )
+
+    # Finite rules: E finite; maximal codes are path-obstructed
+    for S in (constant_rule(3), syracuse_rule(5), coefficient_rule(5)):
+        er = expansion_rate_of_rule(S)
+        assert er["E_infinite"] is False
+        ch = characterize_bounded_w_obstruction(S)
+        assert ch["has_all_ones"] is True
+        assert ch["bounded_w_obstructed"] is True
+        assert ch["obstruction_type"] == "path_cycle_all_ones"
+
+    # Untruncated predicates up to a horizon
+    syr = expansion_rate_of_predicate(syracuse_stop, 12)
+    assert syr["has_expansive_word"] is True
+    assert syr["E_unbounded_on_horizon"] is True
+    coef = expansion_rate_of_predicate(coefficient_stop, 12)
+    assert coef["has_expansive_word"] is False
+    assert coef["E_unbounded_on_horizon"] is False
+
+
+def test_uniform_gap_odd_words_length_up_to_10():
+    """Certificate for paper eq. (uniform gap): Gamma <= max(g,0)+1
+    for all odd-starting words of length <= 10 and first few lifts."""
+    from collatz.stopping import affine_block_constants
+    from collatz.core import parity_vector
+    import itertools
+
+    for L in range(1, 11):
+        for bits in itertools.product([0, 1], repeat=L):
+            if bits[0] != 1:
+                continue
+            a, b, LL = affine_block_constants(bits)
+            # find residue
+            r = None
+            for cand in range(1 << L):
+                if tuple(parity_vector(cand, L)) == bits:
+                    r = cand
+                    break
+            assert r is not None
+            g_positive = 3 ** a > (1 << L)
+            for k in range(0, 4):
+                n = r + k * (1 << L)
+                if n <= 0 or n % 2 == 0:
+                    continue
+                end = (3 ** a * n + b) // (1 << L)
+                if g_positive:
+                    # T <= 2 * (3^a/2^L) * n  <=>  end * 2^L <= 2 * 3^a * n
+                    assert end * (1 << L) <= 2 * (3 ** a) * n
+                else:
+                    assert end <= 2 * n
 
 
 def test_stop_word_of_follows_parities():

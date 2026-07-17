@@ -10,7 +10,7 @@ The laboratory investigates the problem from two complementary angles:
 1. **Counterexample (Exact Search & Exclusion)** — systematic exact-arithmetic search for non-trivial cycles and divergent orbits, with detectors *validated on sibling systems that have real counterexamples* (3n−1 and 3n+5). It implements Diophantine cycle exclusion via certified integer convergents.
 2. **Proof Constraints (Formalization of Folklore)** — explicit, rigorous formalization of structural properties that constrain where a counterexample could live.
 
-Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side — extended past the fixed-depth folklore to **every variable-depth adapted stopping-time scheme** (any rule that ever stops the all-ones parity word admits no bounded correction; the surviving rules must defer their decision beyond depth log₂ n, exactly where Terras's open coefficient stopping time conjecture lives) — paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
+Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side — extended past the fixed-depth folklore by two nested filters on variable-depth schedules: (1) any rule that stops the all-ones parity word admits no bounded correction; (2) any rule (adapted or not) with unbounded single-block log-expansion \(\Gamma=\log_2(T^{\sigma(n)}(n)/n)\) is likewise impossible — capturing in particular the untruncated Syracuse renewal rule. The residual escapees are non-expansive rules, whose prototype is Terras's open coefficient stopping-time conjecture — paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
 
 The laboratory uses **only the Python standard library** for its execution. You do not need to install anything to run the experiments.
 
@@ -132,23 +132,28 @@ the residue window read by the correction depend on `n` through an
 **adapted stopping rule** (a prefix code of parity words — by Terras's
 bijection, exactly a stopping time of the 2-adic filtration; examples:
 "stop at the first even step", Terras's coefficient stopping time, any
-truncation). The module `collatz/stopping.py` implements the theorem that
-closes this class (paper, Theorem `thm:stopping`): **any rule that stops
-the all-ones parity word — automatic for every bounded rule, by König's
-lemma — admits no bounded correction `w(n)` whatsoever**, modular or not.
-The module extends this impossibility to **any sublogarithmic envelope**
-(checked exactly by the integer inequality `3^(q-p_) > 2^(q+p+)`) and 
-**any monotone correction**. The proof replaces the single-step cancellation 
-by a telescoping chain along `n = 2^ℓ·m − 1`, and the module makes it 
-computational: it builds the **block graph** of any finite rule (validated 
-by an exact Kraft sum), runs Karp on it, and certifies the obstruction cycle 
-by the exact integer comparison `3^A > 2^L` — plus explicit Mersenne witnesses 
-`n = 2^ℓ − 1` defeating any correction of prescribed oscillation or sublogarithmic 
-bounds, verified in exact integer arithmetic. Ultimately, the unrestricted unbounded 
-class is nonempty if and only if there are no nontrivial cycles. Rules escape 
-only by never deciding on the all-ones word (`σ(n) > v₂(n+1)` for all n); the first 
-open member of that boundary is Terras's coefficient stopping time conjecture, 
-so the no-go is sharp.
+truncation). The module `collatz/stopping.py` implements two nested
+theorems (paper, `thm:stopping` + `thm:expansion`):
+
+1. **All-ones / path.** Any rule that stops the all-ones parity word —
+   automatic for every bounded rule, by König's lemma — admits **no
+   bounded correction `w(n)` whatsoever**, modular or not. Mechanism:
+   telescoping along `n = 2^ℓ·m − 1`.
+2. **Single-block expansion.** For an *arbitrary* schedule `σ` (not
+   necessarily adapted), if `Γ_σ(n) = log₂(T^{σ(n)}(n)/n)` is unbounded
+   above, no bounded `w` works. This captures the **untruncated Syracuse
+   rule**, which never stops all-ones (escapes (1)) but has `Γ → +∞` on
+   Mersenne numbers — certified by `(3^ℓ−1)/2 ≥ (2^ℓ−1)·2^W`.
+
+Further strengthenings: **log-Lipschitz** corrections with `L < 1` fail on
+any expanding block; **log-affine** `w = β log₂ n + b` with `b` bounded
+and `limsup Γ = +∞` forces `β ≤ −1`; **sublogarithmic envelopes**
+(`3^(q−p₋) > 2^(q+p₊)`) and **monotone** corrections also fail. The
+module builds the **block graph** of any finite rule (exact Kraft sum),
+runs Karp, and certifies obstruction by `3^A > 2^L`. Residual escapees
+are *non-expansive* rules (`Γ` bounded above); the prototype is Terras's
+coefficient stopping time, whose descent claim with `w ≡ 0` *is* the open
+coefficient stopping-time conjecture — so the no-go is sharp.
 
 ### 7. `symmetries` — affine conjugations and rigidity
 Exhaustive search for `φ(x) = ax + b` such that `φ∘T_d = T_{d'}∘φ`.

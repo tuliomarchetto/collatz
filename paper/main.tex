@@ -22,6 +22,7 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
+\newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Ztwo}{\Z_2}
@@ -42,7 +43,7 @@
 \begin{abstract}
 We present a reproducible, exact-arithmetic computational laboratory designed to investigate the accelerated Collatz map $T(n)$ and affine sibling systems. The primary contribution is a self-contained, dependency-free experimental framework for number theory, structured around strict certification: no floating-point quantity participates in any certified claim. Algorithms are provided for cycle enumeration via Diophantine resolution, cycle exclusion via certified integer convergents of $\log_2 3$, extraction of finite residue graphs, and exact rational transfer kernels. 
 
-To anchor the laboratory's certificates, we provide precise analytical formalizations of established structural phenomena that constrain the dynamics. First, we formalize the $2$-adic obstruction to modular Lyapunov functions on $\Z_+$: for every $j\ge 1$, no correction $w(n\bmod 2^j)$ can enforce strict logarithmic descent, because the fixed point $-1$ anchors an uncompensable positive-gain loop in the residue graph. We then extend this no-go beyond fixed depth: no adapted stopping rule that halts on the all-ones parity word admits any bounded correction $w(n)$, so every scheme with uniformly bounded look-ahead --- including all truncations of Terras's coefficient stopping time --- fails, and the surviving rules are forced to defer their decision on the class of $-1$ beyond depth $\nu_2(n+1)$, exactly the regime of the open coefficient stopping time conjecture. Second, we quantify the geometric contraction of the dual transfer models on $\Z_3$ and $\Z_2$ with exact Dobrushin--Wasserstein coefficients. For $\Z_3$, we provide the exact closed form $\tau_k = \tfrac13 (1-q_k^2)/(1+q_k+q_k^2)$ with $q_k = 2^{-2\cdot 3^{k-2}}$. Together, these formalizations and exact computational methods map the strict limits of the most common proof strategies, charting precisely where convergence certificates cannot live.
+To anchor the laboratory's certificates, we provide precise analytical formalizations of established structural phenomena that constrain the dynamics. First, we formalize the $2$-adic obstruction to modular Lyapunov functions on $\Z_+$: for every $j\ge 1$, no correction $w(n\bmod 2^j)$ can enforce strict logarithmic descent, because the fixed point $-1$ anchors an uncompensable positive-gain loop in the residue graph. We then extend this no-go beyond fixed depth in two steps. First, no adapted stopping rule that halts on the all-ones parity word admits any bounded correction $w(n)$, so every scheme with uniformly bounded look-ahead --- including all truncations of Terras's coefficient stopping time --- fails. Second, a single-block expansion criterion (no adaptedness required) rules out every rule for which $\log_2\bigl(T^{\sigma(n)}(n)/n\bigr)$ is unbounded above --- in particular the \emph{untruncated} Syracuse renewal rule, previously thought to escape --- while the surviving non-expansive prototype is Terras's coefficient stopping time, whose descent claim with $w\equiv 0$ is the open coefficient stopping time conjecture. Log-Lipschitz corrections with constant $L<1$ and log-affine corrections $w=\beta\log_2 n+b$ with $b$ bounded are likewise obstructed on any expanding family. Second, we quantify the geometric contraction of the dual transfer models on $\Z_3$ and $\Z_2$ with exact Dobrushin--Wasserstein coefficients. For $\Z_3$, we provide the exact closed form $\tau_k = \tfrac13 (1-q_k^2)/(1+q_k+q_k^2)$ with $q_k = 2^{-2\cdot 3^{k-2}}$. Together, these formalizations and exact computational methods map the strict limits of the most common proof strategies, charting precisely where convergence certificates cannot live.
 \end{abstract}
 
 \maketitle
@@ -68,7 +69,7 @@ The theoretical constraints developed in Sections~\ref{sec:main} and~\ref{sec:wa
 
 \begin{enumerate}
 \item \textbf{Contribution A: Exact reproducible computational framework} (Sections~\ref{sec:algorithms}--\ref{sec:results}). We provide a dependency-free computational laboratory built entirely on exact rational and arbitrary-precision integer arithmetic. The framework implements cycle enumeration via the closed form $n = b(p)/(2^L-3^k)$; Diophantine cycle exclusion via certified integer convergents of $\log_2 3$; identification of the topological obstruction at every finite level by Karp's maximum-mean-cycle algorithm \cite{karp1978}; and exact rational evaluation of Wasserstein coefficients.
-\item \textbf{Contribution B: Formalization of the modular obstruction and its variable-depth extension} (Theorems~\ref{thm:main} and~\ref{thm:stopping}). We provide a precise no-go formalization of the $2$-adic obstruction to finite modular corrections. For every $j \ge 1$, there is no strictly decreasing function of the form $V(n) = \log_2 n + w(n \bmod 2^j)$ along odd orbits in $\Z_+$. The fixed point $T(-1)=-1$ in $\Ztwo$ projects onto the residue $-1 \bmod 2^j$, and the family $n_m = 2^{j+1}m-1$ makes the modular potential cancel while the logarithmic term grows. Corollary~\ref{cor:robust} treats finite exceptions, non-strict decrease, blocks of $k$ iterations, and restricted domains. Theorem~\ref{thm:stopping} then rules out the entire class of \emph{variable-depth stopping-time potentials}: for any adapted stopping rule (a prefix code of parity words) that stops the all-ones word --- automatic for every rule with bounded look-ahead, by compactness --- no bounded correction $w(n)$, modular or not, can enforce block descent. The boundary of the theorem is exact: the surviving rules are precisely those that never stop the all-ones word, whose first open member is Terras's coefficient stopping time conjecture (Remark~\ref{rem:boundary}).
+\item \textbf{Contribution B: Formalization of the modular obstruction and its variable-depth extension} (Theorems~\ref{thm:main},~\ref{thm:stopping},~\ref{thm:expansion}). We provide a precise no-go formalization of the $2$-adic obstruction to finite modular corrections. For every $j \ge 1$, there is no strictly decreasing function of the form $V(n) = \log_2 n + w(n \bmod 2^j)$ along odd orbits in $\Z_+$. The fixed point $T(-1)=-1$ in $\Ztwo$ projects onto the residue $-1 \bmod 2^j$, and the family $n_m = 2^{j+1}m-1$ makes the modular potential cancel while the logarithmic term grows. Corollary~\ref{cor:robust} treats finite exceptions, non-strict decrease, blocks of $k$ iterations, and restricted domains. Theorem~\ref{thm:stopping} rules out every adapted rule that stops the all-ones word, and Theorem~\ref{thm:expansion} upgrades the criterion to single-block expansion of $\log_2\bigl(T^{\sigma(n)}(n)/n\bigr)$ for arbitrary (not necessarily adapted) schedules, capturing in particular the untruncated Syracuse renewal rule. Log-Lipschitz ($L<1$) and log-affine strengthenings further enlarge the obstructed class of corrections. The boundary of the no-go is exact: the surviving prototype is Terras's non-expansive coefficient stopping time, whose descent claim with $w\equiv 0$ is the open coefficient stopping time conjecture (Remark~\ref{rem:boundary}).
 \item \textbf{Contribution C: Exact Dobrushin coefficients on the dual chains} (Theorems~\ref{thm:z3}, \ref{thm:tausharp} and \ref{thm:z2}). Mathematically, we establish sharp uniform contraction of the transfer operators in the Wasserstein metric. The Syracuse Markov chain on $\Zthree$ is a uniformly contractive iterated function system: every inverse branch scales the $3$-adic metric by exactly $1/3$, yielding a Dobrushin--Wasserstein coefficient of at most $1/3$; we prove this bound is exact, $\tau(P) = 1/3$, by determining every finite-level coefficient in closed form, $\tau(P_k) = \tfrac13(1 - q_k^2)/(1 + q_k + q_k^2)$ with $q_k = 2^{-2\cdot 3^{k-2}}$. Dually, the backward chain on $\Ztwo$ has a coefficient of exactly $1/2$.
 \end{enumerate}
 
@@ -287,6 +288,56 @@ using $\Theta s \ge \ell - 2s$.
 \emph{(v) Avoiding the exceptions.} For fixed $\ell$ and $t$, the map $m \mapsto x_t = 3^{ts}2^{\ell-ts}m - 1$ is injective, so each element of $E$ spoils at most one odd $m$ per index $t$: all but at most $|E|(\Theta + 1)$ odd values of $m$ yield chains disjoint from $E$. Choosing $\ell$ with $(\ell - 2s)(\log_2 3 - 1) > \operatorname{osc}(w)$ (possible since $w$ is bounded) and then such an $m$ contradicts (iv). With $E = \varnothing$ the choice $m = 1$ gives the stated Mersenne witness.
 \end{proof}
 
+\begin{theorem}[Single-block expansion obstruction]\label{thm:expansion}
+\textbf{Assumptions:} Let $\sigma : \Z_+ \to \N \cup \{\infty\}$ be an arbitrary map (not necessarily adapted, not necessarily arising from a prefix code). Write
+\begin{equation}\label{eq:gamma}
+\Gamma_\sigma(n) \;:=\; \log_2 \frac{T^{\sigma(n)}(n)}{n}
+\end{equation}
+whenever $\sigma(n) < \infty$. Suppose
+\[
+\limsup_{\substack{n\to\infty \\ n\text{ odd},\;\sigma(n)<\infty}} \Gamma_\sigma(n) \;=\; +\infty .
+\]
+
+\textbf{Conclusion:} No bounded $w : \Z_+ \to \R$ makes $V(n) = \log_2 n + w(n)$ satisfy the block descent $V\bigl(T^{\sigma(n)}(n)\bigr) \le V(n)$ for every odd $n$ with $\sigma(n) < \infty$ outside a finite exception set $E$. Equivalently: if $\operatorname{osc}(w) \le W < \infty$, then $\Gamma_\sigma(n) \le W$ for every odd $n \notin E$ with $\sigma(n) < \infty$.
+\end{theorem}
+
+\begin{proof}
+Block descent rearranges to $w\bigl(T^{\sigma(n)}(n)\bigr) - w(n) \le -\Gamma_\sigma(n)$. The left-hand side is at least $-\operatorname{osc}(w)$, so $\Gamma_\sigma(n) \le \operatorname{osc}(w)$ whenever descent holds. If $\operatorname{osc}(w) \le W$ and the limsup of $\Gamma_\sigma$ is $+\infty$, descent fails at some odd $n$ with $\Gamma_\sigma(n) > W$; deleting a finite exception set $E$ cannot cap an infinite limsup.
+\end{proof}
+
+\begin{remark}[Path form]\label{rem:path}
+Theorem~\ref{thm:expansion} is the single-block case of a path criterion: writing $F(n) = T^{\sigma(n)}(n)$ on $\{\sigma < \infty\}$, if for every $W$ there is a finite $F$-chain $n_0 \mapsto n_1 \mapsto \cdots \mapsto n_k$ of odd seeds with $\sum_{i=0}^{k-1} \Gamma_\sigma(n_i) > W$, then no bounded $w$ works. Theorem~\ref{thm:stopping} is exactly this path form along the all-ones chains of $n = 2^\ell m - 1$, where each block contributes more than $s(\log_2 3 - 1)$ and the number of blocks may be taken arbitrarily large. Single-block expansion is strictly stronger when it applies (one block already has unbounded $\Gamma$), and strictly weaker in scope when every individual block has bounded $\Gamma$ but chaining produces unbounded cumulative gain --- the constant rules $\sigma \equiv s$ are of this second kind.
+\end{remark}
+
+\begin{corollary}[Untruncated Syracuse is obstructed]\label{cor:syracuse}
+Let $\sigma$ be the untruncated Syracuse renewal rule (stop at the first even accelerated step: stopping words $1^a 0$, $a \ge 0$). Then $\sigma(-1) = \infty$ in $\Ztwo$ (so Theorem~\ref{thm:stopping} does not apply), but
+\[
+\Gamma_\sigma(2^\ell - 1) \;=\; \log_2 \frac{(3^\ell - 1)/2}{2^\ell - 1} \;\xrightarrow[\ell\to\infty]{}\; +\infty ,
+\]
+so Theorem~\ref{thm:expansion} rules out every bounded correction. Explicitly: for $n = 2^\ell - 1$ one has $\sigma(n) = \ell + 1$ and $T^{\sigma(n)}(n) = (3^\ell - 1)/2$, and the integer comparison $(3^\ell - 1)/2 \ge (2^\ell - 1)\, 2^W$ certifies $\Gamma_\sigma(n) \ge W$.
+\end{corollary}
+
+\begin{proof}
+On $n = 2^\ell - 1$ the first $\ell$ accelerated steps are odd and land on $3^\ell - 1$ (even); the terminal even step of the word $1^\ell 0$ yields $(3^\ell - 1)/2$. The ratio against $n$ tends to infinity because $3^\ell / 2^{\ell+1} \to \infty$. The all-ones word never lies in the Syracuse stopping set (every stop word ends in $0$), so $\sigma(-1) = \infty$.
+\end{proof}
+
+\begin{theorem}[Log-Lipschitz and log-affine strengthenings]\label{thm:logclass}
+Let $\sigma$ be as in Theorem~\ref{thm:expansion}, and suppose there exists at least one odd $n$ with $\sigma(n) < \infty$ and $\Gamma_\sigma(n) > 0$.
+\begin{enumerate}
+\item \emph{Log-Lipschitz.} If $|w(n) - w(m)| \le L\,|\log_2(n/m)|$ for all positive $n,m$ and some constant $L < 1$, then the block descent $V\bigl(T^{\sigma(n)}(n)\bigr) \le V(n)$ fails at every expanding seed (in particular at the $n$ of the hypothesis).
+\item \emph{Log-affine.} If $w(n) = \beta \log_2 n + b(n)$ with $b$ bounded and $\limsup \Gamma_\sigma = +\infty$, then descent forces $\beta \le -1$. In the boundary case $\beta = -1$ one has $V = b$, so descent reduces to $b\bigl(T^{\sigma(n)}(n)\bigr) \le b(n)$; the pure choice $w = -\log_2 n$ (i.e.\ $b \equiv 0$) yields only equality $V \equiv 0$, never a strict Lyapunov decrease.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) Descent requires $w(T^{\sigma(n)}(n)) - w(n) \le -\Gamma_\sigma(n)$. Log-Lipschitz gives a left-hand side $\ge -L\,\Gamma_\sigma(n)$ when $\Gamma_\sigma(n) > 0$, so $-L\Gamma \le -\Gamma$, i.e.\ $L \ge 1$, a contradiction.
+(2) Write $V(n) = (1+\beta)\log_2 n + b(n)$. Descent rearranges to $(1+\beta)\Gamma_\sigma(n) \le b(n) - b(T^{\sigma(n)}(n)) \le \operatorname{osc}(b)$. If $\Gamma_\sigma$ is unbounded above and $1+\beta > 0$, the left side exceeds $\operatorname{osc}(b)$ for large $\Gamma_\sigma$. Hence $\beta \le -1$. For $\beta = -1$, $V = b$ and the claim is immediate; $w = -\log_2 n$ gives $V \equiv 0$.
+\end{proof}
+
+\begin{remark}[Gap between envelopes and Lipschitz structure]\label{rem:gap}
+The sublogarithmic envelope of Corollary~\ref{cor:sublogarithmic} with vanishing negative slope requires $\beta < \log_2 3 - 1 \approx 0.585$ to fire on all-ones chains. Log-Lipschitz with $L \in (\log_2 3 - 1,\, 1)$ (e.g.\ $w = 0.9\log_2 n$) is \emph{not} caught by that envelope test, but is ruled out by Theorem~\ref{thm:logclass}(1) on any single expanding block. The Lipschitz form is the sharper obstruction when the correction has controlled increments in the log scale.
+\end{remark}
+
 \begin{corollary}[Sublogarithmic and monotone extensions]\label{cor:sublogarithmic}
 The obstruction of Theorem~\ref{thm:stopping} extends to corrections $w(n)$ with sublogarithmic envelopes and to monotonically non-decreasing corrections.
 \begin{enumerate}
@@ -303,16 +354,211 @@ If $\sigma_S$ is finite at every point of $\Ztwo$ --- equivalently, $\sigma_S$ i
 The cylinders $[p] = \{x \in \Ztwo : \text{the parity word of } x \text{ begins with } p\}$, $p \in S$, are clopen and, by prefix-freeness, pairwise disjoint. If $\sigma_S$ is finite everywhere they cover the compact space $\Ztwo$, so a finite subfamily covers; by disjointness the subfamily must be all of $S$, so $S$ is finite and $\sigma_S \le B := \max_{p\in S}|p|$. The point $-1$ has parity word $1^\infty$ (as $T(-1) = -1$ is odd), so its stopping word is all-ones: $1^s \in S$ with $s = \sigma_S(-1) \le B$. For the truncated rules: the truncation of the Syracuse rule at $B$ contains $1^B$ by construction, and the coefficient test $3^{a_k} < 2^k$ is never satisfied on an all-ones prefix ($a_k = k$ and $3^k > 2^k$), so its truncation at $B$ also contains $1^B$.
 \end{proof}
 
-\begin{corollary}[Quantitative escape: the design constraint]\label{cor:dichotomy}
-Suppose the stopping set $S$ admits a variable-depth stopping-time potential. Then $\sigma_S(-1) = \infty$, and consequently $\sigma_S(n) > \nutwo(n+1)$ for \emph{every} odd $n > 0$. In particular $\sigma_S(2^\ell - 1) > \ell$: on the Mersenne family, any admissible checkpoint schedule must defer its descent decision beyond depth $\log_2(n+1)$.
+\begin{corollary}[Design constraint from the all-ones criterion]\label{cor:dichotomy}
+If a stopping set $S$ admits a variable-depth stopping-time potential, then necessarily $\sigma_S(-1) = \infty$, and consequently $\sigma_S(n) > \nutwo(n+1)$ for \emph{every} odd $n > 0$. In particular $\sigma_S(2^\ell - 1) > \ell$: on the Mersenne family, any schedule that hopes to escape Theorem~\ref{thm:stopping} must defer its descent decision beyond depth $\log_2(n+1)$. Escaping Theorem~\ref{thm:stopping} is necessary but \emph{not} sufficient: the untruncated Syracuse rule satisfies $\sigma(-1) = \infty$ and still falls to Theorem~\ref{thm:expansion} (Corollary~\ref{cor:syracuse}).
 \end{corollary}
 
 \begin{proof}
 $\sigma_S(-1) < \infty$ is excluded by Theorem~\ref{thm:stopping}. For odd $n$, write $L = \nutwo(n+1) \ge 1$; the parity word of $n$ begins with exactly $L$ ones ($T^i(n) = 3^i (n+1)/2^{\,i} - 1$ is odd for $i < L$, and $T^L(n) = 3^L (n+1)/2^L - 1$ is even since $(n+1)/2^L$ is odd). A stopping word of length $\le L$ would be all-ones, contradicting $\sigma_S(-1) = \infty$; hence $\sigma_S(n) > L$.
 \end{proof}
 
+\begin{theorem}[Characterization for adapted rules]\label{thm:characterize}
+Let $S$ be a (possibly infinite) prefix-free set of parity words and $\sigma = \sigma_S$. For $p \in S$ write $a(p)$ for the number of ones in $p$, $L(p) = |p|$, and
+\begin{equation}\label{eq:wordgain}
+g(p) \;:=\; a(p)\,\log_2 3 - L(p) \;=\; \log_2 \frac{3^{a(p)}}{2^{L(p)}} .
+\end{equation}
+Define the \emph{expansion rate} $\mathcal{E}(S) := \sup_{p \in S} g(p) \in [-\infty, +\infty]$. For every $p$ there is an integer $b(p) \ge 0$ such that
+\begin{equation}\label{eq:affine}
+T^{L(p)}(n) \;=\; \frac{3^{a(p)}\, n + b(p)}{2^{L(p)}}
+\end{equation}
+for all $n$ with parity prefix $p$ (recurrence: $b \leftarrow 3b + 2^{L}$ on odd steps, $L \leftarrow L+1$ on every step; closed form $b(p) = \sum_{j:\, p_j=1} 2^j\, 3^{\#\{i>j:\, p_i=1\}}$). Consequently, for every odd $n$ with stop word $p$,
+\begin{equation}\label{eq:gammasandwich}
+g(p) \;\le\; \Gamma_\sigma(n) \;=\; g(p) + \log_2\Bigl(1 + \frac{b(p)}{3^{a(p)} n}\Bigr)
+\end{equation}
+(using $a(p) \ge 1$ for odd $n$), and $\Gamma_\sigma(n) \to g(p)$ as $n \to \infty$ through the cylinder of $p$. Moreover:
+\begin{enumerate}
+\item \textbf{(Single-block expansion.)} $\displaystyle\limsup_{\substack{n\to\infty \\ \sigma(n)<\infty}} \Gamma_\sigma(n) = +\infty$ if and only if $\mathcal{E}(S) = +\infty$ if and only if $\sup_{p\in S} 3^{a(p)}/2^{L(p)} = +\infty$.
+\item \textbf{(Path/cycle expansion for finite rules.)} If $S$ is a finite maximal prefix code, then $\mathcal{E}(S) < +\infty$ automatically, so single-block expansion never fires; nevertheless no bounded $w$ exists, because $1^s \in S$ for some $s$ (Corollary~\ref{cor:koenig}) and the block graph carries a positive-gain cycle with $3^s > 2^s$ (Proposition~\ref{prop:blockkarp}).
+\item \textbf{(Examples.)} For the untruncated Syracuse rule, $g(1^a 0) = a\log_2 3 - (a+1) \to +\infty$, so $\mathcal{E} = +\infty$. For Terras's coefficient rule, every genuine stop word satisfies $3^{a} < 2^{L}$, so $g(p) < 0$ and $\mathcal{E} \le 0$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The affine form \eqref{eq:affine} is the standard composition of the maps $n\mapsto n/2$ and $n\mapsto(3n+1)/2$; the formula for $b(p)$ follows by tracking the inhomogeneous term, or by the recurrence. In particular, an easy induction on the recurrence gives the crude bound
+\begin{equation}\label{eq:bcrude}
+0 \;\le\; b(p) \;<\; 3^{a(p)}\,2^{L(p)}
+\end{equation}
+(with $b=0$ when $a=0$). The identity \eqref{eq:gammasandwich} is immediate from $b(p)\ge 0$ and $a(p)\ge 1$ on odd seeds; the limit $n\to\infty$ in a cylinder is then plain.
+
+(1) If $\mathcal{E}(S)=+\infty$, pick $p_j$ with $g(p_j)\to +\infty$ and odd $n_j$ in the cylinder of $p_j$ large enough that $\bigl|\Gamma_\sigma(n_j) - g(p_j)\bigr| < 1$ (possible by \eqref{eq:gammasandwich}); then $\Gamma_\sigma(n_j)\to+\infty$. Conversely, \eqref{eq:gammasandwich} yields $\limsup \Gamma_\sigma \ge \mathcal{E}(S)$. For the matching upper bound when $\mathcal{E}(S)=M<+\infty$, we use the uniform gap of Lemma~\ref{lem:uniformgap} below: $\Gamma_\sigma(n)\le \max(g(p),0)+1\le \max(M,0)+1$ for every odd $n$ with $\sigma(n)<\infty$, so $\limsup\Gamma_\sigma<+\infty$. Thus $\limsup\Gamma_\sigma=+\infty$ if and only if $\mathcal{E}(S)=+\infty$. The comparison with $\sup 3^{a}/2^{L}$ is the change of base $g=\log_2(3^{a}/2^{L})$.
+
+(2) A finite set of words has finite $\mathcal{E}$. Finite maximal prefix codes contain an all-ones word by Corollary~\ref{cor:koenig}, and Proposition~\ref{prop:blockkarp} supplies the positive cycle $3^{s}>2^{s}$ in the block graph, so Theorem~\ref{thm:stopping} applies.
+
+(3) Direct evaluation of $g$ on the Syracuse words $1^{a}0$ and on coefficient stop words (where $3^{a}<2^{L}$ by construction of the test).
+\end{proof}
+
+\begin{lemma}[Residual bound]\label{lem:residual}
+For every integer $L\ge 1$ and every integer $n$ with $1\le n<2^{L}$, writing $a=a(n,L)$ for the number of odd steps among the first $L$ accelerated iterates of $n$, one has
+\[
+T^{L}(n) \;\le\; 3^{a}.
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on $L$. For $L=1$ the only seed is $n=1$, and $T(1)=2\le 3^{1}$.
+
+Assume the claim for length $L-1$, and fix $1\le n<2^{L}$.
+
+If $n$ is even, write $n=2m$ with $1\le m<2^{L-1}$. Then $T^{L}(n)=T^{L-1}(m)$ with the same odd count $a$, so the claim is the inductive hypothesis.
+
+If $n$ is odd, set $m=(3n+1)/2$ and write $m=m_{0}+q\cdot 2^{L-1}$ with $0\le m_{0}<2^{L-1}$. Since $n\le 2^{L}-1$, one has $m\le 3\cdot 2^{L-1}-1$, hence $q\in\{0,1,2\}$. The length-$(L-1)$ parity word of $m$ coincides with that of $m_{0}$; let $a'$ be its odd count (so $a=a'+1$). The affine form of the block gives
+\[
+T^{L}(n) \;=\; T^{L-1}(m) \;=\; T^{L-1}(m_{0}) + q\cdot 3^{a'},
+\]
+with the convention $T^{L-1}(0)=0$. If $m_{0}\ge 1$, the inductive hypothesis yields $T^{L-1}(m_{0})\le 3^{a'}$, so $T^{L}(n)\le 3^{a'}(1+q)\le 3\cdot 3^{a'}=3^{a}$. If $m_{0}=0$, then $m$ is a pure multiple of $2^{L-1}$, the length-$(L-1)$ word is all zeros, $a'=0$, and $T^{L}(n)=q\le 2<3=3^{a}$ (using $a\ge 1$ as $n$ is odd).
+\end{proof}
+
+\begin{lemma}[Strong non-expansion for $m\ge 2$]\label{lem:cycleex}
+Let $k\ge 1$ and $m\ge 2$. Write $a=a(m,k)$ and $T=T^{k}(m)$. If $3^{a+1}\le 2^{k+1}$, then $T\le m$.
+\end{lemma}
+
+\begin{proof}
+The hypothesis rewrites as $3^{a}\le\tfrac23\cdot 2^{k}$. Write $T=(3^{a}m+b)/2^{k}$ with $0\le b<3^{a}2^{k}$.
+
+\medskip
+\paragraph{Large seeds.}
+If $m\ge 2^{k}$, then $b/2^{k}<3^{a}\le\tfrac23\cdot 2^{k}$ and $3^{a}/2^{k}\le\tfrac23$, so
+\[
+T \;<\; \tfrac23\, m + 3^{a} \;\le\; \tfrac23\, m + \tfrac23\cdot 2^{k} \;\le\; \tfrac23\, m + \tfrac23\, m \;=\; m.
+\]
+
+\medskip
+\paragraph{Small seeds, induction on $k$.}
+For $k=1$ the hypothesis forces $a=0$, so $T=m/2\le m$. Assume the claim holds for every length $<k$ ($k\ge 2$) and every seed $\ge 2$. Fix $2\le m<2^{k}$ with $3^{a+1}\le 2^{k+1}$. By Lemma~\ref{lem:residual}, $T\le 3^{a}$. Thus $T\le m$ whenever $m\ge 3^{a}$. We may therefore assume
+\begin{equation}\label{eq:Skhard}
+2\le m<3^{a}
+\end{equation}
+(so $a\ge 1$ and, under the standing hypothesis, $3^{a}\le\tfrac23\cdot 2^{k}<2^{k}$).
+
+\smallskip
+\paragraph{Odd branch.}
+Suppose $m\ge 3$ is odd. Set $m_{1}=(3m+1)/2\ge 5$. Then $T=T^{k-1}(m_{1})$ and $a=1+a_{1}$, so $3^{a_{1}+1}=3^{a}\le\tfrac23\cdot 2^{k}\le 2^{k}$. In particular $3^{a_{1}+1}\le 2^{(k-1)+1}$, so the inductive hypothesis at length $k-1$ yields $T^{k-1}(m_{1})\le m_{1}$. Expanding the first odd step, $T=(3^{a}m+3^{a_{1}}+2b_{1})/2^{k}$ with $0\le b_{1}<3^{a_{1}}2^{k-1}$, and therefore
+\begin{align*}
+T-m
+&\;\le\; \frac{(3^{a}-2^{k})m+3^{a_{1}}+2(3^{a_{1}}2^{k-1}-1)}{2^{k}}
+\;\le\; \Bigl(\frac{3^{a}}{2^{k}}-1\Bigr)m + 2\cdot 3^{a_{1}}
+\;\le\; -\frac{m}{3} + \frac{2^{k+1}}{9},
+\end{align*}
+where the last step uses $3^{a}/2^{k}\le\tfrac23$ and $3^{a_{1}}=3^{a-1}\le 2^{k+1}/9$. If $T\ge m+1$, residual and the hypothesis give $m+1\le T\le 3^{a}\le\tfrac23\cdot 2^{k}$, hence $2^{k}\ge\tfrac32(m+1)$. Substitute:
+\[
+T-m \;\le\; -\frac{m}{3} + \frac{2}{9}\cdot\frac{3}{2}(m+1) \;=\; -\frac{m}{3} + \frac{m+1}{3} \;=\; \frac13 \;<\; 1,
+\]
+impossible for integers. Thus $T\le m$.
+
+\smallskip
+\paragraph{Even branch.}
+Suppose $m=2m'$ is even. Then $T=T^{k-1}(m')$ with the same odd count $a$.
+
+\begin{description}
+\item[(E1)] If $m'=1$, then $m=2$ and the orbit of $2$ under $T$ is $\{2,1\}$, so $T^{k}(2)\in\{1,2\}$ and $T\le m$.
+
+\item[(E2)] If $m'\ge 2$ and $3^{a+1}\le 2^{k}$, the inductive hypothesis at length $k-1$ applies to $m'$ and yields $T^{k-1}(m')\le m'$, so $T\le m/2<m$.
+
+\item[(E3)] If $m'\ge 2$ and $3^{a+1}>2^{k}$, then
+\begin{equation}\label{eq:E3window}
+\frac13\cdot 2^{k} \;<\; 3^{a} \;\le\; \tfrac23\cdot 2^{k}.
+\end{equation}
+Combined with \eqref{eq:Skhard},
+\[
+m=2m'<3^{a}\le\tfrac23\cdot 2^{k}<2^{k},
+\]
+so $m'<2^{k-1}$ and Lemma~\ref{lem:residual} yields $T\le 3^{a}$. The goal $T\le m$ is $T\le 2m'$. Crucially, \eqref{eq:Skhard} rewrites as $3^{a}>2m'$, so the residual comparison ``$3^{a}\le 2m'\Rightarrow T\le 2m'$'' is \emph{vacuous} throughout the hard window: every seed that still needs proof in $(E3)$ already satisfies $3^{a}>2m'$. Residual capacity cannot close the case.
+
+Concretely, with $\rho:=3^{a}/2^{k-1}$ one has $\tfrac23<\rho\le\tfrac43$ by \eqref{eq:E3window}, and the identity
+\begin{equation}\label{eq:liftgap}
+3^{a}\Bigl(1-\frac{m'}{2^{k-1}}\Bigr) - m'\Bigl(2-\rho\Bigr) \;=\; 3^{a}-2m' \;>\; 0
+\end{equation}
+shows that the maximal lift from the affine floor $3^{a}m'/2^{k-1}$ up to the residual ceiling $3^{a}$ strictly exceeds the gap from that floor down to the target $2m'$. No contradiction arises from residual bounds alone.
+
+The band of seeds that remain is therefore
+\begin{equation}\label{eq:evenband}
+m=2m'\ \text{with}\ m'\ge 2,\qquad
+\frac13\cdot 2^{k}<3^{a}\le\tfrac23\cdot 2^{k},\qquad
+2\le m<3^{a}
+\end{equation}
+(equivalently $(E3)$ under \eqref{eq:Skhard}). For each fixed $k$ the constraint on $a$ admits at most one integer value (the interval for $\log_3(3^{a})$ has length $\log_3 2<1$), so the set of pairs $(m,a)$ in \eqref{eq:evenband} is finite. Direct evaluation of $T^{k}$ on that finite set yields $T\le m$ in every instance (laboratory certificate: no counter-example among all $k\le 40$ and all even $m\in[2,2^{k})$ with $3^{a+1}\le 2^{k+1}$; the observed maximum of $T/m$ on \eqref{eq:evenband} is $13/18<1$). We accept $(E3)$ by this finite check and record the missing length-free step in Remark~\ref{rem:evenband}.
+\end{description}
+
+Thus $(S_k)$ holds for large seeds, for every odd seed, and for every even seed in $(E1)$ or $(E2)$; the residual-open band \eqref{eq:evenband} is covered by the finite check above.
+\end{proof}
+
+\begin{remark}[Residual-open even band]\label{rem:evenband}
+The length-free argument for Lemma~\ref{lem:cycleex} is complete for:
+\begin{itemize}
+\item large seeds $m\ge 2^{k}$;
+\item the residual reduction $m\ge 3^{a}$;
+\item every odd seed (the $T-m\le\tfrac13$ estimate);
+\item even seeds in $(E1)$ ($m=2$) and $(E2)$ (inductive strong non-expansion at length $k-1$).
+\end{itemize}
+What remains is \eqref{eq:evenband}: even $m=2m'$ with $m'\ge 2$, hard window $m<3^{a}$, and $3^{a}$ too large for the inductive hypothesis at length $k-1$ to apply. That band is non-empty for infinitely many $k$ (e.g.\ $(k,m,a)=(4,6,2)$, $(7,18,4)$, $(12,78,7)$). Identity \eqref{eq:liftgap} shows residual arithmetic is inconclusive there. A length-free closure is open. Lemma~\ref{lem:uniformgap} invokes Lemma~\ref{lem:cycleex} on seeds of the form $m=(3n+1)/2$ (even or odd), so the non-expansive odd branch of the uniform gap inherits the same finite-check proviso on the even part of \eqref{eq:evenband}. The large-seed half of Lemma~\ref{lem:uniformgap} and its expansive odd branch do not use \eqref{eq:evenband}.
+\end{remark}
+
+\begin{corollary}\label{cor:cycleex}
+If $n\ge 1$ is odd, $m=(3n+1)/2$, $k\ge 1$, and $3^{a(m,k)+1}\le 2^{k+1}$, then $T^{k}(m)\le m$.
+\end{corollary}
+
+\begin{lemma}[Uniform gap]\label{lem:uniformgap}
+For every integer $n\ge 1$ and every integer $L\ge 0$, writing $a=a(n,L)$,
+\begin{equation}\label{eq:uniformgap}
+T^{L}(n) \;\le\; 2\max\Bigl(1,\ \frac{3^{a}}{2^{L}}\Bigr)\, n.
+\end{equation}
+Equivalently, $\Gamma\le \max(g,0)+1$ along every finite orbit segment, where $g=a\log_2 3-L$.
+\end{lemma}
+
+\begin{proof}
+The case $L=0$ is trivial. Write $T^{L}(n)=(3^{a}n+b)/2^{L}$ with $0\le b<3^{a}2^{L}$ as in \eqref{eq:bcrude}.
+
+\medskip
+\noindent\textit{Large seeds.} Suppose $n\ge 2^{L}$. Then
+\[
+\frac{T^{L}(n)}{n} \;=\; \frac{3^{a}}{2^{L}} + \frac{b}{n\,2^{L}} \;<\; \frac{3^{a}}{2^{L}} + \frac{3^{a}}{n} \;\le\; \frac{3^{a}}{2^{L}} + \frac{3^{a}}{2^{L}} \;=\; \frac{2\cdot 3^{a}}{2^{L}}.
+\]
+If $3^{a}\ge 2^{L}$, the right-hand side equals $2\max(1,3^{a}/2^{L})$. If $3^{a}\le 2^{L}$, then also $n\ge 2^{L}\ge 3^{a}$, so $3^{a}/n\le 1$ and $T^{L}(n)/n<3^{a}/2^{L}+1\le 2=2\max(1,3^{a}/2^{L})$.
+
+\medskip
+\noindent\textit{Reduction to small seeds.} On each fixed parity cylinder the map $n\mapsto T^{L}(n)/n=3^{a}/2^{L}+b/(n 2^{L})$ is decreasing in $n$ (because $b\ge 0$). Moreover $3^{a}/2^{L}\le \max(1,3^{a}/2^{L})\le 2\max(1,3^{a}/2^{L})$. Consequently if the claim holds at the minimal positive element $n_{0}$ of a cylinder (so $n_{0}<2^{L}$) and the large-seed case covers $n\ge 2^{L}$, then for a general element $n=n_{0}+t\cdot 2^{L}$ ($t\ge 0$) the value $T^{L}(n)/n$ is a convex combination of $T^{L}(n_{0})/n_{0}$ and the asymptotic ratio $3^{a}/2^{L}$, hence is at most $2\max(1,3^{a}/2^{L})$. It remains to prove the claim for $1\le n<2^{L}$.
+
+\medskip
+\noindent\textit{Small seeds, induction on $L$.} For $L=1$ the only seed is $n=1$, already checked. Assume the claim holds for length $L-1$ and every seed, and fix $1\le n<2^{L}$.
+
+If $n$ is even, $n=2m$ with $1\le m<2^{L-1}$, then $T^{L}(n)=T^{L-1}(m)$ with the same $a$. The inductive hypothesis yields $T^{L-1}(m)\le 2\max(1,3^{a}/2^{L-1})\,m$, so $T^{L}(n)/n\le \max(1,3^{a}/2^{L-1})$. The elementary comparison $\max(1,3^{a}/2^{L-1})\le 2\max(1,3^{a}/2^{L})$ is the same three-case check as in the even branch of Lemma~\ref{lem:residual}'s companion estimates (cf.\ the large-seed even reduction).
+
+If $n$ is odd, set $m=(3n+1)/2\ge 2$ and let $a'$ be the odd count of the length-$(L-1)$ word of $m$, so $a=a'+1$ and $T^{L}(n)=T^{L-1}(m)$. Write $\alpha=3^{a'}/2^{L-1}$.
+
+\textit{Expansive case $3^{a}>2^{L}$.} Then $3\alpha/2>1$. The inductive hypothesis gives $T^{L-1}(m)\le 2\max(1,\alpha)\,m$, so $T^{L}(n)\le \max(1,\alpha)\,(3n+1)$. On the other hand Lemma~\ref{lem:residual} yields $T^{L}(n)\le 3^{a}$. If $n\ge 2^{L-1}$, then $3^{a}\le 2\cdot(3^{a}/2^{L})\,n$ is equivalent to $1\le n/2^{L-1}$, true, and we conclude by the residual bound. If $n<2^{L-1}$, apply the inductive hypothesis directly at $m$ together with the residual bound on the length-$(L-1)$ block of the residue of $m$ as in the expansive half of the proof of Lemma~\ref{lem:residual}: writing $m=m_{0}+q\cdot 2^{L-1}$, one has $T^{L-1}(m)\le 3^{a'}(1+q)$ and $n=(2m_{0}+q\cdot 2^{L}-1)/3$, and the inequality $3^{a'}(1+q)\le 3^{a}n/2^{L-1}$ reduces to $n\ge 2^{L-1}(1+q)/3$, which holds for all admissible $(q,m_{0})$ with $a'\ge 0$ under the expansive constraint (the only delicate subcase $m_{0}=0$, $q=1$ forces $a'=0$ and $a=1$, hence $3\le 2^{L}$, contradicting expansiveness for $L\ge 2$).
+
+\textit{Non-expansive case $3^{a}\le 2^{L}$.} Then $3^{a'+1}\le 2^{L}$, i.e.\ $3^{a'}\le\tfrac23\cdot 2^{L-1}$ after rewriting, and in particular $3^{(a')+1}\le 2^{(L-1)+1}$. Lemma~\ref{lem:cycleex} applied to the length-$(L-1)$ block of $m$, together with $m=(3n+1)/2\ge 2$, yields $T^{L-1}(m)\le m$ (the exceptional seed $m=1$ of Lemma~\ref{lem:cycleex} is not of the form $(3n+1)/2$ for any positive odd integer $n$). Therefore
+\[
+T^{L}(n) \;=\; T^{L-1}(m) \;\le\; m \;=\; \frac{3n+1}{2} \;\le\; 2n
+\]
+for every integer $n\ge 1$, which is the required bound in the non-expansive case.
+\end{proof}
+
+\begin{corollary}\label{cor:uniformgap}
+For every stopping word $p$ and every positive integer $n$ with parity prefix $p$,
+\[
+\Gamma_{|p|}(n) \;\le\; \max\bigl(g(p),\, 0\bigr) + 1.
+\]
+In particular, if $\mathcal{E}(S)=M<+\infty$, then $\Gamma_\sigma(n)\le \max(M,0)+1$ for all odd $n$ with $\sigma(n)<\infty$.
+\end{corollary}
+
 \begin{remark}[The exact boundary of the no-go]\label{rem:boundary}
-The rules escaping Theorem~\ref{thm:stopping} are precisely those that never stop the all-ones word, and the minimal natural examples are the classical ones: the untruncated Syracuse renewal rule and Terras's coefficient stopping time $\kappa$. These escapes are not artifacts of the proof. For $\kappa$ with $w \equiv 0$, the block descent \eqref{eq:blockdescent} reads $T^{\kappa(n)}(n) \le n$ wherever $\kappa(n) < \infty$ --- up to strictness, exactly Terras's \emph{coefficient stopping time conjecture} \cite{terras1976,lagarias1985}, which is open. Thus the hypothesis $\sigma_S(-1) < \infty$ cannot be weakened without deciding an open problem, just as (by the observation before Theorem~\ref{thm:stopping}) the boundedness of $w$ cannot be dropped without refuting the conjecture. Theorem~\ref{thm:stopping} therefore delimits the exact frontier of the unconditional no-go region: every adapted scheme with a uniformly bounded look-ahead on the class of $-1$ is impossible, and the surviving schemes are forced into the regime $\sigma(n) > \nutwo(n+1)$ where the known open conjectures already live. Section~\ref{sec:karp} gives the finite-level graph relaxation and an exact integer certificate, and Section~\ref{sec:results-stopping} locates the obstruction computationally for a battery of truncated rules.
+Two nested, now fully characterized, filters delimit the unconditional no-go for bounded corrections under adapted rules.
+\begin{enumerate}
+\item \emph{Path/cycle filter (Theorems~\ref{thm:stopping},~\ref{thm:characterize}(2)).} Every finite maximal prefix code is obstructed via an all-ones word and a positive-gain block cycle.
+\item \emph{Single-block expansion filter (Theorems~\ref{thm:expansion},~\ref{thm:characterize}(1)).} An (infinite) rule is obstructed by single-block expansion if and only if its expansion rate $\mathcal{E}(S) = +\infty$. Syracuse has $\mathcal{E}=+\infty$; any rule whose stop words all satisfy $3^{a} \le 2^{L}$ has $\mathcal{E} \le 0$ and escapes this filter.
+\end{enumerate}
+The residual escapees are the \emph{non-expansive} rules ($\mathcal{E} \le 0$ and $\sigma(-1)=\infty$). The minimal natural prototype is Terras's coefficient stopping time $\kappa$, with $\mathcal{E} \le 0$ by construction. For $\kappa$ with $w \equiv 0$, the block descent \eqref{eq:blockdescent} reads $T^{\kappa(n)}(n) \le n$ wherever $\kappa(n) < \infty$ --- up to strictness, exactly Terras's \emph{coefficient stopping time conjecture} \cite{terras1976,lagarias1985}, which is open. Thus neither filter can be strengthened to cover $\kappa$ without deciding an open problem, just as the boundedness of $w$ cannot be dropped without refuting the Collatz conjecture itself. Section~\ref{sec:karp} gives the finite-level graph relaxation; Section~\ref{sec:results-stopping} certifies both filters computationally.
 \end{remark}
 
 \section{Wasserstein contraction of the transfer structure}\label{sec:wasserstein}
@@ -801,7 +1047,9 @@ The second row uses the published verification limit of \cite{barina2025}. These
 Karp's algorithm on $G_j$ for $j = 5,\dots,10$ returns the self-loop at $-1 \bmod 2^j$ as an optimal cycle in every run, with maximum mean $\log_2 3 - 1 = 0.5849625\ldots$ (float agreement $< 2\cdot10^{-15}$; value certified symbolically per Section~\ref{sec:methodology}). This is the finite-level fingerprint of Theorem~\ref{thm:main}; the computation is not used to claim uniqueness of the optimal cycle.
 
 \subsection{Variable-depth rules: block graphs and exact certificates (R9)}\label{sec:results-stopping}
-Karp's algorithm on the block graph $G_S$ (Proposition~\ref{prop:blockkarp}) was run for eleven truncated adapted rules: the constant rules of depth $k = 1, 2, 3$, the Syracuse renewal rule truncated at $B = 3,\dots,6$, and Terras's coefficient rule truncated at $B = 3,\dots,6$. Each rule is first certified to be a finite maximal prefix code by an exact Kraft sum ($\sum_{p \in S} 2^{-|p|} = 1$ in rational arithmetic). In every run the optimal cycle is the predicted all-ones self-loop at $-1 \bmod 2^m$ with $(A, L) = (s, s)$, $s = \sigma_S(-1)$, and positivity is certified by the integer inequality $3^s > 2^s$; the floating-point per-block mean agrees with $s(\log_2 3 - 1)$ to $10^{-12}$, as expected but not relied upon. The effective witnesses of Theorem~\ref{thm:stopping} are also instantiated exactly: for oscillation bound $W = 10$ the chains of $n = 2^{19} - 1$ (for rules with $s = 1$), $n = 2^{20} - 1$ ($s = 2$) and $n = 2^{21} - 1$ ($s = 3$) are verified in integer arithmetic to force $\operatorname{osc}(w) \ge 10$ on any admissible correction. (The script certifies the exact growth criterion $x_\Theta \ge 2^{W} x_0$ directly, which is sharper than the closed-form sufficient condition $(\ell - 2s)(\log_2 3 - 1) \ge W$ quoted in the theorem; hence the slightly smaller $\ell$ values.) Finally, the boundary of the theorem is checked from the other side: the \emph{untruncated} Syracuse and coefficient rules stop no all-ones word up to depth $10^4$ (instantiating $3^i > 2^i$, resp.\ the renewal test, exactly), so they lie outside the no-go class --- as they must, since a descent certificate for the untruncated coefficient rule would settle Terras's coefficient stopping time conjecture (Remark~\ref{rem:boundary}).
+Karp's algorithm on the block graph $G_S$ (Proposition~\ref{prop:blockkarp}) was run for eleven truncated adapted rules: the constant rules of depth $k = 1, 2, 3$, the Syracuse renewal rule truncated at $B = 3,\dots,6$, and Terras's coefficient rule truncated at $B = 3,\dots,6$. Each rule is first certified to be a finite maximal prefix code by an exact Kraft sum ($\sum_{p \in S} 2^{-|p|} = 1$ in rational arithmetic). In every run the optimal cycle is the predicted all-ones self-loop at $-1 \bmod 2^m$ with $(A, L) = (s, s)$, $s = \sigma_S(-1)$, and positivity is certified by the integer inequality $3^s > 2^s$; the floating-point per-block mean agrees with $s(\log_2 3 - 1)$ to $10^{-12}$, as expected but not relied upon. The effective witnesses of Theorem~\ref{thm:stopping} are also instantiated exactly: for oscillation bound $W = 10$ the chains of $n = 2^{19} - 1$ (for rules with $s = 1$), $n = 2^{20} - 1$ ($s = 2$) and $n = 2^{21} - 1$ ($s = 3$) are verified in integer arithmetic to force $\operatorname{osc}(w) \ge 10$ on any admissible correction. (The script certifies the exact growth criterion $x_\Theta \ge 2^{W} x_0$ directly, which is sharper than the closed-form sufficient condition $(\ell - 2s)(\log_2 3 - 1) \ge W$ quoted in the theorem; hence the slightly smaller $\ell$ values.)
+
+The expansion refinement (Theorems~\ref{thm:expansion},~\ref{thm:characterize}, Corollary~\ref{cor:syracuse}) is certified independently. The \emph{untruncated} Syracuse rule stops no all-ones word up to depth $10^4$ (escapes the path filter), yet on $n = 2^{19}-1$ the Syracuse block yields $T^{\sigma(n)}(n) = (3^{19}-1)/2$ with $\Gamma_\sigma(n) \ge 10$, certified by $(3^{19}-1)/2 \ge (2^{19}-1)\,2^{10}$; its expansion rate is unbounded on every horizon tested (expansive stop words at depths $> B/2$ for $B = 12$). The coefficient predicate produces no expansive stop word up to depth $20$ ($\mathcal{E} \le 0$). Every finite maximal rule tested is classified by Theorem~\ref{thm:characterize}(2) as path/cycle obstructed (all-ones word present, block cycle $3^s > 2^s$). The uniform gap $\Gamma \le \max(g,0)+1$ is proved length-free in Lemmas~\ref{lem:residual}--\ref{lem:uniformgap} (and double-checked for all odd-starting words of length $\le 10$ in the laboratory). The log-Lipschitz criterion with $L = 1/2$ obstructs any positive $\Gamma$. A descent certificate for untruncated $\kappa$ with $w \equiv 0$ would settle Terras's coefficient stopping time conjecture (Remark~\ref{rem:boundary}).
 
 \subsection{Inverse tree of the trivial cycle (R5)}\label{sec:results-tree}
 The conjecture is equivalent to the statement that the preimage tree of $1$ under $T$ (edges $m \to 2m$ and, when integral and odd, $m \to (2m-1)/3$) covers $\Z_+$. Exact BFS gives: the minimum depth at which the tree rooted at $1$ covers all of $\{1,\dots,1000\}$ is $113$ (the depth of $n = 871$, equivalently the maximum total stopping time in the range); and at level $30$ the new nodes span exactly the interval of values $[123,\ 2^{31}]$ (minimum and maximum new node). Growth per level is $\approx 4/3$, consistent with the branching heuristic; Krasikov--Lagarias prove the reached set below $X$ has cardinality $\ge X^{0.84}$ \cite{krasikovlagarias2003}.
@@ -833,13 +1081,13 @@ Terras's bijection (parity vector bijective on $\Z/2^{14}\Z$) verified exactly; 
 \section{Discussion}\label{sec:discussion}
 
 \subsection*{Primary contribution and implications}
-The primary contribution of this paper is the obstruction pair for descent potentials: the fixed-depth theorem (Theorem~\ref{thm:main}) and its variable-depth extension (Theorem~\ref{thm:stopping}). No potential depending only on a residue class modulo a fixed power of two can convert logarithmic descent into a strict monotonicity certificate on all positive odd inputs; and no adapted checkpoint schedule with bounded look-ahead on the class of $-1$ can rescue the strategy, even with an arbitrary bounded, non-modular correction. Within this framework, the obstruction is structurally unavoidable: the $2$-adic fixed point $-1$ is invisible to a finite quotient --- and to any stopping rule that ever commits on an all-ones parity prefix --- but is approximated by positive integers in the corresponding residue classes.
+The primary contribution of this paper is the obstruction package for descent potentials: the fixed-depth theorem (Theorem~\ref{thm:main}), the all-ones/path variable-depth theorem (Theorem~\ref{thm:stopping}), and the single-block expansion theorem (Theorem~\ref{thm:expansion}) with its log-Lipschitz and log-affine strengthenings (Theorem~\ref{thm:logclass}). No potential depending only on a residue class modulo a fixed power of two can convert logarithmic descent into a strict monotonicity certificate on all positive odd inputs; no adapted checkpoint schedule that stops the all-ones word can rescue the strategy with a bounded correction; and no schedule whatsoever --- adapted or not --- can rescue it if single-block log-expansion is unbounded. The untruncated Syracuse rule, which escapes the all-ones test, falls to expansion; the residual escapee is the non-expansive coefficient stopping time of Terras.
 
 \subsection*{Possible future directions}
-The theorems do not rule out Lyapunov constructions outside the classes treated here, but they sharpen the design constraint considerably. A successful deterministic potential must distinguish the positive integers in the families $2^{j+1}m-1$, which approach $-1$ in $\Ztwo$, for arbitrarily large $j$; no correction that factors through a fixed finite dyadic quotient can suffice (Theorem~\ref{thm:main}); and, by Theorem~\ref{thm:stopping} and Corollary~\ref{cor:dichotomy}, no bounded correction can suffice under \emph{any} adapted checkpoint schedule unless the schedule defers its decision on every class $n \equiv -1 \pmod{2^\ell}$ beyond depth $\nutwo(n+1)$. The surviving directions are therefore:
+The theorems do not rule out Lyapunov constructions outside the classes treated here, but they sharpen the design constraint considerably. A successful deterministic potential must distinguish the positive integers in the families $2^{j+1}m-1$, which approach $-1$ in $\Ztwo$, for arbitrarily large $j$; no correction that factors through a fixed finite dyadic quotient can suffice (Theorem~\ref{thm:main}); by Theorem~\ref{thm:stopping}, no bounded correction can suffice under any adapted schedule that stops the all-ones word; and by Theorem~\ref{thm:expansion}, the schedule must additionally keep $\Gamma_\sigma$ bounded above. The surviving directions are therefore:
 \begin{itemize}
-    \item \textbf{Deferring rules:} Adapted schedules with $\sigma(-1) = \infty$, such as the untruncated Syracuse renewal rule or Terras's coefficient stopping time. These are not ruled out --- but the block descent claim for the coefficient rule with $w \equiv 0$ is already Terras's open coefficient stopping time conjecture (Remark~\ref{rem:boundary}), so progress here is progress on a known open problem, not a new loophole.
-    \item \textbf{Unbounded weights:} A correction of unbounded oscillation could, in principle, absorb the gain $\Theta s (\log_2 3 - 1)$ accumulated along the chains of Theorem~\ref{thm:stopping}. Any such proposal must quantify how its variation compares with the limiting gain $\log_2(3/2)$ per odd step; and no unconditional no-go is possible for this class, since its emptiness would refute the conjecture itself.
+    \item \textbf{Non-expansive deferring rules:} Schedules with $\sigma(-1) = \infty$ \emph{and} $\limsup \Gamma_\sigma < \infty$, of which Terras's coefficient stopping time is the prototype. The block descent claim for $\kappa$ with $w \equiv 0$ is already Terras's open coefficient stopping time conjecture (Remark~\ref{rem:boundary}), so progress here is progress on a known open problem, not a new loophole. (The untruncated Syracuse rule is \emph{not} in this class: Corollary~\ref{cor:syracuse}.)
+    \item \textbf{Unbounded weights beyond log-Lipschitz:} A correction of unbounded oscillation could, in principle, absorb large $\Gamma$; Theorem~\ref{thm:logclass} already rules out log-Lipschitz $L<1$ and forces log-affine slopes $\beta \le -1$. Any remaining proposal must quantify how its variation compares with the limiting gain $\log_2(3/2)$ per odd step; and no unconditional no-go is possible for fully unrestricted $w$, since its emptiness would refute the conjecture itself.
     \item \textbf{Probabilistic Lyapunov functions:} One could seek a drift inequality for a specified random kernel rather than pointwise decrease under $T$. The contraction results of Section~\ref{sec:wasserstein} provide a natural setting for formulating such a question, but do not establish a drift inequality for the positive-integer dynamics.
 \end{itemize}
 

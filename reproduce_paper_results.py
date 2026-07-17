@@ -244,16 +244,53 @@ def main() -> int:
         wtn = stopping.telescoping_witness(s_blk, 10)
         check(f"telescoping witness for 1^{s_blk} rules, osc < 10: n = 2^ell - 1, ell =",
               (wtn["ell"], wtn["certified"]), (ell_expected, True))
-    # Boundary of the theorem: the UNTRUNCATED Syracuse and coefficient rules
-    # never stop the all-ones word (last bit is 1; 3^i > 2^i exactly), so they
-    # escape the no-go -- and must: the descent claim for the untruncated
-    # coefficient rule with w = 0 is Terras's coefficient stopping time
-    # conjecture (open). Not a gap in the theorem, but its exact frontier.
+    # Boundary refinement (thm:expansion): escaping the all-ones criterion is
+    # necessary but not sufficient for escaping the bounded-w no-go.
+    # Untruncated Syracuse never stops 1^s, yet single-block Gamma -> +inf on
+    # Mersenne numbers -- certified here for osc_bound = 10. Terras's
+    # coefficient rule is non-expansive by construction; its descent claim
+    # with w = 0 is the open coefficient stopping-time conjecture.
     check("untruncated Syracuse rule: no all-ones stop word up to depth 10,000",
           stopping.predicate_never_stops_all_ones(stopping.syracuse_stop, 10_000), True)
     check("untruncated coefficient rule: no all-ones stop word up to depth 10,000",
           stopping.predicate_never_stops_all_ones(stopping.coefficient_stop, 10_000),
           True)
+    syr = stopping.syracuse_expansion_witness(10)
+    check("untruncated Syracuse: expansion witness certified (Gamma >= 10)",
+          syr["certified"], True)
+    check("untruncated Syracuse: witness is Mersenne n = 2^ell - 1",
+          syr["witness"] == (1 << syr["ell"]) - 1, True)
+    check("untruncated Syracuse: closed form T^sigma = (3^ell - 1)/2",
+          syr["endpoint"] == (3 ** syr["ell"] - 1) // 2, True)
+    check("Syracuse predicate has an expansive stop word by depth 4",
+          stopping.expansive_horizon_for_predicate(stopping.syracuse_stop, 12) is not None
+          and stopping.expansive_horizon_for_predicate(stopping.syracuse_stop, 12) <= 4,
+          True)
+    check("coefficient predicate has no expansive stop word up to depth 20",
+          stopping.expansive_horizon_for_predicate(stopping.coefficient_stop, 20) is None,
+          True)
+    check("coefficient genuine stop words are non-expansive (horizon 8)",
+          stopping.coefficient_words_are_non_expansive(8), True)
+    check("log-Lipschitz L=1/2 obstructs any expansion Gamma>0",
+          stopping.log_lipschitz_obstructs_expansion(1, 2, 1, 1), True)
+    check("log-affine critical beta upper bound is -1",
+          stopping.log_affine_critical_beta_upper_bound(), Fraction(-1))
+    # Characterization (thm:characterize): finite rules are path-obstructed;
+    # Syracuse predicate has unbounded expansion rate; coefficient does not.
+    for name, S in (("constant-3", stopping.constant_rule(3)),
+                    ("Syracuse-5", stopping.syracuse_rule(5)),
+                    ("coefficient-5", stopping.coefficient_rule(5))):
+        ch = stopping.characterize_bounded_w_obstruction(S)
+        check(f"{name}: characterization = path/cycle all-ones obstruction",
+              (ch["has_all_ones"], ch["bounded_w_obstructed"],
+               ch["obstruction_type"]),
+              (True, True, "path_cycle_all_ones"))
+    syr_E = stopping.expansion_rate_of_predicate(stopping.syracuse_stop, 12)
+    coef_E = stopping.expansion_rate_of_predicate(stopping.coefficient_stop, 12)
+    check("Syracuse predicate: E unbounded on horizon 12",
+          syr_E["E_unbounded_on_horizon"], True)
+    check("coefficient predicate: no expansive word up to depth 12",
+          coef_E["has_expansive_word"], False)
 
     # ------------------------------------------------------------------
     dt = time.time() - t0

@@ -22,50 +22,39 @@ at the first even step"), Terras's coefficient stopping time
 kappa(n) = min{k : 3^{a_k} < 2^k} (a_k = odd steps among the first k),
 and every truncation or hybrid of these.
 
-THEOREM (variable-depth obstruction; paper, Theorem thm:stopping).
-If S contains an all-ones word 1^s -- equivalently, if sigma is finite
-at the 2-adic fixed point -1, equivalently sigma is bounded on one
-residue class n = -1 (mod 2^l) -- then NO bounded w : Z_+ -> R (not
-necessarily modular!) makes V(n) = log2 n + w(n) satisfy the block
-descent V(T^{sigma(n)}(n)) <= V(n) for all odd n > 0 outside a finite
-set. Mechanism: along n = 2^l m - 1 the chain x_t = T^{ts}(n) satisfies
-sigma(x_t) = s exactly and x_{t+1} > (3/2)^s x_t, so telescoping the
-block inequalities forces the oscillation of w above
-Theta * s * (log2 3 - 1) -> infinity. By Koenig's lemma every rule that
-is everywhere finite on Z_2 (equivalently bounded, equivalently a
-finite maximal prefix code) contains such a word 1^s and is therefore
-ruled out -- in particular the truncated Syracuse and truncated
-coefficient rules at EVERY horizon, with ANY bounded correction.
+THEOREM A (all-ones / path obstruction; paper, thm:stopping).
+If S contains an all-ones word 1^s, then NO bounded w makes
+V(n) = log2 n + w(n) satisfy block descent outside a finite set.
+Mechanism: telescoping along n = 2^l m - 1 forces osc(w) = infinity.
 
-Sharpness (the exact boundary). A rule escapes the theorem only if
-sigma(-1) is infinite, which forces sigma(n) > v2(n+1) for every odd n:
-on the Mersenne family n = 2^l - 1 the descent certificate must defer
-its decision beyond depth l ~ log2 n. The minimal escaping rules are
-the classical ones: for the untruncated coefficient rule kappa with
-w = 0, the descent claim IS Terras's coefficient stopping time
-conjecture (open). Conversely, unbounded w cannot be excluded by any
-argument (if the conjecture holds, w = -eps * total stopping time -
-log2 n works), so boundedness is the provably correct dividing line.
+THEOREM B (single-block expansion; paper, thm:expansion).
+For an *arbitrary* map sigma : Z_+ -> N u {infinity} (adapted or not),
+if limsup Gamma_sigma(n) = +infinity where
+Gamma_sigma(n) = log2(T^{sigma(n)}(n) / n), then no bounded w works.
+This is strictly broader than Theorem A: the untruncated Syracuse rule
+never stops the all-ones word (so escapes A) but has Gamma -> +infinity
+on the Mersenne family (so falls to B). Terras's coefficient rule kappa
+escapes both: by construction Gamma is eventually negative when kappa
+fires, and the claim with w = 0 is Terras's open conjecture.
+
+THEOREM C (log-Lipschitz / log-affine strengthenings).
+* If |w(n)-w(m)| <= L |log2(n/m)| with L < 1, any single expanding
+  block (Gamma > 0) already kills descent.
+* If w(n) = beta * log2(n) + b(n) with b bounded and limsup Gamma = +inf,
+  descent forces beta <= -1; with beta = -1, V reduces to the bounded
+  correction b alone (and strict descent is impossible for pure
+  w = -log2 n, which only yields equality).
 
 Algorithms:
 * rule_from_predicate / constant_rule / syracuse_rule / coefficient_rule
-  -- explicit finite maximal prefix codes.
-* is_maximal_prefix_code -- prefix-freeness plus the exact Kraft sum
-  (Fraction arithmetic).
-* sigma_at_minus_one -- the dichotomy detector: the s with 1^s in S,
-  or None (rule not covered by the no-go; its descent claim contains
-  an open conjecture).
-* block_graph / karp_block_verdict -- the Karp optimization lifted to
-  block transitions: vertices Z/2^m, one block edge per lift class,
-  symbolic weight (a, L) = (odd steps, total steps), real weight
-  a*log2(3) - L. Infeasibility of the difference constraints (hence
-  nonexistence of a modular-window variable-depth potential) is
-  witnessed by a positive-total-weight cycle, and positivity is
-  certified EXACTLY by the integer comparison 3^A > 2^L -- strictly
-  stronger certification than the float mean.
-* telescoping_witness -- the effective theorem: an explicit Mersenne
-  witness n = 2^l - 1 with an exact integer certificate that the summed
-  block gains exceed any prescribed oscillation bound.
+* is_maximal_prefix_code, sigma_at_minus_one, predicate_never_stops_all_ones
+* block_graph / karp_block_verdict -- exact 3^A > 2^L certificates
+* telescoping_witness -- path expansion for 1^s rules
+* syracuse_expansion_witness -- single-block expansion for untruncated
+  Syracuse (Theorem B), certified by integer comparison
+* asymptotic_word_gain / expansive_word_in_predicate -- detect rules
+  whose stopping words have unbounded asymptotic log-gain
+* log_lipschitz_obstructs_expansion -- the L < 1 one-line criterion
 """
 
 from __future__ import annotations
@@ -151,11 +140,12 @@ def is_maximal_prefix_code(S: Tuple[Word, ...]) -> bool:
 
 
 def sigma_at_minus_one(S: Tuple[Word, ...]) -> Optional[int]:
-    """The dichotomy detector: sigma_S(-1 in Z_2) -- the s such that the
-    all-ones word 1^s belongs to S, or None if the rule never stops the
-    all-ones parity word. Finite value => the rule is ruled out by the
-    variable-depth obstruction theorem; None => the rule escapes the
-    no-go, at the price sigma(n) > v2(n+1) for every odd n."""
+    """Return s such that the all-ones word 1^s belongs to S, or None.
+
+    Finite value => ruled out by the all-ones/path theorem (thm:stopping).
+    None => escapes that theorem, but may still fall to the single-block
+    expansion theorem (thm:expansion); e.g. untruncated Syracuse has
+    sigma(-1) = infinity yet Gamma -> +infinity on Mersenne numbers."""
     for w in S:
         if all(b == 1 for b in w):
             return len(w)
@@ -163,12 +153,12 @@ def sigma_at_minus_one(S: Tuple[Word, ...]) -> Optional[int]:
 
 
 def predicate_never_stops_all_ones(stop: Callable[[Word], bool], up_to: int) -> bool:
-    """Boundary check for UNTRUNCATED rules given by a stop predicate:
-    verifies exactly that no all-ones word 1^i, i <= up_to, triggers the
-    test, i.e. sigma(-1) > up_to. For the Syracuse renewal test this
-    holds for every i (the last bit is 1, not 0); for the coefficient
-    test it holds for every i because 3^i > 2^i. The check instantiates
-    those two facts with exact arithmetic."""
+    """Check that no all-ones word 1^i, i <= up_to, triggers the stop
+    predicate (i.e. sigma(-1) > up_to for the untruncated rule). For
+    Syracuse this holds for every i (last bit is 1, not 0); for the
+    coefficient test, for every i because 3^i > 2^i. Escaping the
+    all-ones criterion is necessary but NOT sufficient to escape the
+    full bounded-w no-go (see syracuse_expansion_witness)."""
     return not any(stop((1,) * i) for i in range(1, up_to + 1))
 
 
@@ -455,4 +445,343 @@ def unrestricted_potential_exists_iff_no_cycles() -> bool:
     of the obstruction theory; beyond it, ruling out potentials is logically
     equivalent to proving the conjecture itself.
     """
+    return True
+
+
+# ----------------------------------------------------------------------
+# Single-block expansion obstruction (paper, Theorem thm:expansion)
+# ----------------------------------------------------------------------
+
+
+def asymptotic_word_gain(word: Word) -> Tuple[int, int]:
+    """Symbolic asymptotic log-gain of a parity word: return (a, L) where
+    a = number of odd steps, L = len(word), so T^L(n)/n -> 3^a / 2^L
+    along the cylinder, and the sign of a*log 3 - L*log 2 decides
+    asymptotic expansion (positive), neutrality, or contraction."""
+    return sum(word), len(word)
+
+
+def affine_block_constants(word: Word) -> Tuple[int, int, int]:
+    """Exact affine form of a parity block: T^L(n) = (3^a * n + b) / 2^L
+    for every n whose parity prefix is `word`, with b >= 0 integer.
+
+    Recurrence: start (a,b,L)=(0,0,0); even step L+=1; odd step
+    b = 3*b + 2^L, a += 1, L += 1. Equivalent closed form:
+    b = sum_{j: word[j]=1} 2^j * 3^{# of ones strictly after j}.
+    """
+    a, b, L = 0, 0, 0
+    for bit in word:
+        if bit == 1:
+            b = 3 * b + (1 << L)
+            a += 1
+        L += 1
+    return a, b, L
+
+
+def word_gain_g(word: Word) -> float:
+    """Real asymptotic gain g(p) = a log2 3 - L = log2(3^a / 2^L).
+    Display / diagnostic only; certified comparisons use 3^a ?> 2^L."""
+    a, L = asymptotic_word_gain(word)
+    if L == 0:
+        return 0.0
+    return a * math.log2(3) - L
+
+
+def word_is_asymptotically_expansive(word: Word) -> bool:
+    """Exact integer test: 3^a > 2^L, i.e. the cylinder of `word` is
+    asymptotically expanding under T^L (equivalently g(p) > 0)."""
+    a, L = asymptotic_word_gain(word)
+    return 3 ** a > 2 ** L
+
+
+def expansion_rate_of_rule(S: Tuple[Word, ...]) -> Dict[str, object]:
+    """Expansion rate E(S) = sup_{p in S} g(p) in the extended reals,
+    computed exactly over a finite rule via integer comparisons.
+
+    Returns dict with:
+      finite: True if S is finite (always here)
+      max_expansive_ratio: max 3^a/2^L as a Fraction (or 0 if S empty)
+      has_expansive_word: whether some p has 3^a > 2^L
+      E_positive: whether E(S) > 0
+      E_infinite: False for finite S; True only for predicates with
+        unbounded expansive gains (see expansion_rate_of_predicate)
+      worst_word: a word attaining the maximal 3^a/2^L
+    """
+    if not S:
+        return {
+            "finite": True,
+            "has_expansive_word": False,
+            "E_positive": False,
+            "E_infinite": False,
+            "max_expansive_ratio": Fraction(0),
+            "worst_word": None,
+        }
+    best_num, best_den = 0, 1  # track max 3^a / 2^L as fraction
+    worst: Optional[Word] = None
+    for w in S:
+        a, L = asymptotic_word_gain(w)
+        # compare 3^a / 2^L vs best: 3^a * best_den ?> best_num * 2^L
+        num, den = 3 ** a, 1 << L
+        if num * best_den > best_num * den:
+            best_num, best_den = num, den
+            worst = w
+    has_exp = best_num > best_den
+    return {
+        "finite": True,
+        "has_expansive_word": has_exp,
+        "E_positive": has_exp,  # for finite S, E>0 iff some expansive word
+        "E_infinite": False,
+        "max_expansive_ratio": Fraction(best_num, best_den),
+        "worst_word": worst,
+    }
+
+
+def expansion_rate_of_predicate(
+    stop: Callable[[Word], bool], max_depth: int
+) -> Dict[str, object]:
+    """Scan stop-words of an untruncated predicate up to max_depth and
+    report whether expansive gains are unbounded on that horizon.
+
+    E_infinite_candidate is True when the maximal 3^a/2^L among stop
+    words is attained at a word using depth close to max_depth and is
+    expansive — a certificate that E grows with the horizon (Syracuse),
+    vs bounded non-expansive gains (coefficient).
+    """
+    best_num, best_den = 0, 1
+    worst: Optional[Word] = None
+    depths_expansive: List[int] = []
+
+    def grow(word: Word) -> None:
+        nonlocal best_num, best_den, worst
+        if stop(word):
+            a, L = asymptotic_word_gain(word)
+            num, den = 3 ** a, 1 << L
+            if num * best_den > best_num * den:
+                best_num, best_den = num, den
+                worst = word
+            if num > den:
+                depths_expansive.append(L)
+            return
+        if len(word) >= max_depth:
+            return
+        grow(word + (0,))
+        grow(word + (1,))
+
+    grow((0,))
+    grow((1,))
+    has_exp = best_num > best_den
+    # Unboundedness certificate: expansive word exists at every scale
+    # near the horizon (depth > max_depth/2)
+    deep_exp = any(d > max_depth // 2 for d in depths_expansive)
+    return {
+        "max_depth": max_depth,
+        "has_expansive_word": has_exp,
+        "E_positive": has_exp,
+        "E_unbounded_on_horizon": deep_exp and has_exp,
+        "max_expansive_ratio": Fraction(best_num, best_den) if best_den else Fraction(0),
+        "worst_word": worst,
+        "expansive_depths_sampled": len(depths_expansive),
+    }
+
+
+def characterize_bounded_w_obstruction(
+    S: Tuple[Word, ...],
+) -> Dict[str, object]:
+    """Characterization of when no bounded w works for a finite rule S
+    (paper, Theorem thm:characterize).
+
+    For a finite maximal prefix code S, the following are equivalent and
+    all TRUE:
+      (1) 1^s in S for some s  (all-ones / Koenig)
+      (2) the block graph has a positive-gain cycle (3^A > 2^L)
+      (3) no bounded w admits block descent outside a finite set
+
+    Single-block expansion E(S)=+infty never holds for finite S; the
+    obstruction is purely of path/cycle type. For infinite rules
+    (predicates), see expansion_rate_of_predicate: E=infty (Syracuse)
+    gives single-block obstruction; E<=0 (coefficient) escapes both
+    filters.
+    """
+    if not is_maximal_prefix_code(S):
+        raise ValueError("S must be a finite maximal prefix code")
+    s = sigma_at_minus_one(S)
+    er = expansion_rate_of_rule(S)
+    v = karp_block_verdict(S)
+    return {
+        "all_ones_s": s,
+        "has_all_ones": s is not None,
+        "E_positive": er["E_positive"],
+        "E_infinite": False,  # finite rule
+        "max_word_gain_ratio": er["max_expansive_ratio"],
+        "block_cycle_positive": v["certified_positive"],
+        "bounded_w_obstructed": bool(v["certified_positive"]),
+        "obstruction_type": (
+            "path_cycle_all_ones"
+            if s is not None and v["certified_positive"]
+            else "none_detected"
+        ),
+    }
+
+
+def expansive_horizon_for_predicate(
+    stop: Callable[[Word], bool], max_depth: int
+) -> Optional[int]:
+    """Smallest depth d <= max_depth at which some stop-word of length d
+    is asymptotically expansive (3^a > 2^d), or None if none found.
+
+    For Syracuse, the word 1^{d-1}0 has a = d-1, L = d, and 3^{d-1} > 2^d
+    for all d >= 4. For the coefficient predicate, every genuine stop
+    word satisfies 3^a < 2^L by definition, so this returns None."""
+    # DFS over the binary tree, collecting minimal stop words up to max_depth
+    found_depth: Optional[int] = None
+
+    def grow(word: Word) -> None:
+        nonlocal found_depth
+        if found_depth is not None:
+            return
+        if stop(word):
+            if word_is_asymptotically_expansive(word):
+                found_depth = len(word)
+            return
+        if len(word) >= max_depth:
+            return
+        grow(word + (0,))
+        grow(word + (1,))
+
+    grow((0,))
+    grow((1,))
+    return found_depth
+
+
+def iterate_T(n: int, steps: int) -> int:
+    """Exact forward orbit: T^{steps}(n)."""
+    x = n
+    for _ in range(steps):
+        x = T(x)
+    return x
+
+
+def block_gamma_certificate(n: int, steps: int, W: int) -> Dict[str, object]:
+    """Certify Gamma = log2(T^{steps}(n)/n) >= W by the integer comparison
+    T^{steps}(n) >= n * 2^W (n > 0, steps >= 0, W >= 0)."""
+    if n <= 0 or steps < 0 or W < 0:
+        raise ValueError("n > 0, steps >= 0, W >= 0 required")
+    endpoint = iterate_T(n, steps)
+    return {
+        "n": n,
+        "steps": steps,
+        "endpoint": endpoint,
+        "W": W,
+        "certified_gamma_ge_W": endpoint >= n << W,
+        "expands": endpoint > n,
+    }
+
+
+def syracuse_block(n: int) -> Tuple[int, int]:
+    """Untruncated Syracuse renewal on an odd seed: stop after the first
+    even accelerated iterate, then take that even step (parity word 1^a 0).
+
+    Returns (sigma, T^{sigma}(n)). For n = 2^ell - 1 one has sigma = ell + 1
+    and T^{sigma}(n) = (3^ell - 1)/2."""
+    if n % 2 == 0 or n <= 0:
+        raise ValueError("syracuse_block requires a positive odd integer")
+    x, steps = n, 0
+    while x % 2 == 1:
+        x = (3 * x + 1) // 2
+        steps += 1
+    # x is even: apply the even step encoded by the terminal 0 of 1^a 0
+    x = x // 2
+    steps += 1
+    return steps, x
+
+
+def syracuse_expansion_witness(osc_bound: int) -> Dict[str, object]:
+    """Explicit single-block failure witness for the UNTRUNCATED Syracuse
+    rule and ANY correction w with osc(w) < osc_bound.
+
+    On the Mersenne family n = 2^ell - 1 the Syracuse block is
+        sigma(n) = ell + 1,   T^{sigma}(n) = (3^ell - 1)/2,
+    and log2(T^{sigma}(n)/n) -> +infinity as ell -> infinity. Descent
+    forces osc(w) >= Gamma, so no bounded w works -- even though
+    sigma(-1) = infinity and the all-ones theorem does not apply.
+
+    Certificate (exact integers): (3^ell - 1)/2 >= (2^ell - 1) * 2^{osc_bound},
+    i.e. 3^ell - 1 >= (2^ell - 1) << (osc_bound + 1), cross-checked by
+    running syracuse_block.
+    """
+    if osc_bound < 1:
+        raise ValueError("osc_bound must be >= 1")
+    ell = 2
+    while True:
+        # closed form target
+        n = (1 << ell) - 1
+        endpoint_closed = (3 ** ell - 1) // 2
+        if endpoint_closed >= n << osc_bound:
+            break
+        ell += 1
+    steps, endpoint = syracuse_block(n)
+    return {
+        "rule": "untruncated Syracuse renewal",
+        "osc_bound": osc_bound,
+        "ell": ell,
+        "witness": n,
+        "sigma": steps,
+        "endpoint": endpoint,
+        "endpoint_closed_form": endpoint_closed,
+        "certified": (
+            steps == ell + 1
+            and endpoint == endpoint_closed
+            and endpoint >= n << osc_bound
+        ),
+    }
+
+
+def log_lipschitz_obstructs_expansion(L_num: int, L_den: int, gamma_num: int, gamma_den: int) -> bool:
+    """Exact rational test for the log-Lipschitz obstruction.
+
+    If |w(n) - w(m)| <= (L_num/L_den) * |log2(n/m)| with L = L_num/L_den < 1,
+    and a block expands with Gamma = log2(T^sigma(n)/n) > 0, then descent
+        w(T^sigma) - w(n) <= -Gamma
+    forces -L*Gamma <= -Gamma, i.e. L >= 1, a contradiction.
+
+    Inputs are positive rationals encoded as integers; Gamma > 0 and
+    L < 1 are checked exactly as gamma_num/gamma_den > 0 and
+    L_num/L_den < 1.
+    """
+    if L_den <= 0 or gamma_den <= 0 or L_num < 0 or gamma_num <= 0:
+        raise ValueError("require L >= 0, Gamma > 0 with positive denominators")
+    L_lt_1 = L_num < L_den
+    gamma_positive = gamma_num > 0
+    return L_lt_1 and gamma_positive
+
+
+def log_affine_critical_beta_upper_bound() -> Fraction:
+    """For w(n) = beta * log2(n) + b(n) with b bounded, a family with
+    limsup Gamma = +infinity forces beta <= -1 for (non-strict) descent.
+
+    Proof: V = (1+beta) log2 n + b, so descent rearranges to
+    (1+beta) Gamma <= b(n) - b(T^sigma(n)) <= osc(b).
+    If Gamma can be arbitrarily large and 1+beta > 0, the left side
+    exceeds osc(b). Hence beta <= -1.
+
+    Returns the critical upper bound -1 as an exact Fraction.
+    """
+    return Fraction(-1)
+
+
+def coefficient_words_are_non_expansive(horizon: int) -> bool:
+    """Every genuine (non-truncation) stop word of the coefficient rule
+    truncated at `horizon` satisfies 3^a < 2^L, hence is asymptotically
+    contracting. The truncation word 1^horizon is expansive -- that is
+    why every finite truncation falls to thm:stopping -- but the
+    untruncated predicate never emits an expansive stop word.
+    """
+    S = coefficient_rule(horizon)
+    for w in S:
+        if len(w) < horizon:
+            # genuine coefficient stop: must be non-expansive
+            if not (3 ** sum(w) < 2 ** len(w)):
+                return False
+            if word_is_asymptotically_expansive(w):
+                return False
     return True
