@@ -216,7 +216,8 @@ def block_graph(
     edges: List[Set[Tuple[int, int, int]]] = [set() for _ in range(M)]
     for u in range(M):
         # stop word of the class u (determined by u because m >= B)
-        x, word = u, []
+        x = u
+        word: List[int] = []
         while tuple(word) not in words:
             word.append(x & 1)
             x = T(x)
@@ -272,10 +273,14 @@ def karp_block_verdict(S: Tuple[Word, ...], m: Optional[int] = None) -> Dict[str
         if val > best:
             best, best_v = val, v
     # reconstructs the optimal walk and extracts a cycle with edge data
-    walk: List[Tuple[int, Optional[Tuple[int, int, int]]]] = [(best_v, None)]
+    # (each vertex is stored with the (a, L) totals of its outgoing edge)
+    walk: List[Tuple[int, Optional[Tuple[int, int]]]] = [(best_v, None)]
     v = best_v
     for t in range(M, 0, -1):
-        u, a, L = parent[t][v]
+        entry = parent[t][v]
+        if entry is None:
+            break
+        u, a, L = entry
         walk.append((u, (a, L)))  # edge u -> previous vertex
         v = u
     walk.reverse()
@@ -288,8 +293,9 @@ def karp_block_verdict(S: Tuple[Word, ...], m: Optional[int] = None) -> Dict[str
             # leaving v_{i0}, ..., v_{i-1}
             cyc_vertices = [x for x, _ in walk[last[v] : i]]
             for _, edge in walk[last[v] : i]:
-                A_tot += edge[0]
-                L_tot += edge[1]
+                if edge is not None:
+                    A_tot += edge[0]
+                    L_tot += edge[1]
             break
         last[v] = i
     certified = 3**A_tot > 2**L_tot  # exact: cycle weight > 0 iff 3^A > 2^L

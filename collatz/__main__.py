@@ -175,7 +175,7 @@ def main(argv=None) -> int:
             v["variable_depth_potential_possible"],
         )
         s = v["sigma_at_minus_one"]
-        if s is not None:
+        if isinstance(s, int):
             wtn = stopping.telescoping_witness(s, args.osc)
             print(
                 f"telescoping witness (osc < {args.osc}): n = 2^{wtn['ell']} - 1, "
