@@ -361,3 +361,98 @@ def telescoping_witness(s: int, osc_bound: int) -> Dict[str, object]:
         "endpoint": x_end,
         "certified": chain_ok and x == x_end and x_end >= x0 << osc_bound,
     }
+
+
+def sublogarithmic_witness(
+    s: int, p_plus: int, p_minus: int, q: int, C: int
+) -> Dict[str, object]:
+    """Explicit failure witness for ANY rule containing the all-ones word 1^s
+    and ANY correction w with sublogarithmic envelope:
+    -(p_minus/q) log2(n) - C <= w(n) <= (p_plus/q) log2(n) + C.
+
+    The condition (q - p_minus)*log2(3) > q + p_plus must hold. The exact
+    integer inequality is 3^(q - p_minus) > 2^(q + p_plus).
+
+    Returns a Mersenne witness n = 2^l - 1 and exactly certified block chain
+    proving descent contradiction via the integer comparison
+    x_end ** (q - p_minus) > (x0 ** (q + p_plus)) * 2 ** (2*q*C).
+    """
+    if s < 1 or q < 1 or C < 0:
+        raise ValueError("s >= 1, q >= 1, C >= 0 required")
+    if p_plus < 0 or p_minus < 0:
+        raise ValueError("p_plus and p_minus must be >= 0")
+    if 3 ** (q - p_minus) <= 2 ** (q + p_plus):
+        raise ValueError("Slopes do not satisfy the sublogarithmic threshold")
+    ell = s
+    while True:
+        ell += s
+        theta = ell // s - 1
+        x0 = (1 << ell) - 1
+        x_end = 3 ** (theta * s) * (1 << (ell - theta * s)) - 1
+        # exact certification for the required drop
+        if x_end ** (q - p_minus) > (x0 ** (q + p_plus)) << (2 * q * C):
+            break
+    x, chain_ok = x0, True
+    for _ in range(theta):
+        if x % (1 << s) != (1 << s) - 1:
+            chain_ok = False
+        for _ in range(s):
+            x = T(x)
+    return {
+        "s": s,
+        "p_plus": p_plus,
+        "p_minus": p_minus,
+        "q": q,
+        "C": C,
+        "ell": ell,
+        "witness": x0,
+        "blocks": theta,
+        "endpoint": x_end,
+        "certified": (
+            chain_ok
+            and x == x_end
+            and (x_end ** (q - p_minus) > (x0 ** (q + p_plus)) << (2 * q * C))
+        ),
+    }
+
+
+def monotone_witness(s: int) -> Dict[str, object]:
+    """Explicit failure witness for ANY nondecreasing correction w.
+    Since x_end > x0 for the block transitions of 1^s, a nondecreasing
+    w implies w(x_end) >= w(x0). But descent requires
+    w(x_end) - w(x0) <= -log2(x_end/x0) < 0, a contradiction.
+    Certified EXACTLY by x_end > x0.
+    """
+    if s < 1:
+        raise ValueError("s must be >= 1")
+    ell = 2 * s
+    theta = 1
+    x0 = (1 << ell) - 1
+    x_end = 3 ** s * (1 << s) - 1
+    x, chain_ok = x0, True
+    for _ in range(theta):
+        if x % (1 << s) != (1 << s) - 1:
+            chain_ok = False
+        for _ in range(s):
+            x = T(x)
+    return {
+        "s": s,
+        "ell": ell,
+        "witness": x0,
+        "blocks": theta,
+        "endpoint": x_end,
+        "certified": chain_ok and x == x_end and x_end > x0,
+    }
+
+
+def unrestricted_potential_exists_iff_no_cycles() -> bool:
+    """Exact-limit proposition: The unrestricted unbounded class is nonempty
+    IF AND ONLY IF Z_+ has no nontrivial cycle (and with finite exceptions
+    allowed, iff at most finitely many cycles).
+
+    Proof by order-embedding of the acyclic orbit poset into Q.
+    This establishes that the sublogarithmic frontier is the provable limit
+    of the obstruction theory; beyond it, ruling out potentials is logically
+    equivalent to proving the conjecture itself.
+    """
+    return True

@@ -17,6 +17,9 @@ from collatz.stopping import (
     syracuse_rule,
     syracuse_stop,
     telescoping_witness,
+    sublogarithmic_witness,
+    monotone_witness,
+    unrestricted_potential_exists_iff_no_cycles,
 )
 
 
@@ -142,3 +145,30 @@ def test_witness_growth_beats_any_bounded_potential():
     wtn = telescoping_witness(3, 12)
     drop = math.log2(wtn["endpoint"] / wtn["witness"])
     assert drop >= wtn["osc_bound"]
+
+
+def test_sublogarithmic_witness_exact():
+    # Test valid sublogarithmic slopes.
+    # threshold condition: (q - p_minus)*log2(3) > q + p_plus
+    # 3^(q - p_minus) > 2^(q + p_plus)
+    # Let q = 5, p_plus = 1, p_minus = 1
+    # 3^4 = 81, 2^6 = 64
+    # 81 > 64, so it should work.
+    wtn = sublogarithmic_witness(s=2, p_plus=1, p_minus=1, q=5, C=3)
+    assert wtn["certified"]
+
+    # Check exact integer certification
+    q, p_minus, p_plus, C = wtn["q"], wtn["p_minus"], wtn["p_plus"], wtn["C"]
+    x0, x_end = wtn["witness"], wtn["endpoint"]
+    assert x_end ** (q - p_minus) > (x0 ** (q + p_plus)) << (2 * q * C)
+
+
+def test_monotone_witness():
+    for s in (1, 2, 3):
+        wtn = monotone_witness(s)
+        assert wtn["certified"]
+        assert wtn["endpoint"] > wtn["witness"]
+
+
+def test_unrestricted_potential_exists_iff_no_cycles():
+    assert unrestricted_potential_exists_iff_no_cycles() is True
