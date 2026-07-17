@@ -7,6 +7,7 @@ Examples:
     python -m collatz cycles --d -1 --max-len 16
     python -m collatz exclude --limit-bits 71  # cycle exclusion (N = 2^71, Barina 2025)
     python -m collatz lyapunov --j 10
+    python -m collatz stopping --rule coefficient --depth 6
     python -m collatz spectral --k 4
     python -m collatz transfer --k3 3 --k2 6 --n 100000
     python -m collatz tree --depth 120 --x 1000
@@ -25,6 +26,7 @@ from . import (
     report,
     search,
     spectral,
+    stopping,
     transfer,
     tree,
 )
@@ -63,6 +65,20 @@ def main(argv=None) -> int:
 
     p = sub.add_parser("lyapunov", help="maximum mean cycle (Karp) mod 2^j")
     p.add_argument("--j", type=int, default=9)
+
+    p = sub.add_parser(
+        "stopping", help="variable-depth stopping-time potentials (block Karp)"
+    )
+    p.add_argument(
+        "--rule",
+        choices=["constant", "syracuse", "coefficient"],
+        default="coefficient",
+        help="adapted stopping rule (truncated at --depth)",
+    )
+    p.add_argument("--depth", type=int, default=6, help="depth / truncation horizon")
+    p.add_argument(
+        "--osc", type=int, default=10, help="oscillation bound for the witness"
+    )
 
     p = sub.add_parser("spectral", help="transfer operator mod 3^k")
     p.add_argument("--k", type=int, default=3)
@@ -130,6 +146,41 @@ def main(argv=None) -> int:
         )
         print(f"optimal cycle (signed): {v['cycle_as_signed']}")
         print("Is a modular Lyapunov function possible?", v["lyapunov_possible"])
+
+    elif args.cmd == "stopping":
+        builders = {
+            "constant": stopping.constant_rule,
+            "syracuse": stopping.syracuse_rule,
+            "coefficient": stopping.coefficient_rule,
+        }
+        S = builders[args.rule](args.depth)
+        v = stopping.karp_block_verdict(S)
+        print(
+            f"rule '{args.rule}' truncated at depth {args.depth}: "
+            f"{v['rule_size']} stop words, sigma(-1) = {v['sigma_at_minus_one']}"
+        )
+        print(
+            f"block Karp mod 2^{v['modulus_bits']}: max mean/block = "
+            f"{v['max_mean_per_block']:.6f}; optimal cycle (signed) = "
+            f"{v['cycle_as_signed']}"
+        )
+        print(
+            f"exact certificate: A = {v['cycle_odd_steps']} odd steps, "
+            f"L = {v['cycle_total_steps']} total steps, 3^A > 2^L: "
+            f"{v['certified_positive']} (all-ones loop at -1: "
+            f"{v['cycle_is_minus_one_loop']})"
+        )
+        print(
+            "Is a variable-depth stopping-time potential possible?",
+            v["variable_depth_potential_possible"],
+        )
+        s = v["sigma_at_minus_one"]
+        if s is not None:
+            wtn = stopping.telescoping_witness(s, args.osc)
+            print(
+                f"telescoping witness (osc < {args.osc}): n = 2^{wtn['ell']} - 1, "
+                f"{wtn['blocks']} blocks of {s} steps, certified: {wtn['certified']}"
+            )
 
     elif args.cmd == "spectral":
         print("uniform stationary (exact):", spectral.stationary_uniform_check(args.k))

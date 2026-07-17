@@ -19,6 +19,11 @@ def test_cli_lyapunov():
     assert main(["lyapunov", "--j", "5"]) == 0
 
 
+def test_cli_stopping():
+    assert main(["stopping", "--rule", "syracuse", "--depth", "4"]) == 0
+    assert main(["stopping", "--rule", "coefficient", "--depth", "5", "--osc", "6"]) == 0
+
+
 def test_cli_spectral():
     assert main(["spectral", "--k", "2"]) == 0
 

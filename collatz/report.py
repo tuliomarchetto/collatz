@@ -14,7 +14,17 @@ import math
 import time
 from typing import List
 
-from . import cycles, invariants, padic, search, spectral, symmetries, transfer, tree
+from . import (
+    cycles,
+    invariants,
+    padic,
+    search,
+    spectral,
+    stopping,
+    symmetries,
+    transfer,
+    tree,
+)
 
 KNOWN_VERIFIED = 2**71  # published computational limit (Barina 2025)
 
@@ -198,6 +208,30 @@ def run_all(
         "exatamente os ciclos de inteiros negativos, pontos periódicos genuínos do "
         "mapa 2-ádico.  Provas por 'testemunha modular finita' estão excluídas; "
         "qualquer prova precisa distinguir ℤ₊ dentro de ℤ₂.\n"
+    )
+
+    # 6b. variable-depth stopping-time potentials
+    add(
+        "### 6b. Potenciais de profundidade variável (regras de parada adaptadas)\n"
+    )
+    S_coef = stopping.coefficient_rule(6)
+    vd = stopping.karp_block_verdict(S_coef)
+    add(
+        f"- Regra do coeficiente de Terras truncada em B = 6 "
+        f"({vd['rule_size']} palavras de parada): Karp no grafo de blocos "
+        f"mod 2^{vd['modulus_bits']} devolve o laço todo-ímpar em −1 "
+        f"(ciclo {vd['cycle_as_signed']}), com certificado EXATO "
+        f"3^{vd['cycle_odd_steps']} > 2^{vd['cycle_total_steps']} — "
+        f"potencial impossível: {not vd['variable_depth_potential_possible']}."
+    )
+    add(
+        "- ACHADO ESTRUTURAL (teorema no manuscrito): NENHUMA regra de parada "
+        "adaptada que pare a palavra de paridades todo-uns (equivalentemente, "
+        "σ(−1) < ∞; automático para toda regra limitada, por König) admite "
+        "potencial V = log₂ n + w(n) com w LIMITADO — nem mesmo w arbitrário, "
+        "não modular. A única saída é adiar a decisão sobre 1^∞ para sempre "
+        "(σ(n) > v₂(n+1)); o primeiro membro aberto dessa fronteira é a "
+        "conjectura do tempo de parada do coeficiente de Terras.\n"
     )
 
     # 7. symmetries

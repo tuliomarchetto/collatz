@@ -17,6 +17,10 @@ padic       2-adic structure: Terras bijection Q_k, conjugacy with the shift,
 invariants  Modular invariants (induced maps, conserved partitions),
             drift by residue class, search for a Lyapunov function
             via maximum mean cycle (Karp's algorithm).
+stopping    Variable-depth stopping-time potentials: adapted stopping
+            rules (prefix codes), block-transition graphs, Karp on
+            blocks with exact 3^A > 2^L certification, telescoping
+            witnesses — the strengthened no-go beyond fixed depth.
 symmetries  Search for affine conjugacies between 3n+d systems and affine
             automorphisms of the modular transition graphs.
 spectral    Syracuse transfer operator on (Z/3^k)*: exact stationary
