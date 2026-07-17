@@ -2,22 +2,22 @@
 
 *Este é o documento canônico (português do Brasil). Uma tradução para o inglês está disponível em [`REPORT.md`](REPORT.md). Licença: este documento é distribuído sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt_BR) (Creative Commons Atribuição 4.0 Internacional). O código-fonte do laboratório (`collatz/`) é distribuído separadamente sob a licença MIT — ver `LICENSE`.*
 
-Este documento formaliza a investigação sobre a Conjectura de Collatz (dinâmica $3n+1$) e sistemas afins ($3n+d$). O relatório está dividido em três partes estritas:
-1. **Parte I: Resultados Matemáticos**, contendo teoremas com provas puramente analíticas (sem dependência de computação). O foco central é a caracterização topológica da falha das funções de Lyapunov modulares.
-2. **Parte II: Descrição dos Algoritmos**, descrevendo os métodos computacionais exatos projetados para investigar o sistema (álgebra exata, grafos modulares, métrica Wasserstein).
-3. **Parte III: Resultados Experimentais e Verificações**, catalogando os limites numéricos, achados em simulações e certificados computacionais que instanciam as teorias matemáticas na prática.
+Este documento apresenta um laboratório computacional de aritmética exata e investigação sobre a Conjectura de Collatz (dinâmica $3n+1$) e sistemas afins ($3n+d$). Projetado como uma contribuição de matemática experimental, o relatório está dividido em três partes:
+1. **Parte I: Formalização das Restrições Matemáticas**, fornecendo empacotamentos analíticos precisos de fenômenos bem estabelecidos (e.g., a obstrução topológica 2-ádica e a contração Wasserstein) que servem como fundação teórica para os algoritmos.
+2. **Parte II: Descrição dos Algoritmos**, detalhando a contribuição principal: um arcabouço computacional totalmente reprodutível, de aritmética exata, projetado para investigar o sistema sem incerteza de ponto flutuante.
+3. **Parte III: Resultados Experimentais e Verificações**, catalogando os certificados computacionais (e.g., limites de exclusão diofantina, coeficientes Wasserstein racionais exatos) que instanciam as restrições na prática.
 
-**Separação das afirmações.** A Parte I contém apenas enunciados provados analiticamente; nenhuma de suas demonstrações depende de computação. A Parte III contém apenas verificações computacionais, cada uma enunciada com seu limite exato de varredura. Os limites empíricos ali reportados (e.g. o crivo de convergência até $200.000$) são deliberadamente modestos e não reivindicam novidade — o recorde publicado de verificação é $2^{71}$ (Barina 2025) — seu papel é validar os detectores em sistemas com contraexemplos conhecidos ($3n-1$, $3n+5$, os ciclos negativos de $3n+1$) e instanciar os teoremas da Parte I em níveis finitos, não estender recordes numéricos.
+**Separação das afirmações.** A Parte I contém formalizações exatas provadas analiticamente; nenhuma de suas demonstrações depende de computação. A Parte III contém as verificações computacionais, cada uma enunciada com seu limite exato de varredura. Os limites empíricos ali reportados (e.g. o crivo de convergência até $200.000$) são deliberadamente modestos e não reivindicam novidade — o recorde publicado de verificação é $2^{71}$ (Barina 2025) — seu papel é fornecer uma hipótese autossuficiente para as cotas diofantinas e validar os detectores em sistemas com contraexemplos conhecidos ($3n-1$, $3n+5$, os ciclos negativos de $3n+1$).
 
 **Manuscrito formal e reprodutibilidade.** Um manuscrito formal deste material (LaTeX, com demonstrações completas e bibliografia pontual) é mantido em [`paper/main.tex`](paper/main.tex). Todo número citado neste relatório e no manuscrito é regenerado e conferido pelo script [`reproduce_paper_results.py`](reproduce_paper_results.py) (seções R1–R8), que termina com erro em qualquer divergência.
 
 ---
 
-## Parte I: Resultados Matemáticos
+## Parte I: Formalização das Restrições Matemáticas
 
 *Notação geral.* Seja $T$ o mapa acelerado de Collatz, $T(n) = n/2$ se $n$ par, $(3n+1)/2$ se $n$ ímpar. Seja $S$ o mapa de Syracuse, $S(n) = (3n+1)/2^{\nu_2(3n+1)}$, definido sobre os ímpares. Em $\mathbb{Z}_p$, $|x|_p$ denota a norma $p$-ádica.
 
-### Teorema Principal: A Obstrução Modular à Função de Lyapunov
+### A Obstrução Modular à Função de Lyapunov
 
 **Hipóteses.** Uma estratégia natural para provar a convergência global seria exibir uma função de Lyapunov que combine a tendência logarítmica macroscópica com correções locais periódicas. Especificamente, fixado um inteiro arbitrário $j \ge 1$, supomos a existência de uma função $V(n) = \log_2 n + w(n \bmod 2^j)$ que seja estritamente decrescente ao longo de qualquer órbita ímpar em $\mathbb{Z}_+$. Aqui, a componente $w : \mathbb{Z}/2^j\mathbb{Z} \to \mathbb{R}$ é uma função arbitrária, atuando estritamente sobre o anel finito de resíduos. Como corolário imediato do seu domínio finito, $w$ é uma função inerentemente limitada que, quando avaliada nos inteiros, comporta-se como um potencial periódico de período $2^j$.
 
@@ -53,7 +53,7 @@ O mecanismo de falha topológica ancorado no ponto fixo $-1$ é robusto a relaxa
 
 ---
 
-### Teoremas de Contração Global e Espectro Infinito
+### Formalização da Contração Global e Espectro Infinito
 
 Estes resultados formulam a contração estocástica do mapa nos fechos $p$-ádicos. Seus ingredientes são clássicos: a conjugação de Bernoulli/shift em $\mathbb{Z}_2$ deve-se a Bernstein–Lagarias (1996) e insere-se na teoria geral das transformações que preservam medida nos inteiros $p$-ádicos (Kingsbery–Levin–Preygel–Silva, TAMS 2009 e DCDS 2011), ao passo que a mistura em escala fina da distribuição de Syracuse em $\mathbb{Z}_3$ é estabelecida, de forma muito mais forte, por Tao (2022). O que aqui se acrescenta é o empacotamento, agora em forma exata: coeficientes de Dobrushin–Wasserstein exatos e independentes da dimensão, determinados em forma fechada em todo nível finito. A sequência $\tau(P_k)$ é provada não decrescente e limitada por $1/3$ (via um argumento de pushforward entre projeções sucessivas), e o seu limite está agora identificado: $\tau(P_k) = \frac{1}{3}(1-q_k^2)/(1+q_k+q_k^2)$ com $q_k = 2^{-2\cdot 3^{k-2}}$, de modo que $\tau(P_k) \uparrow 1/3$ com velocidade duplamente exponencial e $\tau(P) = 1/3$ exatamente em $\mathbb{Z}_3$ — a cota do acoplamento síncrono é justa, embora o supremo não seja atingido por nenhum par individual (artigo, Lema 4.5 e Teorema 4.6). Isso refina apenas o quadro teórico-de-medida; nada acrescenta sobre órbitas individuais em $\mathbb{Z}_+$.
 

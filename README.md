@@ -2,26 +2,15 @@
 
 [![CI](https://github.com/tuliomarchetto/Collatz/actions/workflows/ci.yml/badge.svg)](https://github.com/tuliomarchetto/Collatz/actions/workflows/ci.yml)
 
-A set of algorithms (pure Python, no dependencies) to investigate the
-**Collatz Conjecture** (3n+1) from two complementary angles:
+An exact-arithmetic computational laboratory (pure Python, no dependencies) to investigate the
+**Collatz Conjecture** (3n+1) and affine sibling systems. The primary contribution of this project is a fully reproducible, dependency-free experimental framework for number theory, designed with strict certification: **no floating-point quantity participates in any certified claim**.
 
-1. **Counterexample** — systematic search for non-trivial cycles and
-   divergent orbits, with detectors *validated on sibling systems that have
-   real counterexamples* (3n−1 and 3n+5).
-2. **Proof** — extraction of invariants, symmetries and structural
-   properties that constrain where a counterexample could live, and that
-   quantify the ingredients of known partial proofs (Terras 1976, Eliahou
-   1993, Krasikov–Lagarias 2003, Tao 2019).
+The laboratory investigates the problem from two complementary angles:
 
-The headline results form an **obstruction map** of the problem, delimiting
-it from both sides: a no-go theorem locating the 2-adic obstruction (the
-fixed point −1) that defeats every modular Lyapunov correction on the
-pointwise side, paired with sharp Wasserstein contraction on the dual,
-measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every
-finite-level coefficient in closed form — and exactly 1/2 on ℤ₂). Neither
-side approaches the conjecture itself: the map charts where convergence
-certificates *cannot* live and where contraction is maximal but blind to
-individual orbits.
+1. **Counterexample (Exact Search & Exclusion)** — systematic exact-arithmetic search for non-trivial cycles and divergent orbits, with detectors *validated on sibling systems that have real counterexamples* (3n−1 and 3n+5). It implements Diophantine cycle exclusion via certified integer convergents.
+2. **Proof Constraints (Formalization of Folklore)** — explicit, rigorous formalization of structural properties that constrain where a counterexample could live.
+
+Rather than proposing groundbreaking new theorems, the theoretical component provides an **obstruction map** of the problem based on precise formalizations of established phenomena: a formal no-go statement locating the 2-adic obstruction (the fixed point −1) that defeats every modular Lyapunov correction on the pointwise side, paired with exactly computed Wasserstein contraction coefficients on the dual, measure-theoretic side (coefficient exactly 1/3 on ℤ₃ — with every finite-level coefficient in closed form — and exactly 1/2 on ℤ₂).
 
 ```bash
 pip install -e ".[test]"                  # install (runtime needs stdlib only)

@@ -2,22 +2,22 @@
 
 *This is the English translation of [`RELATORIO.md`](RELATORIO.md), which remains the canonical Brazilian Portuguese version of this report. License: this document is distributed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (Creative Commons Attribution 4.0 International). The laboratory's source code (`collatz/`) is distributed separately under the MIT License — see `LICENSE`.*
 
-This document formalizes the investigation of the Collatz Conjecture ($3n+1$ dynamics) and affine systems ($3n+d$). The report is divided into three strict parts:
-1. **Part I: Mathematical Results**, containing theorems with purely analytic proofs (no dependence on computation). The central focus is the topological characterization of the failure of modular Lyapunov functions.
-2. **Part II: Description of the Algorithms**, describing the exact computational methods designed to investigate the system (exact algebra, modular graphs, Wasserstein metric).
-3. **Part III: Experimental Results and Verifications**, cataloguing the numerical limits, simulation findings, and computational certificates that instantiate the mathematical theories in practice.
+This document presents an exact-arithmetic computational laboratory and investigation of the Collatz Conjecture ($3n+1$ dynamics) and affine systems ($3n+d$). Designed as an experimental mathematics contribution, the report is divided into three parts:
+1. **Part I: Formalization of the Mathematical Constraints**, providing precise analytic packagings of established folklore phenomena (e.g., the 2-adic topological obstruction and Wasserstein contraction) that serve as theoretical foundations for the algorithms.
+2. **Part II: Description of the Algorithms**, detailing the primary contribution: a fully reproducible, exact-arithmetic computational framework designed to investigate the system without floating-point uncertainty.
+3. **Part III: Experimental Results and Verifications**, cataloguing the computational certificates (e.g., Diophantine exclusion bounds, exact rational Wasserstein coefficients) that instantiate the constraints in practice.
 
-**Separation of claims.** Part I contains only statements proved analytically; none of their proofs depends on a computation. Part III contains only computational verifications, each stated with its exact sweep limit. The empirical limits reported there (e.g. the convergence sieve at $200{,}000$) are deliberately modest and claim no novelty — the published verification record is $2^{71}$ (Barina 2025) — their role is to validate the detectors on systems with known counterexamples ($3n-1$, $3n+5$, the negative cycles of $3n+1$) and to instantiate the theorems of Part I at finite levels, not to extend numerical records.
+**Separation of claims.** Part I contains exact formalizations proved analytically; none of their proofs depends on a computation. Part III contains the computational verifications, each stated with its exact sweep limit. The empirical limits reported there (e.g. the convergence sieve at $200{,}000$) are deliberately modest and claim no novelty — the published verification record is $2^{71}$ (Barina 2025) — their role is to provide a self-contained hypothesis for the Diophantine bounds and to validate the detectors on systems with known counterexamples ($3n-1$, $3n+5$, the negative cycles of $3n+1$).
 
 **Formal manuscript and reproducibility.** A formal manuscript of this material (LaTeX, with complete proofs and pointed bibliography) is maintained in [`paper/main.tex`](paper/main.tex). Every number quoted in this report and in the manuscript is regenerated and checked by the script [`reproduce_paper_results.py`](reproduce_paper_results.py) (sections R1–R8), which exits with an error on any mismatch.
 
 ---
 
-## Part I: Mathematical Results
+## Part I: Formalization of the Mathematical Constraints
 
 *General notation.* Let $T$ be the accelerated Collatz map, $T(n) = n/2$ if $n$ is even, $(3n+1)/2$ if $n$ is odd. Let $S$ be the Syracuse map, $S(n) = (3n+1)/2^{\nu_2(3n+1)}$, defined on the odd integers. In $\mathbb{Z}_p$, $|x|_p$ denotes the $p$-adic norm.
 
-### Main Theorem: The Modular Obstruction to a Lyapunov Function
+### The Modular Obstruction to a Lyapunov Function
 
 **Hypotheses.** A natural strategy for proving global convergence would be to exhibit a Lyapunov function combining the macroscopic logarithmic trend with periodic local corrections. Specifically, fixing an arbitrary integer $j \ge 1$, we assume the existence of a function $V(n) = \log_2 n + w(n \bmod 2^j)$ that is strictly decreasing along any odd orbit in $\mathbb{Z}_+$. Here, the component $w : \mathbb{Z}/2^j\mathbb{Z} \to \mathbb{R}$ is an arbitrary function, acting strictly on the finite ring of residues. As an immediate corollary of its finite domain, $w$ is an inherently bounded function that, when evaluated on the integers, behaves as a periodic potential of period $2^j$.
 
@@ -53,7 +53,7 @@ The topological-failure mechanism anchored at the fixed point $-1$ is robust to 
 
 ---
 
-### Theorems on Global Contraction and the Infinite Spectrum
+### Formalization of Global Contraction and the Infinite Spectrum
 
 These results formulate the stochastic contraction of the map on the $p$-adic closures. Their ingredients are classical: the $\mathbb{Z}_2$ Bernoulli/shift conjugacy is due to Bernstein–Lagarias (1996) and fits the general theory of measure-preserving transformations on the $p$-adic integers (Kingsbery–Levin–Preygel–Silva, TAMS 2009 and DCDS 2011), while the fine-scale mixing of the $\mathbb{Z}_3$ Syracuse distribution is established, far more strongly, by Tao (2022). What is contributed here is the packaging, now in sharp form: exact, dimension-free Dobrushin–Wasserstein coefficients, determined in closed form at every finite level. The sequence $\tau(P_k)$ is proved nondecreasing and bounded by $1/3$ (via a pushforward argument between successive projections), and its limit is now identified: $\tau(P_k) = \frac{1}{3}(1-q_k^2)/(1+q_k+q_k^2)$ with $q_k = 2^{-2\cdot 3^{k-2}}$, so $\tau(P_k) \uparrow 1/3$ doubly exponentially fast and $\tau(P) = 1/3$ exactly on $\mathbb{Z}_3$ — the synchronous-coupling bound is sharp, although the supremum is attained by no single pair (paper, Lemma 4.5 and Theorem 4.6). This sharpens the measure-theoretic picture only; it says nothing new about individual orbits on $\mathbb{Z}_+$.
 
