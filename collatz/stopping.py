@@ -736,7 +736,9 @@ def syracuse_expansion_witness(osc_bound: int) -> Dict[str, object]:
     }
 
 
-def log_lipschitz_obstructs_expansion(L_num: int, L_den: int, gamma_num: int, gamma_den: int) -> bool:
+def log_lipschitz_obstructs_expansion(
+    L_num: int, L_den: int, gamma_num: int, gamma_den: int
+) -> bool:
     """Exact rational test for the log-Lipschitz obstruction.
 
     If |w(n) - w(m)| <= (L_num/L_den) * |log2(n/m)| with L = L_num/L_den < 1,

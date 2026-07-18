@@ -29,10 +29,9 @@ fence: none of this folds into the current manuscript's claims.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from . import padic
 from .core import T
