@@ -56,22 +56,22 @@ def section(title: str):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--quick", action="store_true",
-                    help="skip the slowest sections (R1 sieve at 200k, tau_4)")
+                    help="skip the slowest sections (R1 sieve at 10M, tau_4)")
     args = ap.parse_args()
     t0 = time.time()
 
     # ------------------------------------------------------------------
-    section("R1. Direct sieve: every n <= 200,000 converges to 1"
+    section("R1. Direct sieve: every n <= 10,000,000 converges to 1"
             " [paper Table 1; REPORT Part III, 'Global Computational Sieve']")
-    limit = 20_000 if args.quick else 200_000
+    limit = 100_000 if args.quick else 10_000_000
     res = search.verify_range(limit)
     check(f"all n <= {limit:,} converge (empirical, NOT a proof)", res.all_converge, True)
     n_rec, s_rec = res.stopping_records[-1]
     print(f"    stopping-time record (steps to drop below seed): n = {n_rec}, {s_rec} steps")
     if not args.quick:
-        check("stopping-time record for n <= 200,000", (n_rec, s_rec), (35_655, 135))
-        check("excursion record for n <= 200,000",
-              res.excursion_records[-1], (159_487, 8_601_188_876))
+        check("stopping-time record for n <= 10,000,000", (n_rec, s_rec), (8_088_063, 246))
+        check("excursion record for n <= 10,000,000",
+              res.excursion_records[-1], (6_631_675, 30_171_305_459_816))
 
     # ------------------------------------------------------------------
     section("R2. Exact cycle enumeration via parity vectors"
@@ -92,11 +92,11 @@ def main() -> int:
     # ------------------------------------------------------------------
     section("R3. Diophantine cycle exclusion (continued fractions of log2 3)"
             " [paper Table 3; REPORT Part III, 'Exclusion via Diophantine Compression']")
-    b = cycles.cycle_exclusion_bound(200_000)
-    check("N = 200,000: any nontrivial cycle has > k odd steps, k =",
-          b["min_odd_steps"], 428)
-    check("N = 200,000: minimum cycle length (T steps)",
-          b["min_length_T_steps"], 676)
+    b = cycles.cycle_exclusion_bound(10_000_000)
+    check("N = 10,000,000: any nontrivial cycle has > k odd steps, k =",
+          b["min_odd_steps"], 1_278)
+    check("N = 10,000,000: minimum cycle length (T steps)",
+          b["min_length_T_steps"], 2_019)
     b71 = cycles.cycle_exclusion_bound(2 ** 71)
     check("N = 2^71 (published verification): minimum odd steps",
           b71["min_odd_steps"], 65_470_613_320)
@@ -310,6 +310,27 @@ def main() -> int:
           syr_E["E_unbounded_on_horizon"], True)
     check("coefficient predicate: no expansive word up to depth 12",
           coef_E["has_expansive_word"], False)
+
+    # Exact boundary theorem (thm:exactboundary): a bounded correction exists
+    # iff the walk-gain supremum Lambda(sigma) along block-map orbits is finite.
+    # Filter (2) [all-ones/path]: exhibit an odd-seed walk of a finite maximal
+    # rule with strictly positive cumulative gain (an exact integer ratio),
+    # certifying Lambda = +infinity.
+    wlk = stopping.walk_gain_lower_bound(stopping.constant_rule(1), (1 << 6) - 1, 5)
+    check("boundary: constant-1 walk from 2^6-1 has positive cumulative gain"
+          " (prod endpoints > prod seeds)",
+          (wlk["blocks"], wlk["expands"]), (5, True))
+    # Filter (1) [single-block]: the Syracuse witness above already gives an
+    # unbounded one-block walk gain (Gamma >= 10), hence Lambda = +infinity.
+    check("boundary: single-block Syracuse witness is a length-1 walk of gain >= 10",
+          syr["endpoint"] >= syr["witness"] << 10, True)
+    # Escapee side: the coefficient rule kappa has Lambda(kappa) = 0 wherever the
+    # coefficient stopping-time conjecture holds -- verified up to 100,000 here
+    # (T^{kappa(n)}(n) < n for every odd n), a CONSISTENCY check, not a proof.
+    kap = stopping.kappa_walk_gain_nonpositive(20_000 if args.quick else 100_000)
+    check("boundary: Lambda(kappa) = 0 on the verified range"
+          " (every kappa block contracts; consistency with the open CSTC)",
+          (kap["all_blocks_contracting"], kap["violation"]), (True, None))
 
     # ------------------------------------------------------------------
     dt = time.time() - t0

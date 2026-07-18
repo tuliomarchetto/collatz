@@ -163,8 +163,30 @@ open-question framing; it is genuinely open. No numeric claim changes.
 
 ### Q3 — Closed-form W₁ on ultrametric quotients
 
-**Verdict: known. Lemma 5.5 is a special case of the closed-form Wasserstein-1
-distance on trees / ultrametric spaces. Keep the proof; add the attribution.**
+**Verdict: known, and the match is now confirmed *exact* (verified against the
+Evans–Matsen full text, 2026-07-17, under Tier 2 G6; re-verified 2026-07-17
+against arXiv:1005.1699 eq. (5) and arXiv:1304.5219 / Kloeckner Mathematika
+2015). Lemma 5.5 is the specialization to ℤ/pᵏℤ of Evans–Matsen equation (5).
+Keep the self-contained proof; attribution tightened to cite the exact
+equation. G6 closed.**
+
+**Exactness check (G6).** Evans–Matsen (2012), §2, eq. (5): for a metric tree
+`T` with length measure `λ`, `W₁(P,Q) = ∫_T |P(τ(y)) − Q(τ(y))| λ(dy)`, where
+`τ(y)` is the subtree below `y` — a sum over edges of (edge length)·(TV
+discrepancy of the two subtree masses). Their eq. (1) is the point-mass
+(weighted-UniFrac) special case. The manuscript's `(ℤ/pᵏℤ, p-adic
+ultrametric)` is exactly the leaf metric of a rooted `p`-ary tree of depth `k`:
+the edge from level `ℓ−1` to `ℓ` has length `p^{−(ℓ−1)} − p^{−ℓ}`, its subtree
+is a congruence cell mod `p^ℓ`, and `2m_ℓ` is the aggregate discrepancy across
+those cells — so `lem:w1formula` is eq. (5) evaluated on that tree, not merely
+a related ultrametric-transport result. Kloeckner (2015) is the correct
+*framework* reference (W₁ as an affine isometry onto a convex subset of `ℓ¹`
+for compact ultrametric spaces; Theorem 1.1 / §3 gives the ℓ¹ coordinates via
+masses of balls, which is the continuous-ultrametric parent of the finite-tree
+formula), but Evans–Matsen is the source of the exact closed form. Manuscript
+updated accordingly (the paragraph preceding `lem:w1formula` now cites
+`[evansmatsen2012, eq. (5)]` explicitly, and the two-line self-contained proof
+is retained so the lemma has no external dependency for reproducibility).
 
 - **Evans & Matsen (2012)**, "The phylogenetic Kantorovich–Rubinstein metric for
   environmental sequence samples", J. R. Stat. Soc. Ser. B **74**(3), 569–592 —

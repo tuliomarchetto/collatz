@@ -7,10 +7,12 @@ from collatz.stopping import (
     block_graph,
     coefficient_rule,
     coefficient_stop,
+    coefficient_stopping_time,
     coefficient_words_are_non_expansive,
     constant_rule,
     expansive_horizon_for_predicate,
     is_maximal_prefix_code,
+    kappa_walk_gain_nonpositive,
     karp_block_verdict,
     log_affine_critical_beta_upper_bound,
     log_lipschitz_obstructs_expansion,
@@ -26,6 +28,7 @@ from collatz.stopping import (
     sublogarithmic_witness,
     monotone_witness,
     unrestricted_potential_exists_iff_no_cycles,
+    walk_gain_lower_bound,
     word_is_asymptotically_expansive,
 )
 
@@ -301,3 +304,19 @@ def test_monotone_witness():
 
 def test_unrestricted_potential_exists_iff_no_cycles():
     assert unrestricted_potential_exists_iff_no_cycles() is True
+
+
+def test_exact_boundary_walk_gain_all_ones_rule():
+    """thm:exactboundary filter (2): a constant-depth-1 walk expands."""
+    wlk = walk_gain_lower_bound(constant_rule(1), (1 << 6) - 1, 5)
+    assert wlk["blocks"] == 5
+    assert wlk["expands"]
+    assert wlk["gain_ratio_num"] > wlk["gain_ratio_den"]
+
+
+def test_exact_boundary_kappa_contracts_on_small_range():
+    """Consistency with the open CSTC: Lambda(kappa)=0 on a small verified range."""
+    assert coefficient_stopping_time(3) is not None
+    kap = kappa_walk_gain_nonpositive(2_000)
+    assert kap["all_blocks_contracting"]
+    assert kap["violation"] is None

@@ -41,7 +41,7 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("all", help="full report of findings")
-    p.add_argument("--limit", type=int, default=200_000)
+    p.add_argument("--limit", type=int, default=10_000_000)
     p.add_argument("--cycle-len", type=int, default=14)
     p.add_argument("-o", "--output", help="save report to a file")
 

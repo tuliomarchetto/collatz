@@ -36,7 +36,7 @@ def _fmt_cycle(c) -> str:
 
 
 def run_all(
-    verify_limit: int = 200_000,
+    verify_limit: int = 10_000_000,
     cycle_len: int = 14,
     terras_k: int = 16,
     karp_j: int = 9,

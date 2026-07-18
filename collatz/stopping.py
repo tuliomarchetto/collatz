@@ -785,3 +785,118 @@ def coefficient_words_are_non_expansive(horizon: int) -> bool:
             if word_is_asymptotically_expansive(w):
                 return False
     return True
+
+
+# ----------------------------------------------------------------------
+# Exact boundary of the bounded-correction no-go (paper, thm:exactboundary)
+# ----------------------------------------------------------------------
+#
+# A bounded w with V = log2 n + w satisfying block descent exists IFF the
+# walk-gain supremum Lambda(sigma) -- the sup of cumulative Gamma along
+# deterministic block-map orbits F_sigma(n) = T^{sigma(n)}(n) restricted to
+# odd seeds -- is finite. The two prior filters are the two structural ways
+# Lambda = +infinity is forced; the coefficient rule sits at the boundary,
+# pinned to the (open) coefficient stopping-time conjecture.
+
+
+def coefficient_stopping_time(n: int, cap: int = 4096) -> Optional[int]:
+    """kappa(n) = min{k >= 1 : 3^{a_k} < 2^k}, a_k = # odd steps among the
+    first k accelerated iterates of n. Returns None if not reached within
+    `cap` steps (kappa is only conjectured finite for every n >= 2)."""
+    if n <= 0:
+        raise ValueError("n must be positive")
+    x, a = n, 0
+    for k in range(1, cap + 1):
+        if x % 2 == 1:
+            a += 1
+            x = (3 * x + 1) // 2
+        else:
+            x = x // 2
+        if 3 ** a < 2 ** k:
+            return k
+    return None
+
+
+def coefficient_block_map(n: int, cap: int = 4096) -> Optional[Tuple[int, int]]:
+    """(kappa(n), T^{kappa(n)}(n)) for the coefficient rule, or None if
+    kappa is not reached within `cap` steps."""
+    k = coefficient_stopping_time(n, cap=cap)
+    if k is None:
+        return None
+    return k, iterate_T(n, k)
+
+
+def kappa_walk_gain_nonpositive(limit: int, cap: int = 4096) -> Dict[str, object]:
+    """Consistency instantiation of thm:exactboundary for the coefficient
+    rule kappa: for every odd 3 <= n <= limit, check the single-block gain
+    is non-positive, T^{kappa(n)}(n) < n. If this holds for all n, then
+    every kappa-walk restricted to [3, limit] has strictly negative gain,
+    so Lambda(kappa) = 0 on this range -- i.e. w = 0 already block-descends
+    and kappa lies in the escapee class {Lambda < infinity} here.
+
+    This is the coefficient stopping-time conjecture verified up to `limit`;
+    it is a CONSISTENCY check, NOT a proof that Lambda(kappa) < infinity
+    (that would settle the open conjecture). Returns the first violation
+    if any (there is none in the classical verified range)."""
+    if limit < 3:
+        raise ValueError("limit must be >= 3")
+    max_gain_seen = 0  # gain of the empty walk
+    violation = None
+    for n in range(3, limit + 1, 2):
+        bm = coefficient_block_map(n, cap=cap)
+        if bm is None:
+            violation = {"n": n, "reason": "kappa not reached within cap"}
+            break
+        _k, endpoint = bm
+        if endpoint >= n:  # Gamma_kappa(n) >= 0
+            violation = {"n": n, "kappa": _k, "endpoint": endpoint,
+                         "reason": "T^kappa(n) >= n (would refute CSTC)"}
+            break
+    return {
+        "rule": "Terras-Garner coefficient stopping time kappa",
+        "limit": limit,
+        "all_blocks_contracting": violation is None,
+        "Lambda_kappa_is_zero_on_range": violation is None,
+        "max_walk_gain_on_range": max_gain_seen,
+        "violation": violation,
+        "note": "consistency with the open coefficient stopping-time conjecture; not a proof",
+    }
+
+
+def walk_gain_lower_bound(sigma_words: Tuple[Word, ...], seed: int,
+                          max_blocks: int) -> Dict[str, object]:
+    """Exhibit a sigma-walk of odd seeds under the block map and report its
+    cumulative gain as an exact lower bound on Lambda(sigma).
+
+    `sigma_words` is a finite maximal prefix code S; the walk starts at the
+    odd `seed` and applies F_S(n) = T^{sigma_S(n)}(n) up to `max_blocks`
+    times, stopping early if a block endpoint is even (leaving the odd-seed
+    walk). The cumulative gain is certified as the exact integer ratio
+    prod(endpoint_i) / prod(seed_i): Lambda(S) >= log2 of that ratio."""
+    if seed % 2 == 0 or seed <= 0:
+        raise ValueError("seed must be a positive odd integer")
+    seeds: List[int] = []
+    endpoints: List[int] = []
+    x = seed
+    for _ in range(max_blocks):
+        if x % 2 == 0 or x <= 0:
+            break
+        p = stop_word_of(sigma_words, x)
+        nxt = iterate_T(x, len(p))
+        seeds.append(x)
+        endpoints.append(nxt)
+        x = nxt
+    num = 1
+    den = 1
+    for s, e in zip(seeds, endpoints):
+        num *= e
+        den *= s
+    return {
+        "seed": seed,
+        "blocks": len(seeds),
+        "seeds": seeds,
+        "endpoints": endpoints,
+        "gain_ratio_num": num,  # prod endpoints
+        "gain_ratio_den": den,  # prod seeds
+        "expands": num > den,   # cumulative gain > 0
+    }

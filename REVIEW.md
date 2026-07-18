@@ -127,6 +127,7 @@ than around new theorems.
 - The W₁ closed form on ultrametric quotients (Lemma 5.5) is likely known in
   the optimal-transport literature; a citation search before submission is
   advised.
-- The R1 sieve limit (2·10⁵) is honestly labeled; consider raising it modestly
-  (e.g. 10⁷) so the self-contained hypothesis is less far from the record, at
-  negligible runtime cost in PyPy or with a compiled helper.
+- The R1 sieve limit has been raised to 10⁷ (pure CPython, few seconds; still
+  dependency-free). The self-contained hypothesis now sits less far below the
+  2⁷¹ record; the conditional Diophantine bound updates accordingly
+  (k > 1,278 / > 2,019 elements).

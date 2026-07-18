@@ -16,7 +16,7 @@ The laboratory uses **only the Python standard library** for its execution. You 
 
 ```bash
 python -m collatz all                     # full findings report
-python -m collatz verify --limit 1000000  # counterexample sieve
+python -m collatz verify --limit 10000000  # counterexample sieve (R1 default)
 python -m collatz cycles --d -1           # exact cycle enumeration (3n-1)
 python -m collatz exclude --limit-bits 68 # Diophantine cycle exclusion
 python -m collatz lyapunov --j 10         # Lyapunov function obstruction
