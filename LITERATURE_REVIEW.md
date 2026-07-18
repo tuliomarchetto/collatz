@@ -1,12 +1,12 @@
 # Systematic literature review — open questions on the state of the art
 
 This document records a systematic search of the mathematical literature against
-the three unresolved bibliographic questions raised by the internal peer review
+the unresolved bibliographic questions raised by the internal peer review
 (`REVIEW.md`) and by the manuscript's own Discussion (`paper/main.tex`). It is a
 working research document, kept in English only (unlike `REPORT.md` /
 `RELATORIO.md`, which are the bilingual publishable report).
 
-**Search conducted:** 12–13 July 2026.
+**Search conducted:** 12–13 July 2026 (Q1–Q3); 17 July 2026 (Q4).
 **Searcher's access:** USP institutional network (IP-based access to Scopus, Web
 of Science, MathSciNet, SpringerLink, Cambridge Core, Oxford Academic, AMS).
 
@@ -21,6 +21,7 @@ Three questions, each tied to a specific claim in the manuscript.
 | Q1 | Is the nonexistence theorem "no `V(n) = log₂n + w(n mod 2ʲ)` is strictly decreasing on the positive odd integers under `T`", with its robustness corollary, stated explicitly anywhere in the 3x+1 literature? | Thm 3.2 (`thm:main`), Cor 3.5 (`cor:robust`), Remark `rem:originality` |
 | Q2 | Are the ℤ₃ Dobrushin–Wasserstein contraction (τ ≤ 1/3, exactness open) and the ℤ₂ finite-time Haar averaging already stated? How do they relate to the known Markov / transfer-operator / p-adic-ergodic theory? | Thms 4.3 & 4.5 (`thm:z3`, `thm:z2`), Remark `rem:tauk`, Discussion "Wasserstein contraction and prior theory" |
 | Q3 | The closed-form `W₁` on ℤ/pᵏℤ with the p-adic ultrametric (Lemma 5.5) — is this known in the optimal-transport literature, and what is the correct citation? | Lemma 5.5 (`lem:w1formula`) |
+| Q4 | The **variable-depth** no-go (added 2026-07-17): is the all-ones-telescoping / single-block-expansion obstruction for variable-depth stopping-rule potentials — no bounded correction `w(n)` makes `log₂n + w(n)` block-descend under any adapted rule stopping `1^s`, nor under any rule with unbounded `Γ_σ` — stated anywhere (Wirsching; Kohl / RCWA; Terras–Garner coefficient stopping time thread; Tao's stopping-time setup)? | Thms `thm:stopping`, `thm:expansion`, `thm:characterize`, Remark `rem:boundary` |
 
 Out of scope by decision: updating cycle-exclusion bounds beyond Hercher 2023
 (the manuscript already cites Hercher 2023 and flags the supersession).
@@ -73,6 +74,11 @@ class. Their prevalence is itself a finding (see Q1).
 | Q2 | `Tao Syracuse random variables total variation mixing 3-adic` | web + arXiv | confirmed Tao 2022 (already cited) | 0 new |
 | Q3 | `Wasserstein ultrametric closed form Kloeckner` | web + arXiv | ~9 | 1 (Kloeckner 2015) |
 | Q3 | `Kantorovich Wasserstein tree metric closed form Evans Matsen` | web + arXiv | ~9 | 1 (Evans–Matsen 2012) |
+| Q4 | `Collatz stopping time bounded potential no-go prefix code parity word telescoping` | web + arXiv | ~20 | 0 |
+| Q4 | `"coefficient stopping time" Terras conjecture survey` | web + arXiv | ~10 | 1 (Garner 1981) |
+| Q4 | `Collatz Lyapunov / potential stopping time nonexistence bounded correction (2024–2026)` | web + arXiv | ~10 (non-refereed "proofs" excluded) | 0 |
+| Q4 | `Wirsching 3n+1 monograph Lyapunov potential descent nonexistence` | web (monograph scope) | ~10 | 0 |
+| Q4 | `Collatz Mersenne 2^k−1 unbounded growth nonexistence bounded weight` | web + arXiv | ~10 | 0 |
 
 ---
 
@@ -179,6 +185,73 @@ to the tree/ultrametric optimal-transport literature (Evans–Matsen 2012;
 Kloeckner 2015), noting the lemma is the specialization to ℤ/pᵏℤ. The lemma's
 self-contained proof stays (it is short and keeps the paper reproducible).
 
+### Q4 — Priority of the variable-depth no-go (search of 2026-07-17)
+
+**Verdict: no prior statement located. The ingredients are folklore; the
+packaging as a nonexistence theorem — and the adapted-rule characterization by
+expansion rate — was not found anywhere. Closest engaged relative: the
+Terras–Garner coefficient stopping time conjecture, which the manuscript
+already identifies as the exact boundary of the no-go. Hedge as for Q1: a
+documented negative search, not a proof of absence.**
+
+What the search established:
+
+- **Both mechanical ingredients are classical.** (i) The all-ones ascent — the
+  class `−1 mod 2^ℓ` (Mersenne seeds `2^ℓ − 1`) rises for `ℓ` consecutive
+  accelerated steps — is Terras (1976) / Everett (1977) folklore, exactly as in
+  Q1. (ii) Unbounded single-block growth of the untruncated Syracuse step on
+  Mersenne seeds (`S(2^ℓ−1) = (3^ℓ−1)/2`) is elementary and appears throughout
+  the stopping-time literature. What was **not found** is either ingredient
+  *stated as a nonexistence theorem* for the class `V(n) = log₂n + w(n)`, `w`
+  bounded, under adapted (prefix-code) stopping rules — i.e., nothing resembling
+  `thm:stopping` (telescoping along all-ones chains defeats every bounded
+  correction for every rule stopping `1^s`), `thm:expansion` (the
+  single-block criterion `limsup Γ_σ = ∞`, adaptedness not required), or the
+  characterization `thm:characterize` (obstruction ⟺ expansion rate
+  `E(S) = ∞` for the single-block filter, plus the all-ones/cycle filter for
+  finite maximal prefix codes).
+- **The stopping-time literature runs orthogonally.** Winkler (arXiv:1504.00212)
+  and the related work on residue classes with equal stopping time enumerate
+  and structure the classes `mod 2^σ`; they contain no potential/no-go
+  statement. Wirsching's monograph (LNM 1681, 1998) develops predecessor-set
+  and measure-theoretic machinery, not descent certificates; no Lyapunov
+  nonexistence statement is in its scope.
+- **The engaged boundary object is Terras–Garner.** The coefficient stopping
+  time conjecture (`σ(n) = τ(n)`; equivalently, descent with `w ≡ 0` at the
+  coefficient stopping time) is stated in Terras (1976) and **Garner (1981)**,
+  and Lagarias (1985, §"coefficient stopping time") proves its truth would
+  imply the nonexistence of nontrivial cycles (verified against the survey
+  text, node5 of the online edition). This confirms the manuscript's Remark
+  `rem:boundary`: the surviving non-expansive prototype is precisely an open
+  conjecture, so neither filter can be strengthened to cover it without
+  deciding an open problem. Garner (1981) was previously uncited — it should be
+  added alongside Terras in `rem:boundary` and Definition `def:adapted`.
+- **Kohl / RCWA (re-checked under Q4 lens).** Kohl (2008) remains a no-go about
+  conjugating permutations in the RCWA category; nothing in the RCWA line
+  treats data-dependent stopping schedules or bounded additive corrections.
+- **Tao's setup is variable-depth but almost-all.** Tao (2022) works with
+  data-dependent stopping times (Syracuse random variables, `n^{1/2}`-type
+  weights) in a probabilistic framework; his results are density statements,
+  not pointwise descent certificates, and contain no nonexistence theorem for
+  potential classes. The manuscript already positions itself below Tao.
+- **The contaminating literature again runs the opposite way** (non-refereed
+  "strictly decreasing functional" proofs, several 2024–2026); as in Q1, they
+  assert existence for classes the manuscript refutes, none in a reputable
+  venue, and none engages adapted stopping rules.
+
+**Consequence.** The variable-depth theorems can be presented as new *as
+packaging*, with the same hedged posture as Q1: state that a documented search
+located no prior formulation, claim no absolute priority, and keep the
+falsifiable request-for-pointer framing. Edits: (1) add `garner1981` to
+`references.bib` (verified: L. E. Garner, *On the Collatz 3n+1 algorithm*,
+Proc. Amer. Math. Soc. **82** (1981), no. 1, 19–22,
+doi:10.1090/S0002-9939-1981-0603593-2) and cite it with Terras for the
+coefficient stopping time conjecture; (2) add a "relation to the literature"
+remark for Section `sec:stopping` mirroring `rem:originality`; (3) soften the
+abstract's "previously thought to escape" (no documented prior belief exists —
+the phrase referred to an earlier version of this work) to a neutral
+formulation.
+
 ---
 
 ## 4. Consequences for the manuscript (edit list)
@@ -206,6 +279,12 @@ Applied in the same session as this review:
    the outcome of a documented search and cites Kohl (2008) as the closest
    relative (both languages, same turn).
 
+Applied in the Q4 session (2026-07-17): `garner1981` added to
+`paper/references.bib`; Garner cited in Definition `def:adapted` and Remark
+`rem:boundary`; new Remark `rem:stoppingoriginality` (relation of the
+variable-depth theorems to the literature) added to Section `sec:stopping`;
+abstract's "previously thought to escape" softened.
+
 **Bibliographic records (all DOIs confirmed via Crossref):**
 
 - Kohl, S. (2008). On conjugates of Collatz-type mappings. *Int. J. Number
@@ -223,6 +302,8 @@ Applied in the same session as this review:
 - Evans, S. N., Matsen, F. A. (2012). The phylogenetic Kantorovich–Rubinstein
   metric for environmental sequence samples. *J. R. Stat. Soc. Ser. B* **74**(3),
   569–592. doi:10.1111/j.1467-9868.2011.01018.x. arXiv:1005.1699.
+- Garner, L. E. (1981). On the Collatz 3n+1 algorithm. *Proc. Amer. Math.
+  Soc.* **82**(1), 19–22. doi:10.1090/S0002-9939-1981-0603593-2.
 
 ## 5. Limitations of this review
 

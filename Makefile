@@ -27,6 +27,7 @@ report:
 	$(PYTHON) -m collatz all
 
 paper:
+	$(PYTHON) paper/make_residue_graph_figure.py
 	cd paper && tectonic main.tex
 
 note:

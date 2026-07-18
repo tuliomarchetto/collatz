@@ -121,6 +121,25 @@ def main() -> int:
         check(f"j = {j}: no modular Lyapunov function exists",
               v["lyapunov_possible"], False)
 
+    # Figure 1 of the paper is a generated artifact of this same graph
+    # construction: certify that the committed TikZ file regenerates
+    # byte-for-byte and that G_4 has exactly the two predicted self-loops.
+    succ4, _ = invariants.transition_graph_mod2j(4)
+    check("G_4 self-loops are exactly {0 (even, weight -1), 15 = -1 (odd, gain)}",
+          sorted(r for r, ss in enumerate(succ4) if r in ss), [0, 15])
+    import importlib.util as _ilu
+    import os as _os
+    _figpath = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "paper")
+    _spec = _ilu.spec_from_file_location(
+        "make_residue_graph_figure",
+        _os.path.join(_figpath, "make_residue_graph_figure.py"))
+    _figmod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_figmod)
+    with open(_os.path.join(_figpath, "residue_graph_j4.tex")) as _fh:
+        _committed = _fh.read()
+    check("paper Figure 1 (residue_graph_j4.tex) regenerates byte-for-byte",
+          _figmod.tikz_residue_graph(4) == _committed, True)
+
     # ------------------------------------------------------------------
     section("R5. Inverse tree of 1: exact covering depth and level bounds"
             " [paper Table 5; REPORT Part III, 'Diffusion Balance (Inverse Tree)']"
