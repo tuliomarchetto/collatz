@@ -6,10 +6,11 @@
 #   make report      — regenerate the integrated findings report (Portuguese)
 #   make paper       — compile the LaTeX manuscript (requires latexmk)
 #   make note        — compile the 2-page extraction notes (PT and EN)
+#   make lean        — build the Lean 4 arithmetic core of thm:main (G10)
 
 PYTHON ?= python3
 
-.PHONY: install test reproduce report paper note clean
+.PHONY: install test reproduce report paper note lean clean
 
 install:
 	@echo "Creating virtual environment and installing..."
@@ -33,6 +34,10 @@ paper:
 note:
 	cd note && tectonic nota-obstrucao-lyapunov-pt.tex && tectonic lyapunov-obstruction-en.tex
 
+lean:
+	cd lean && lake build
+
 clean:
 	rm -rf build dist *.egg-info collatz/__pycache__ tests/__pycache__ .pytest_cache
 	cd paper 2>/dev/null && latexmk -C main.tex 2>/dev/null || true
+	rm -rf lean/.lake

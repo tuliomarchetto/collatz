@@ -25,8 +25,13 @@ python -m collatz spectral --k 4          # transfer operator mod 3^k
 python -m collatz transfer --k3 3 --k2 6  # infinite transfer operator
 python -m collatz tree --depth 120        # inverse-tree coverage
 python -m collatz terras --k 18           # 2-adic structure
+python -m collatz density --bad-set 16    # Terras bad-set (exact rational; G11 hook)
 python reproduce_paper_results.py         # regenerate every number in the paper
 ```
+
+Lean 4 companion (optional, Tier 3 G10): machine-checked arithmetic core of the
+modular Lyapunov obstruction (`thm:main`) lives in [`lean/`](lean/) —
+`cd lean && lake build` (Lean 4.24.0, pure stdlib, no mathlib).
 
 If you want to run the test suite (which requires `pytest`), you should set up a virtual environment to avoid PEP 668 system-package errors:
 

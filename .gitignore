@@ -5,9 +5,6 @@ __pycache__/
 .claude/
 *.egg-info/
 *.pyc
-build/
-CLAUDE.md
-dist/
 
 # LaTeX build artifacts (paper/main.pdf is reproducible via `make paper`)
 paper/*.aux
@@ -20,3 +17,6 @@ paper/*.out
 paper/*.synctex.gz
 
 todo/
+# Lean 4 build artifacts
+lean/.lake/
+lake-packages/

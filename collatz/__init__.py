@@ -32,6 +32,10 @@ transfer    INFINITE transfer operator: Koopman operator of the Syracuse
             weights, density contraction).
 tree        Inverse tree (preimages of 1): coverage density and growth
             rate.
+density     Almost-all / log-density hooks (Terras bad-set as exact
+            rationals, partial log-density sums, empirical probes).
+            Tier-3 G11 laboratory surface — does not claim new almost-all
+            theorems; see todo/G11_PROGRAM.md.
 report      Orchestrates all modules and produces a report of findings.
 """
 

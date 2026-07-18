@@ -11,6 +11,8 @@ Examples:
     python -m collatz spectral --k 4
     python -m collatz transfer --k3 3 --k2 6 --n 100000
     python -m collatz tree --depth 120 --x 1000
+    python -m collatz density --bad-set 16   # Terras bad-set (exact rational)
+    python -m collatz density --interface   # almost-all ingredient map (G11)
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ import sys
 
 from . import (
     cycles,
+    density,
     invariants,
     padic,
     report,
@@ -100,6 +103,31 @@ def main(argv=None) -> int:
 
     p = sub.add_parser("terras", help="verification of the 2-adic structure")
     p.add_argument("--k", type=int, default=16)
+
+    p = sub.add_parser(
+        "density",
+        help="almost-all / log-density laboratory hooks (G11; no new claims)",
+    )
+    p.add_argument(
+        "--bad-set",
+        type=int,
+        metavar="K",
+        help="print exact Terras bad-set measures for k = 1..K",
+    )
+    p.add_argument(
+        "--log-probe",
+        action="store_true",
+        help="empirical log-density of long stopping times (display only)",
+    )
+    p.add_argument("--limit", type=int, default=5_000, help="probe limit (odd seeds)")
+    p.add_argument(
+        "--bound", type=int, default=40, help="stopping-time threshold for --log-probe"
+    )
+    p.add_argument(
+        "--interface",
+        action="store_true",
+        help="print the map from almost-all ingredients to this repo",
+    )
 
     args = ap.parse_args(argv)
 
@@ -246,6 +274,46 @@ def main(argv=None) -> int:
         print("binomial census:", padic.census_is_binomial(padic.parity_census(k), k))
         m_bad, r_rate = padic.bad_set_measure(k)
         print(f"bad-set measure: {m_bad:.6f} (theoretical rate {r_rate:.6f})")
+
+    elif args.cmd == "density":
+        ran = False
+        if args.interface:
+            ran = True
+            print("Almost-all ingredient map (G11; see todo/G11_PROGRAM.md):\n")
+            for k, v in density.interface_map().items():
+                print(f"  • {k}\n      → {v}")
+        if args.bad_set is not None:
+            ran = True
+            print(f"Exact Terras bad-set measure mod 2^k, k = 1..{args.bad_set}:")
+            for row in density.bad_set_table(args.bad_set):
+                print(
+                    f"  k = {row['k']:2d}: measure = {row['measure']} "
+                    f"= {row['n_bad']}/{row['total']} "
+                    f"≈ {row['measure_float']:.6f} "
+                    f"(threshold j = {row['threshold_j']})"
+                )
+        if args.log_probe:
+            ran = True
+            probe = density.empirical_long_stopping_log_density(
+                args.limit, args.bound
+            )
+            print(
+                f"Empirical probe: odd seeds in 3..{probe.limit} with "
+                f"stopping time ≥ {probe.bound}:"
+            )
+            print(f"  n_exceed = {probe.n_exceed}")
+            print(
+                f"  partial log-density ≈ {probe.empirical_log_density:.6f} "
+                f"(float display only)"
+            )
+            print(f"  note: {probe.note}")
+        if not ran:
+            print(
+                "Specify --bad-set K, --log-probe, and/or --interface. "
+                "See todo/G11_PROGRAM.md.",
+                file=sys.stderr,
+            )
+            return 2
 
     return 0
 

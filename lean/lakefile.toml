@@ -1,0 +1,22 @@
+# Lean 4 formalization of the modular Lyapunov obstruction (paper thm:main).
+#
+# Two layers:
+#   * Arithmetic core (CollatzObstruction.Basic / .Arith) — pure Lean 4 stdlib,
+#     no mathlib; `lake build` works offline once Lean is installed.
+#   * Real/log form (CollatzObstruction.Modular) — needs mathlib; enable by
+#     uncommenting the require block and the import in CollatzObstruction.lean.
+#
+# See README.md.
+
+name = "collatz_obstruction"
+version = "0.1.0"
+defaultTargets = ["CollatzObstruction"]
+
+# Uncomment for the Real/log form (Modular.lean):
+# [[require]]
+# name = "mathlib"
+# scope = "leanprover-community"
+# rev = "v4.24.0"
+
+[[lean_lib]]
+name = "CollatzObstruction"

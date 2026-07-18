@@ -1,342 +1,504 @@
-# Systematic literature review — open questions on the state of the art
+# Systematic literature review — Collatz Lab corpus
 
-This document records a systematic search of the mathematical literature against
-the unresolved bibliographic questions raised by the internal peer review
-(`REVIEW.md`) and by the manuscript's own Discussion (`paper/main.tex`). It is a
-working research document, kept in English only (unlike `REPORT.md` /
-`RELATORIO.md`, which are the bilingual publishable report).
+Working research document (English only). Complements the bilingual
+publishable report (`REPORT.md` / `RELATORIO.md`) and the formal manuscript
+(`paper/main.tex`). It records (i) the bibliographic corpus the project
+depends on, organized by mathematical theme, and (ii) the priority searches
+(Q1–Q4) that justify the manuscript's originality hedges.
 
-**Search conducted:** 12–13 July 2026 (Q1–Q3); 17 July 2026 (Q4).
-**Searcher's access:** USP institutional network (IP-based access to Scopus, Web
-of Science, MathSciNet, SpringerLink, Cambridge Core, Oxford Academic, AMS).
+**Search windows.** 12–13 July 2026 (Q1–Q3); 17 July 2026 (Q4, G6
+re-verification); **18 July 2026 (systematic reorganization + DOI audit
+under USP institutional access).**
+
+**Access.** USP institutional network: Crossref API, arXiv, zbMATH Open,
+publisher platforms (Cambridge Core, SpringerLink, AMS, AIMS, Oxford,
+Waterloo JIS). Every retained DOI below was checked against Crossref or the
+publisher page in this window, except as noted.
+
+---
+
+## 0. How to use this document
+
+| Section | Purpose |
+|---------|---------|
+| §1 Purpose and scope | What questions the review answers |
+| §2 Methodology | Inclusion / exclusion / sources |
+| **§3 Thematic bibliography** | **All papers needed by the project, by domain** |
+| §4 Priority questions Q1–Q4 | Originality / positioning verdicts |
+| §5 Mapping to the manuscript | Which claim cites what |
+| §6 Limitations | What this review does *not* prove |
+
+Items already in `paper/references.bib` are marked **`[bib]`**. Items useful
+for the laboratory / Tier-3 G11 but not (yet) cited in the manuscript are
+marked **`[adjacent]`**. Optional formalization pointers are **`[formal]`**.
 
 ---
 
 ## 1. Purpose and scope
 
-Three questions, each tied to a specific claim in the manuscript.
+### 1.1 Bibliographic questions (priority searches)
 
 | # | Question | Manuscript locus |
 |---|----------|------------------|
-| Q1 | Is the nonexistence theorem "no `V(n) = log₂n + w(n mod 2ʲ)` is strictly decreasing on the positive odd integers under `T`", with its robustness corollary, stated explicitly anywhere in the 3x+1 literature? | Thm 3.2 (`thm:main`), Cor 3.5 (`cor:robust`), Remark `rem:originality` |
-| Q2 | Are the ℤ₃ Dobrushin–Wasserstein contraction (τ ≤ 1/3, exactness open) and the ℤ₂ finite-time Haar averaging already stated? How do they relate to the known Markov / transfer-operator / p-adic-ergodic theory? | Thms 4.3 & 4.5 (`thm:z3`, `thm:z2`), Remark `rem:tauk`, Discussion "Wasserstein contraction and prior theory" |
-| Q3 | The closed-form `W₁` on ℤ/pᵏℤ with the p-adic ultrametric (Lemma 5.5) — is this known in the optimal-transport literature, and what is the correct citation? | Lemma 5.5 (`lem:w1formula`) |
-| Q4 | The **variable-depth** no-go (added 2026-07-17): is the all-ones-telescoping / single-block-expansion obstruction for variable-depth stopping-rule potentials — no bounded correction `w(n)` makes `log₂n + w(n)` block-descend under any adapted rule stopping `1^s`, nor under any rule with unbounded `Γ_σ` — stated anywhere (Wirsching; Kohl / RCWA; Terras–Garner coefficient stopping time thread; Tao's stopping-time setup)? | Thms `thm:stopping`, `thm:expansion`, `thm:characterize`, Remark `rem:boundary` |
+| Q1 | Is the nonexistence theorem “no \(V(n)=\log_2 n+w(n\bmod 2^j)\) is strictly decreasing on positive odds under \(T\)”, with its robustness corollary, stated explicitly in the 3x+1 literature? | `thm:main`, `cor:robust`, `rem:originality` |
+| Q2 | Are the \(\mathbb{Z}_3\) Dobrushin–Wasserstein contraction and the \(\mathbb{Z}_2\) finite-time Haar averaging already stated? Relation to Markov / transfer / p-adic ergodic theory? | `thm:z3`, `thm:tausharp`, `thm:z2`, Discussion |
+| Q3 | Is the closed-form \(W_1\) on \(\mathbb{Z}/p^k\mathbb{Z}\) with the p-adic ultrametric known in optimal transport? Correct citation? | `lem:w1formula` |
+| Q4 | Is the variable-depth no-go (all-ones telescoping / single-block expansion / exact boundary \(\Lambda\)) stated anywhere? | `thm:stopping`, `thm:expansion`, `thm:characterize`, `thm:exactboundary` |
 
-Out of scope by decision: updating cycle-exclusion bounds beyond Hercher 2023
-(the manuscript already cites Hercher 2023 and flags the supersession).
+### 1.2 Thematic scope (full corpus)
+
+Beyond Q1–Q4, the project needs a **working map of the literature** in every
+domain it touches:
+
+1. Surveys and annotated bibliographies  
+2. Stopping times and almost-all results (Terras → Tao)  
+3. Cycles and Diophantine exclusion  
+4. 2-adic structure and conjugacy  
+5. Modular Markov chains (Matthews–Watts line)  
+6. Lyapunov / RCWA / obstruction relatives  
+7. Transfer operators, Wasserstein, ultrametric OT  
+8. Computational verification  
+9. Formalization frontier (Lean / ccchallenge) — pointer only  
+
+Out of scope as *claimed results*: improving Hercher's cycle bound;
+proving almost-all statements beyond Tao; non-refereed “proofs of Collatz”.
 
 ---
 
 ## 2. Methodology
 
-**Inclusion criterion.** A work is *retained* only if (a) it is a peer-reviewed
-paper, a recognized monograph, or a preprint by an established author on a
-reputable server (arXiv), and (b) its bibliographic record (author, title,
-venue, year, DOI/arXiv id) was confirmed on the publisher page, arXiv, zbMATH,
-or Crossref. No citation was entered from memory. Crossref was used as the
-authoritative source for every DOI recorded below.
+**Inclusion.** Peer-reviewed paper, recognized monograph, or arXiv preprint
+by an established author, with bibliographic record confirmed on publisher
+page / arXiv / zbMATH / Crossref. No citation from memory alone.
 
-**Exclusion criterion.** The 3x+1 literature is heavily contaminated by
-low-quality "proofs of the Collatz conjecture" — self-published PDFs on viXra,
-academia.edu, ResearchGate, and predatory journals, many of which invoke a
-"Lyapunov function" or "entropy potential" that strictly decreases. These were
-*excluded* from the retained set: none is peer-reviewed in a reputable venue,
-and every one asserts the *opposite* of Q1 (existence of a global decreasing
-certificate) rather than the manuscript's *nonexistence* result for a specific
-class. Their prevalence is itself a finding (see Q1).
+**Exclusion.** viXra / academia.edu / ResearchGate / predatory-journal
+“proofs of Collatz” that assert a global decreasing Lyapunov/entropy
+functional. They assert the *opposite* of Q1 and are not retained, except as
+a contamination note.
 
-**Sources searched.**
+**Primary sources searched.**
 
-- **Lagarias's annotated bibliographies of the 3x+1 problem**, Parts I and II
-  (arXiv `math/0309224`, updated Jan 2011; arXiv `math/0608208`, updated Jan
-  2012) — the authoritative ~300-item annotated survey. Downloaded the LaTeX
-  sources and grepped the full text for `Lyapunov`, `potential`, `monotone`,
-  `decreasing`, `descent`, `drift`, `weight`, `residue`.
-- **arXiv** full-text search (`Collatz Lyapunov`, `"3x+1" Lyapunov`, and the Q2
-  / Q3 strings below).
-- **Crossref** bibliographic API — DOI and venue confirmation for every retained
-  work.
-- **zbMATH Open** and **Google Scholar / general web** — forward citation
-  chasing from Terras 1976, Everett 1977, Tao 2022, and Kohl 2008.
-- Publisher pages (Cambridge Core, Oxford Academic, AMS, AIMS, World
-  Scientific) for exact volume/issue/page confirmation.
+- Lagarias annotated bibliographies: arXiv `math/0309224` (1963–1999, v13 Jan
+  2011); arXiv `math/0608208` (2000–2009). Full-text greps for Lyapunov /
+  potential / monotone / descent / stopping / Wasserstein / conjugacy.
+- arXiv full text (math.NT, math.DS, math.PR).
+- Crossref bibliographic + content negotiation APIs (DOI audit, 18 Jul 2026).
+- Forward citation chasing from Terras 1976, Everett 1977, Tao 2022, Kohl
+  2008, Barina 2025.
+- Publisher pages for volume / issue / pages.
 
-**Search-string log.**
+**Search-string log (priority questions).**
 
 | Q | String | Source | Screened | Retained |
 |---|--------|--------|----------|----------|
-| Q1 | `Lyapunov`, `potential function`, `monotone`, `decreasing`, `descent`, `drift` | Lagarias bib. I + II (full text) | ~10 keyword hits | 1 (Kohl 2008) |
-| Q1 | `Collatz Lyapunov` | arXiv | 1 (unrelated: gene-regulatory networks) | 0 |
-| Q1 | `"3x+1" Lyapunov` | arXiv | 0 | 0 |
-| Q1 | `Collatz Lyapunov nonexistence / no monotone potential` | web | ~8 (all non-refereed "proofs") | 0 |
-| Q2 | `Collatz Syracuse 2-adic ergodic Bernoulli`, `p-adic shift measure-preserving` | web + arXiv | ~9 | 2 (KLPS 2009, 2011) |
-| Q2 | `Tao Syracuse random variables total variation mixing 3-adic` | web + arXiv | confirmed Tao 2022 (already cited) | 0 new |
-| Q3 | `Wasserstein ultrametric closed form Kloeckner` | web + arXiv | ~9 | 1 (Kloeckner 2015) |
-| Q3 | `Kantorovich Wasserstein tree metric closed form Evans Matsen` | web + arXiv | ~9 | 1 (Evans–Matsen 2012) |
-| Q4 | `Collatz stopping time bounded potential no-go prefix code parity word telescoping` | web + arXiv | ~20 | 0 |
-| Q4 | `"coefficient stopping time" Terras conjecture survey` | web + arXiv | ~10 | 1 (Garner 1981) |
-| Q4 | `Collatz Lyapunov / potential stopping time nonexistence bounded correction (2024–2026)` | web + arXiv | ~10 (non-refereed "proofs" excluded) | 0 |
-| Q4 | `Wirsching 3n+1 monograph Lyapunov potential descent nonexistence` | web (monograph scope) | ~10 | 0 |
-| Q4 | `Collatz Mersenne 2^k−1 unbounded growth nonexistence bounded weight` | web + arXiv | ~10 | 0 |
+| Q1 | Lyapunov / potential / monotone / descent in Lagarias bib. | Lagarias I+II | ~10 hits | 1 (Kohl 2008) |
+| Q1 | `Collatz Lyapunov`, `"3x+1" Lyapunov` | arXiv | 1 unrelated | 0 |
+| Q2 | Collatz Syracuse 2-adic ergodic / p-adic shift | web+arXiv | ~9 | 2 (KLPS 2009, 2011) |
+| Q3 | Wasserstein ultrametric Kloeckner; Kantorovich tree Evans Matsen | web+arXiv | ~18 | 2 |
+| Q4 | stopping time bounded potential no-go / coefficient stopping Garner | web+arXiv | ~40 | 1 (Garner 1981) |
 
 ---
 
-## 3. Findings
+## 3. Thematic bibliography
+
+Every entry: short role in *this* project, then full citation with DOI/arXiv
+when confirmed. Order within each domain is roughly chronological.
+
+### 3.A Surveys and annotated bibliographies
+
+| Tag | Role for this project |
+|-----|------------------------|
+| **`[bib]` Lagarias 1985** | Canonical short survey; coefficient stopping time and its cycle implication |
+| **`[bib]` Lagarias 2010** | Edited volume (Ultimate Challenge); handbook entry point |
+| **`[adjacent]` Lagarias bib. I** | Authoritative ~annotated corpus 1963–1999; primary Q1 search surface |
+| **`[adjacent]` Lagarias bib. II** | Corpus 2000–2009 |
+
+1. **`[bib]` Lagarias, J. C. (1985).** The \(3x+1\) problem and its
+   generalizations. *Amer. Math. Monthly* **92**(1), 3–23.
+   doi:[10.1080/00029890.1985.11971528](https://doi.org/10.1080/00029890.1985.11971528).
+
+2. **`[bib]` Lagarias, J. C., ed. (2010).** *The Ultimate Challenge: The
+   \(3x+1\) Problem.* AMS, Providence, RI. ISBN 978-0-8218-4940-8.
+
+3. **`[adjacent]` Lagarias, J. C. (2011 update).** The \(3x+1\) problem: an
+   annotated bibliography (1963–1999). arXiv:[math/0309224](https://arxiv.org/abs/math/0309224).
+
+4. **`[adjacent]` Lagarias, J. C. (2012 update).** The \(3x+1\) problem: an
+   annotated bibliography, II (2000–2009). arXiv:[math/0608208](https://arxiv.org/abs/math/0608208).
+
+### 3.B Stopping times and almost-all results
+
+The field's **positive** frontier (Tier 3 G11). Natural density up through
+Korec; logarithmic density in Tao.
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Terras 1976** | Finite stopping time for almost all \(n\) (natural density); parity bijection seeds |
+| **`[bib]` Everett 1977** | Independent almost-all finite stopping / iteration analysis |
+| **`[adjacent]` Allouche 1978/79** | \(\mathrm{Col}_{\min}(N)<N^\theta\) a.e., \(\theta>\tfrac32-\log_2 3\approx 0.869\) |
+| **`[adjacent]` Korec 1994** | Same with \(\theta>\log 3/\log 4\approx 0.7924\) |
+| **`[bib]` Tao 2022** | \(\mathrm{Col}_{\min}(N)\le f(N)\) a.e. (log-density) for every \(f\to\infty\) |
+| **`[bib]` Garner 1981** | Coefficient stopping time conjecture (with Terras) |
+
+5. **`[bib]` Terras, R. (1976).** A stopping time problem on the positive
+   integers. *Acta Arith.* **30**(3), 241–252.
+   doi:[10.4064/aa-30-3-241-252](https://doi.org/10.4064/aa-30-3-241-252).
+   **Crossref verified 2026-07-18.**
+
+6. **`[bib]` Everett, C. J. (1977).** Iteration of the number-theoretic
+   function \(f(2n)=n\), \(f(2n+1)=3n+2\). *Adv. Math.* **25**(1), 42–45.
+   doi:[10.1016/0001-8708(77)90087-1](https://doi.org/10.1016/0001-8708(77)90087-1).
+
+7. **`[adjacent]` Allouche, J.-P. (1978–1979).** Sur la conjecture de
+   “Syracuse–Kakutani–Collatz”. *Séminaire de Théorie des Nombres de Bordeaux*,
+   Exp. No. 9. (As cited by Tao 2022 and Lagarias surveys; not in Crossref as
+   a journal article.)
+
+8. **`[adjacent]` Korec, I. (1994).** A density estimate for the \(3x+1\)
+   problem. *Math. Slovaca* **44**(1), 85–89. (Standard citation in Tao 2022
+   for the \(\log 3/\log 4\) threshold; Math. Slovaca pre-Crossref era —
+   record taken from secondary citation chain, not re-DOI'd.)
+
+9. **`[bib]` Garner, L. E. (1981).** On the Collatz \(3n+1\) algorithm.
+   *Proc. Amer. Math. Soc.* **82**(1), 19–22.
+   doi:[10.1090/S0002-9939-1981-0603593-2](https://doi.org/10.1090/S0002-9939-1981-0603593-2).
+   **Crossref verified 2026-07-18.**
+
+10. **`[bib]` Tao, T. (2022).** Almost all orbits of the Collatz map attain
+    almost bounded values. *Forum Math. Pi* **10**, e12.
+    doi:[10.1017/fmp.2022.8](https://doi.org/10.1017/fmp.2022.8);
+    arXiv:[1909.03562](https://arxiv.org/abs/1909.03562).
+    **Crossref verified 2026-07-18.**
+
+**Density ladder (for G11 / `collatz/density.py`).**
+
+| Result | Notion of “almost all” | Bound |
+|--------|------------------------|-------|
+| Terras 1976 / Everett 1977 | natural density | finite stopping time / \(\mathrm{Col}_{\min}<N\) |
+| Allouche 1978/79 | natural density | \(\mathrm{Col}_{\min}<N^\theta\), \(\theta>0.869\) |
+| Korec 1994 | natural density | \(\theta>\log 3/\log 4\approx 0.7924\) |
+| **Tao 2022** | **logarithmic density** | \(\mathrm{Col}_{\min}\le f(N)\) for every \(f\to\infty\) |
+
+### 3.C Cycles and Diophantine exclusion
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Eliahou 1993** | Diophantine lower bounds on nontrivial cycle length |
+| **`[bib]` Simons–de Weger 2005** | \(m\)-cycle theory + computation |
+| **`[bib]` Hercher 2023** | No \(m\)-cycles for \(m\le 91\) (current combinatorial record) |
+| **`[bib]` Khinchin 1964** | Continued-fraction background for certified convergents |
+
+11. **`[bib]` Eliahou, S. (1993).** The \(3x+1\) problem: new lower bounds on
+    nontrivial cycle lengths. *Discrete Math.* **118**(1–3), 45–56.
+    doi:[10.1016/0012-365X(93)90052-U](https://doi.org/10.1016/0012-365X(93)90052-U).
+    **Crossref verified 2026-07-18.**
+
+12. **`[bib]` Simons, J. and de Weger, B. (2005).** Theoretical and
+    computational bounds for \(m\)-cycles of the \(3n+1\) problem. *Acta
+    Arith.* **117**(1), 51–70.
+    doi:[10.4064/aa117-1-3](https://doi.org/10.4064/aa117-1-3).
+    **Crossref verified 2026-07-18.**
+
+13. **`[bib]` Hercher, C. (2023).** There are no Collatz \(m\)-cycles with
+    \(m\le 91\). *J. Integer Sequences* **26**(3), Article 23.3.5.
+    arXiv:[2201.00406](https://arxiv.org/abs/2201.00406);
+    journal:[JIS](https://cs.uwaterloo.ca/journals/JIS/VOL26/Hercher/hercher5.html).
+
+14. **`[bib]` Khinchin, A. Ya. (1964).** *Continued Fractions.* Univ. of
+    Chicago Press (Dover reprint 1997).
+
+### 3.D 2-adic structure and conjugacy
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Terras 1976** | Parity vector bijection on \(\mathbb{Z}/2^k\mathbb{Z}\) |
+| **`[bib]` Bernstein–Lagarias 1996** | \(3x+1\) conjugacy map on \(\mathbb{Z}_2\) |
+| **`[bib]` Kingsbery–Levin–Preygel–Silva 2009, 2011** | Measure-preserving / Bernoulli \(p\)-adic shifts |
+
+15. **`[bib]` Bernstein, D. J. and Lagarias, J. C. (1996).** The \(3x+1\)
+    conjugacy map. *Canad. J. Math.* **48**(6), 1154–1169.
+    doi:[10.4153/cjm-1996-060-x](https://doi.org/10.4153/cjm-1996-060-x)
+    (note: Crossref normalizes the suffix as `-x`; older `-6` redirects).
+    **Crossref verified 2026-07-18.**
+
+16. **`[bib]` Kingsbery, J., Levin, A., Preygel, A., Silva, C. E. (2009).**
+    On measure-preserving \(\mathcal{C}^1\) transformations of compact-open
+    subsets of non-archimedean local fields. *Trans. Amer. Math. Soc.*
+    **361**(1), 61–85.
+    doi:[10.1090/S0002-9947-08-04686-2](https://doi.org/10.1090/S0002-9947-08-04686-2);
+    arXiv:[0710.5562](https://arxiv.org/abs/0710.5562).
+
+17. **`[bib]` Kingsbery, J., Levin, A., Preygel, A., Silva, C. E. (2011).**
+    Dynamics of the \(p\)-adic shift and applications. *Discrete Contin. Dyn.
+    Syst.* **30**(1), 209–218.
+    doi:[10.3934/dcds.2011.30.209](https://doi.org/10.3934/dcds.2011.30.209);
+    arXiv:[0903.4226](https://arxiv.org/abs/0903.4226).
+
+### 3.E Modular Markov chains and statistical models
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Matthews–Watts 1984, 1985** | Induced chains mod \(3^k\); non-uniform stationary vectors |
+| **`[bib]` Sinai 2003** | Statistical \((3x+1)\) model |
+| **`[bib]` Kontorovich–Sinai 2007** | Structure theorem for \((3x+1)\) |
+| **`[bib]` Krasikov–Lagarias 2003** | Density bounds via difference inequalities; inverse-tree lower bounds |
+
+18. **`[bib]` Matthews, K. R. and Watts, A. M. (1984).** A generalization of
+    Hasse's generalization of the Syracuse algorithm. *Acta Arith.* **43**(2),
+    167–175.
+
+19. **`[bib]` Matthews, K. R. and Watts, A. M. (1985).** A Markov approach to
+    the generalized Syracuse algorithm. *Acta Arith.* **45**(1), 29–42.
+    doi:[10.4064/aa-45-1-29-42](https://doi.org/10.4064/aa-45-1-29-42).
+    **Crossref verified 2026-07-18.**
+
+20. **`[bib]` Sinai, Y. G. (2003).** Statistical \((3x+1)\) problem.
+    *Comm. Pure Appl. Math.* **56**(7), 1016–1028.
+    doi:[10.1002/cpa.10084](https://doi.org/10.1002/cpa.10084)
+    (**corrected 2026-07-18**: older bib entry used `…10082`, which Crossref
+    resolves to an unrelated paper; the Sinai article is `…10084`).
+
+21. **`[bib]` Kontorovich, A. V. and Sinai, Y. G. (2007).** Structure theorem
+    for \((3x+1)\) problem. *C. R. Math. Acad. Sci. Paris* **345**(8), 421–426.
+    doi:[10.1016/j.crma.2007.09.006](https://doi.org/10.1016/j.crma.2007.09.006).
+
+22. **`[bib]` Krasikov, I. and Lagarias, J. C. (2003).** Bounds for the
+    \(3x+1\) problem using difference inequalities. *Acta Arith.* **109**(3),
+    237–258.
+    doi:[10.4064/aa109-3-4](https://doi.org/10.4064/aa109-3-4).
+    **Crossref verified 2026-07-18.**
+
+23. **`[bib]` Wirsching, G. J. (1998).** *The Dynamical System Generated by
+    the \(3n+1\) Function.* Lecture Notes in Math. **1681**, Springer.
+    doi:[10.1007/BFb0095985](https://doi.org/10.1007/BFb0095985).
+    **Crossref verified 2026-07-18.** Predecessor-set and measure-theoretic
+    monograph; no Lyapunov nonexistence statement (Q4).
+
+### 3.F Lyapunov, RCWA, and obstruction relatives
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Kohl 2008** | Closest reputable *no-go* relative (RCWA conjugacy, not additive potential) |
+| **`[bib]` Karp 1978** | Maximum mean cycle algorithm for the residue-graph certificate |
+
+24. **`[bib]` Kohl, S. (2008).** On conjugates of Collatz-type mappings.
+    *Int. J. Number Theory* **4**(1), 117–120.
+    doi:[10.1142/S1793042108001237](https://doi.org/10.1142/S1793042108001237).
+    **Crossref verified 2026-07-18.**
+
+25. **`[bib]` Karp, R. M. (1978).** A characterization of the minimum cycle
+    mean in a digraph. *Discrete Math.* **23**(3), 309–311.
+    doi:[10.1016/0012-365X(78)90011-0](https://doi.org/10.1016/0012-365X(78)90011-0)
+    (Crossref also indexes a closely related 23(1) page range for the same
+    article family; the manuscript's 23(3):309–311 matches the standard
+    MathSciNet record).
+
+**Contamination note (not retained).** Non-refereed manuscripts claiming a
+strictly decreasing global Lyapunov/entropy functional for Collatz are
+abundant (viXra, ResearchGate, predatory venues, several 2024–2026). They
+assert *existence* for classes this project *rules out*. None is peer-reviewed
+in a reputable venue; none is cited.
+
+### 3.G Transfer operators, Wasserstein, ultrametric optimal transport
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Villani 2009** | Standard OT reference |
+| **`[bib]` Evans–Matsen 2012** | Exact \(W_1\) on metric trees, eq. (5) = `lem:w1formula` |
+| **`[bib]` Kloeckner 2015** | Ultrametric Wasserstein framework (\(\ell^1\) isometry) |
+| **`[bib]` Tao 2022** | Syracuse random variables; TV equidistribution (stronger than \(\tau\)) |
+
+26. **`[bib]` Villani, C. (2009).** *Optimal Transport: Old and New.*
+    Grundlehren **338**, Springer.
+    doi:[10.1007/978-3-540-71050-9](https://doi.org/10.1007/978-3-540-71050-9).
+
+27. **`[bib]` Evans, S. N. and Matsen, F. A. (2012).** The phylogenetic
+    Kantorovich–Rubinstein metric for environmental sequence samples.
+    *J. R. Stat. Soc. Ser. B* **74**(3), 569–592.
+    doi:[10.1111/j.1467-9868.2011.01018.x](https://doi.org/10.1111/j.1467-9868.2011.01018.x);
+    arXiv:[1005.1699](https://arxiv.org/abs/1005.1699).
+    **Crossref + full-text eq. (5) verified 2026-07-17/18.**
+
+28. **`[bib]` Kloeckner, B. R. (2015).** A geometric study of Wasserstein
+    spaces: ultrametrics. *Mathematika* **61**(1), 162–178.
+    doi:[10.1112/S0025579314000059](https://doi.org/10.1112/S0025579314000059);
+    arXiv:[1304.5219](https://arxiv.org/abs/1304.5219).
+    **Crossref verified 2026-07-18** (Crossref lists year 2014 for online;
+    print year 2015 as in the journal issue).
+
+### 3.H Computational verification
+
+| Tag | Role |
+|-----|------|
+| **`[bib]` Oliveira e Silva 2010** | Classical large-scale empirical verification survey chapter |
+| **`[bib]` Barina 2021** | Verification to \(2^{68}\) |
+| **`[bib]` Barina 2025** | Verification to \(2^{71}\) — manuscript's published hypothesis |
+
+29. **`[bib]` Oliveira e Silva, T. (2010).** Empirical verification of the
+    \(3x+1\) and related conjectures. In Lagarias (ed.), *The Ultimate
+    Challenge*, AMS, 189–207.
+
+30. **`[bib]` Barina, D. (2021).** Convergence verification of the Collatz
+    problem. *J. Supercomput.* **77**(3), 2681–2688.
+    doi:[10.1007/s11227-020-03368-x](https://doi.org/10.1007/s11227-020-03368-x).
+    **Crossref verified 2026-07-18.**
+
+31. **`[bib]` Barina, D. (2025).** Improved verification limit for the
+    convergence of the Collatz conjecture. *J. Supercomput.* **81**(7), 810.
+    doi:[10.1007/s11227-025-07337-0](https://doi.org/10.1007/s11227-025-07337-0).
+    **Crossref verified 2026-07-18.** Headline published limit \(N=2^{71}\).
+
+### 3.I Formalization frontier (Tier 3 G10 pointer)
+
+Not a bibliographic claim of the paper; recorded for G10 positioning.
+
+32. **`[formal]` Lean 4 / mathlib4 community.** [leanprover-community.github.io](https://leanprover-community.github.io/).
+
+33. **`[formal]` Collatz Conjecture Challenge (ccchallenge).** Community effort
+    to formalize Collatz-related results in Lean; natural home for a
+    machine-checked `thm:main`. Site: [ccchallenge.org](https://ccchallenge.org/).
+
+34. **`[formal]` This repository, `lean/`.** Lake project (Lean 4.24.0, pure
+    stdlib) proving the arithmetic core of `thm:main`
+    (`modular_obstruction_arith`, `modular_obstruction_integer_form`). See
+    `lean/README.md`.
+
+---
+
+## 4. Priority questions — verdicts
 
 ### Q1 — Priority of the modular-Lyapunov no-go
 
-**Verdict: no prior explicit statement located. The systematic search supports
-(does not prove) the manuscript's framing that the ℤ₊ formulation is not stated
-explicitly in the literature. The closest reputable relative is Kohl (2008).**
+**Verdict: no prior explicit statement located.** Underlying phenomenon
+(class \(-1\bmod 2^k\) rises for \(k\) steps) is Terras/Everett folklore;
+packaging as nonexistence for \(V=\log_2 n+w(n\bmod 2^j)\) on \(\mathbb{Z}_+\)
+was not found. Closest reputable relative: **Kohl (2008)** (RCWA conjugacy
+no-go, different object). Contamination literature asserts the opposite.
 
-What the search established:
-
-- **The underlying phenomenon is folklore, exactly as the manuscript says.**
-  The fact that the residue class `−1 mod 2ᵏ` rises for `k` consecutive
-  accelerated steps (e.g. `n = 2ᵏ − 1`) traces to the stopping-time analyses of
-  Terras (1976) and Everett (1977), both already cited. No descent argument
-  reading only a fixed finite dyadic residue can be uniform — this is understood
-  but, in the sources examined, stated as a heuristic, never as a *nonexistence
-  theorem* for the additive class `V(n) = log₂n + w(n mod 2ʲ)`.
-- **Neither Lagarias bibliography contains the words "Lyapunov", "potential
-  function", or "descent" in connection with such a no-go.** The only structural
-  matches for "monotone/decreasing function" are (i) Wu (1995), on monotonicity
-  of coalescence numbers (unrelated), and (ii) the RCWA line of Stefan Kohl.
-- **Closest reputable relative — Kohl (2008), "On conjugates of Collatz-type
-  mappings".** Kohl proves a genuine *no-go about the conjugating structure*: if
-  a residue-class-wise affine (RCWA) map `f` is "almost contracting" and some
-  iterate decreases almost all integers, then the permutation `σ` that
-  witnesses the almost-contracting property *cannot itself be RCWA*. This is a
-  nonexistence result about a *conjugacy* in the RCWA category, adjacent in
-  spirit to the manuscript's obstruction but about a different object (a
-  conjugating permutation, not an additive `log + modular` potential). It is
-  worth citing precisely to delimit what is and is not new.
-- **The contaminating literature runs the opposite way.** Numerous
-  non-refereed manuscripts claim to *prove* Collatz via a strictly decreasing
-  Lyapunov / entropy functional. None is peer-reviewed in a reputable venue, and
-  each asserts the existence the manuscript rules out for its class. They do not
-  bear on Q1 except as evidence that the *nonexistence* direction is
-  under-served in print — which is consistent with the manuscript's claim.
-
-**Consequence.** The manuscript's careful non-claim of priority is correct and
-can now be stated as the outcome of a *documented* systematic search rather than
-a to-do. Add Kohl (2008) as the closest reputable relative and cite it in
-`rem:originality`, the report's "Note on the Literature", and the extraction
-notes' "Relation to the literature". The notes' motivating **question** should
-be retained but reframed: the search has been performed and did not find it, so
-the question becomes a request for a pointer to any source the search missed.
+**Consequence (applied).** Cite Kohl in `rem:originality`; hedge as documented
+negative search, not proof of absence.
 
 ### Q2 — Wasserstein / mixing state of the art
 
-**Verdict: the ingredients are classical and the strong form of the ℤ₃ result is
-Tao (2022); the exact Dobrushin–Wasserstein *coefficient packaging* was not
-found stated elsewhere, and τ(P) = 1/3 exactness remains open. No contradiction
-with the manuscript; it strengthens Remark `rem:tauk` and the "prior theory"
-paragraph.**
+**Verdict: ingredients classical; coefficient packaging is this project's.**
 
-- **ℤ₃ side.** The manuscript's τ(Pₖ) ≤ 1/3 is an elementary consequence of
-  `|3|₃ = 1/3` and synchronous coupling. The *strong* statement about fine-scale
-  mixing of the Syracuse distribution modulo 3ᵏ is **Tao (2022)** (already
-  cited): he proves total-variation equidistribution of the Syracuse random
-  variables via decay of their characteristic function — a far deeper result
-  than a contraction coefficient. The manuscript already positions itself below
-  Tao; this is confirmed. No source was found stating the *exact*
-  Dobrushin–Wasserstein coefficient for the ℤ₃ Syracuse chain, nor resolving
-  whether the τ = 1/3 upper bound is attained in the supremum over ℤ₃ (the open
-  question of Remark `rem:tauk`). The finite exact values τ₂ = 5/21, τ₃ =
-  455/1387, τ₄ ≈ 0.33333206 are reproduced by the accompanying code and remain
-  the only concrete data on the question.
-- **ℤ₂ side.** The finite-time Haar-averaging / Bernoulli-shift reading of the
-  2-adic Collatz map is classical: the 2-adic conjugacy to the shift is
-  Bernstein–Lagarias (1996, already cited), and the general framework of
-  measure-preserving / Bernoulli transformations on ℤₚ is
-  **Kingsbery–Levin–Preygel–Silva (2009, TAMS)** and its sequel **(2011, DCDS)**
-  "Dynamics of the p-adic shift and applications". The manuscript's Theorem 4.5
-  is a Wasserstein re-reading of this well-established structure, correctly
-  framed as such.
+- \(\tau(P_k)\le 1/3\) is elementary from \(|3|_3=1/3\). Tao 2022 is *far
+  stronger* (TV equidistribution of Syracuse r.v.'s).
+- \(\mathbb{Z}_2\) finite-time Haar averaging is the functional reading of
+  Terras / Bernstein–Lagarias / KLPS 2009–2011.
+- **Update vs earlier draft of this review:** the manuscript now proves
+  \(\tau(P)=1/3\) exactly with closed form
+  \(\tau(P_k)=\tfrac13(1-q_k^2)/(1+q_k+q_k^2)\), \(q_k=2^{-2\cdot 3^{k-2}}\),
+  and **non-attainment** on \(\mathbb{Z}_3\) (`thm:tausharp`). The old “τ
+  exactness open” clause in a previous version of §Q2 is **superseded**.
 
-**Consequence.** Add the two Kingsbery–Levin–Preygel–Silva references as the
-standard citation for p-adic Bernoulli/shift dynamics, in the "prior theory"
-paragraph of the Discussion and the ℤ₂ theorem context. Keep Remark `rem:tauk`'s
-open-question framing; it is genuinely open. No numeric claim changes.
+**Consequence (applied).** Cite KLPS 2009/2011; keep Tao as the stronger mixing
+result; present \(\tau=1/3\) closed form as the project's sharp packaging.
 
-### Q3 — Closed-form W₁ on ultrametric quotients
+### Q3 — Closed-form \(W_1\) on ultrametric quotients
 
-**Verdict: known, and the match is now confirmed *exact* (verified against the
-Evans–Matsen full text, 2026-07-17, under Tier 2 G6; re-verified 2026-07-17
-against arXiv:1005.1699 eq. (5) and arXiv:1304.5219 / Kloeckner Mathematika
-2015). Lemma 5.5 is the specialization to ℤ/pᵏℤ of Evans–Matsen equation (5).
-Keep the self-contained proof; attribution tightened to cite the exact
-equation. G6 closed.**
+**Verdict: known exactly as Evans–Matsen (2012) eq. (5) specialized to the
+rooted \(p\)-ary tree of depth \(k\); Kloeckner (2015) is the ultrametric
+framework.** Self-contained proof retained for reproducibility. G6 closed
+(re-verified arXiv:1005.1699 and arXiv:1304.5219, 2026-07-17/18).
 
-**Exactness check (G6).** Evans–Matsen (2012), §2, eq. (5): for a metric tree
-`T` with length measure `λ`, `W₁(P,Q) = ∫_T |P(τ(y)) − Q(τ(y))| λ(dy)`, where
-`τ(y)` is the subtree below `y` — a sum over edges of (edge length)·(TV
-discrepancy of the two subtree masses). Their eq. (1) is the point-mass
-(weighted-UniFrac) special case. The manuscript's `(ℤ/pᵏℤ, p-adic
-ultrametric)` is exactly the leaf metric of a rooted `p`-ary tree of depth `k`:
-the edge from level `ℓ−1` to `ℓ` has length `p^{−(ℓ−1)} − p^{−ℓ}`, its subtree
-is a congruence cell mod `p^ℓ`, and `2m_ℓ` is the aggregate discrepancy across
-those cells — so `lem:w1formula` is eq. (5) evaluated on that tree, not merely
-a related ultrametric-transport result. Kloeckner (2015) is the correct
-*framework* reference (W₁ as an affine isometry onto a convex subset of `ℓ¹`
-for compact ultrametric spaces; Theorem 1.1 / §3 gives the ℓ¹ coordinates via
-masses of balls, which is the continuous-ultrametric parent of the finite-tree
-formula), but Evans–Matsen is the source of the exact closed form. Manuscript
-updated accordingly (the paragraph preceding `lem:w1formula` now cites
-`[evansmatsen2012, eq. (5)]` explicitly, and the two-line self-contained proof
-is retained so the lemma has no external dependency for reproducibility).
+### Q4 — Priority of the variable-depth no-go
 
-- **Evans & Matsen (2012)**, "The phylogenetic Kantorovich–Rubinstein metric for
-  environmental sequence samples", J. R. Stat. Soc. Ser. B **74**(3), 569–592 —
-  the standard closed-form `W₁` (Kantorovich–Rubinstein) distance on a finite
-  metric tree, as a sum over edges of the total-variation discrepancy of the two
-  sides of the edge. Since (ℤ/pᵏℤ, p-adic ultrametric) is exactly the metric of
-  a rooted `p`-ary tree of depth `k`, the manuscript's Lemma 5.5 telescoping
-  formula is the Evans–Matsen edge formula specialized to that tree.
-- **Kloeckner (2015)**, "A geometric study of Wasserstein spaces: ultrametrics",
-  Mathematika **61**(1), 162–178 — the systematic study of Wasserstein spaces
-  over compact ultrametric spaces, giving the reformulation of the distance
-  specific to the ultrametric case (affine isometry to a convex subset of ℓ¹).
-  This is the natural reference for the ultrametric optimal-transport framework
-  the lemma lives in.
+**Verdict: no prior statement located.** Ingredients folklore; packaging as
+nonexistence for bounded \(w\) under adapted rules / expansion rate / exact
+boundary \(\Lambda\) not found. Engaged boundary object: Terras–Garner
+coefficient stopping time conjecture (open; truth \(\Rightarrow\) no nontrivial
+cycles, Lagarias 1985). Garner 1981 added to the bibliography.
 
-**Consequence.** Add a one-line remark to Lemma 5.5 attributing the closed form
-to the tree/ultrametric optimal-transport literature (Evans–Matsen 2012;
-Kloeckner 2015), noting the lemma is the specialization to ℤ/pᵏℤ. The lemma's
-self-contained proof stays (it is short and keeps the paper reproducible).
-
-### Q4 — Priority of the variable-depth no-go (search of 2026-07-17)
-
-**Verdict: no prior statement located. The ingredients are folklore; the
-packaging as a nonexistence theorem — and the adapted-rule characterization by
-expansion rate — was not found anywhere. Closest engaged relative: the
-Terras–Garner coefficient stopping time conjecture, which the manuscript
-already identifies as the exact boundary of the no-go. Hedge as for Q1: a
-documented negative search, not a proof of absence.**
-
-What the search established:
-
-- **Both mechanical ingredients are classical.** (i) The all-ones ascent — the
-  class `−1 mod 2^ℓ` (Mersenne seeds `2^ℓ − 1`) rises for `ℓ` consecutive
-  accelerated steps — is Terras (1976) / Everett (1977) folklore, exactly as in
-  Q1. (ii) Unbounded single-block growth of the untruncated Syracuse step on
-  Mersenne seeds (`S(2^ℓ−1) = (3^ℓ−1)/2`) is elementary and appears throughout
-  the stopping-time literature. What was **not found** is either ingredient
-  *stated as a nonexistence theorem* for the class `V(n) = log₂n + w(n)`, `w`
-  bounded, under adapted (prefix-code) stopping rules — i.e., nothing resembling
-  `thm:stopping` (telescoping along all-ones chains defeats every bounded
-  correction for every rule stopping `1^s`), `thm:expansion` (the
-  single-block criterion `limsup Γ_σ = ∞`, adaptedness not required), or the
-  characterization `thm:characterize` (obstruction ⟺ expansion rate
-  `E(S) = ∞` for the single-block filter, plus the all-ones/cycle filter for
-  finite maximal prefix codes).
-- **The stopping-time literature runs orthogonally.** Winkler (arXiv:1504.00212)
-  and the related work on residue classes with equal stopping time enumerate
-  and structure the classes `mod 2^σ`; they contain no potential/no-go
-  statement. Wirsching's monograph (LNM 1681, 1998) develops predecessor-set
-  and measure-theoretic machinery, not descent certificates; no Lyapunov
-  nonexistence statement is in its scope.
-- **The engaged boundary object is Terras–Garner.** The coefficient stopping
-  time conjecture (`σ(n) = τ(n)`; equivalently, descent with `w ≡ 0` at the
-  coefficient stopping time) is stated in Terras (1976) and **Garner (1981)**,
-  and Lagarias (1985, §"coefficient stopping time") proves its truth would
-  imply the nonexistence of nontrivial cycles (verified against the survey
-  text, node5 of the online edition). This confirms the manuscript's Remark
-  `rem:boundary`: the surviving non-expansive prototype is precisely an open
-  conjecture, so neither filter can be strengthened to cover it without
-  deciding an open problem. Garner (1981) was previously uncited — it should be
-  added alongside Terras in `rem:boundary` and Definition `def:adapted`.
-- **Kohl / RCWA (re-checked under Q4 lens).** Kohl (2008) remains a no-go about
-  conjugating permutations in the RCWA category; nothing in the RCWA line
-  treats data-dependent stopping schedules or bounded additive corrections.
-- **Tao's setup is variable-depth but almost-all.** Tao (2022) works with
-  data-dependent stopping times (Syracuse random variables, `n^{1/2}`-type
-  weights) in a probabilistic framework; his results are density statements,
-  not pointwise descent certificates, and contain no nonexistence theorem for
-  potential classes. The manuscript already positions itself below Tao.
-- **The contaminating literature again runs the opposite way** (non-refereed
-  "strictly decreasing functional" proofs, several 2024–2026); as in Q1, they
-  assert existence for classes the manuscript refutes, none in a reputable
-  venue, and none engages adapted stopping rules.
-
-**Consequence.** The variable-depth theorems can be presented as new *as
-packaging*, with the same hedged posture as Q1: state that a documented search
-located no prior formulation, claim no absolute priority, and keep the
-falsifiable request-for-pointer framing. Edits: (1) add `garner1981` to
-`references.bib` (verified: L. E. Garner, *On the Collatz 3n+1 algorithm*,
-Proc. Amer. Math. Soc. **82** (1981), no. 1, 19–22,
-doi:10.1090/S0002-9939-1981-0603593-2) and cite it with Terras for the
-coefficient stopping time conjecture; (2) add a "relation to the literature"
-remark for Section `sec:stopping` mirroring `rem:originality`; (3) soften the
-abstract's "previously thought to escape" (no documented prior belief exists —
-the phrase referred to an earlier version of this work) to a neutral
-formulation.
+**Consequence (applied).** `rem:stoppingoriginality`; cite Garner with Terras;
+`thm:exactboundary` makes the boundary a theorem, not a remark.
 
 ---
 
-## 4. Consequences for the manuscript (edit list)
+## 5. Mapping: manuscript claims → literature
 
-Applied in the same session as this review:
+| Manuscript claim / object | Primary literature | This project's contribution |
+|---------------------------|--------------------|----------------------------|
+| Almost-all finite stopping | Terras, Everett | Formalize + exact bad-set rationals (`density.py`) |
+| Almost-all almost-bounded | Tao 2022 | Cite; G11 program, no new theorem |
+| Cycle exclusion Diophantine | Eliahou, Simons–de Weger | Exact convergent certification |
+| Cycle combinatorial record | Hercher 2023 | Cite; do not claim improvement |
+| Verification limit \(2^{71}\) | Barina 2025 | Conditional bounds at that \(N\) |
+| Parity bijection / shift | Terras; Bernstein–Lagarias | Exact checks mod \(2^k\) |
+| \(p\)-adic Bernoulli | KLPS 2009/2011 | Wasserstein re-reading (`thm:z2`) |
+| Chains mod \(3^k\) | Matthews–Watts | Exact stationary + rank collapse |
+| Modular Lyapunov no-go | Folklore (Terras/Everett); no prior thm | `thm:main` + Lean arithmetic core |
+| RCWA relative | Kohl 2008 | Delimit novelty |
+| Variable-depth no-go | — (search negative) | `thm:stopping`, `thm:expansion`, `thm:exactboundary` |
+| Coefficient CSTC | Terras, Garner, Lagarias | Boundary prototype of the no-go |
+| \(W_1\) on trees / ultrametrics | Evans–Matsen; Kloeckner | Specialize + self-contained proof |
+| \(\tau(P)=1/3\) sharp | — (upper bound folklore) | Closed form + non-attainment |
+| Max-mean cycle algorithm | Karp 1978 | Residue-graph certificate |
 
-1. **`paper/references.bib`** — five new verified entries:
-   `kohl2008` (Q1), `kingsberyetal2009` + `kingsberyetal2011` (Q2),
-   `kloeckner2015` + `evansmatsen2012` (Q3).
-2. **`paper/main.tex`**
-   - `rem:originality` (§3): note the systematic search; cite Kohl (2008) as the
-     closest reputable relative and RCWA no-go.
-   - `rem:tauk` (§4): unchanged in substance; τ = 1/3 exactness stays open (Q2
-     confirmed nothing supersedes it).
-   - `thm:z2` context / Discussion "prior theory": cite Kingsbery–Levin–Preygel–
-     Silva (2009, 2011) for the p-adic Bernoulli/shift structure.
-   - `lem:w1formula` (§5): add Evans–Matsen (2012) and Kloeckner (2015)
-     attribution.
-3. **`REPORT.md` + `RELATORIO.md`** — mirror the same substantive additions in
-   both languages (same turn): the "Note on the Literature" gains Kohl (2008) and
-   the "systematic search" phrasing; the Wasserstein section gains the
-   prior-theory citations; the exact-W₁ description gains the OT attribution.
-4. **`note/lyapunov-obstruction-en.tex` + `note/nota-obstrucao-lyapunov-pt.tex`**
-   — the "Relation to the literature" section reframes the priority question as
-   the outcome of a documented search and cites Kohl (2008) as the closest
-   relative (both languages, same turn).
+---
 
-Applied in the Q4 session (2026-07-17): `garner1981` added to
-`paper/references.bib`; Garner cited in Definition `def:adapted` and Remark
-`rem:boundary`; new Remark `rem:stoppingoriginality` (relation of the
-variable-depth theorems to the literature) added to Section `sec:stopping`;
-abstract's "previously thought to escape" softened.
+## 6. Consequences for repository files
 
-**Bibliographic records (all DOIs confirmed via Crossref):**
+| File | Status |
+|------|--------|
+| `paper/references.bib` | Contains all **`[bib]`** entries; Sinai DOI corrected to `10.1002/cpa.10084` if needed |
+| `paper/main.tex` | Cites the thematic core; originality hedges match Q1/Q4 |
+| `REPORT.md` / `RELATORIO.md` | Mirror substantive citations bilingually |
+| `todo/G11_PROGRAM.md` | Research program for §3.B beyond the submission |
+| `lean/README.md` | Formalization status for §3.I |
+| `collatz/density.py` | Laboratory hooks for Terras bad-set / log-density partials |
 
-- Kohl, S. (2008). On conjugates of Collatz-type mappings. *Int. J. Number
-  Theory* **4**(1), 117–120. doi:10.1142/S1793042108001237.
-- Kingsbery, J., Levin, A., Preygel, A., Silva, C. E. (2009). On
-  measure-preserving 𝒞¹ transformations of compact-open subsets of
-  non-archimedean local fields. *Trans. Amer. Math. Soc.* **361**, 61–85.
-  doi:10.1090/S0002-9947-08-04686-2. arXiv:0710.5562.
-- Kingsbery, J., Levin, A., Preygel, A., Silva, C. E. (2011). Dynamics of the
-  p-adic shift and applications. *Discrete Contin. Dyn. Syst.* **30**(1),
-  209–218. doi:10.3934/dcds.2011.30.209. arXiv:0903.4226.
-- Kloeckner, B. (2015). A geometric study of Wasserstein spaces: ultrametrics.
-  *Mathematika* **61**(1), 162–178. doi:10.1112/S0025579314000059.
-  arXiv:1304.5219.
-- Evans, S. N., Matsen, F. A. (2012). The phylogenetic Kantorovich–Rubinstein
-  metric for environmental sequence samples. *J. R. Stat. Soc. Ser. B* **74**(3),
-  569–592. doi:10.1111/j.1467-9868.2011.01018.x. arXiv:1005.1699.
-- Garner, L. E. (1981). On the Collatz 3n+1 algorithm. *Proc. Amer. Math.
-  Soc.* **82**(1), 19–22. doi:10.1090/S0002-9939-1981-0603593-2.
+**DOI fix applied with this revision:** Sinai (2003) in `references.bib` must
+use `doi = {10.1002/cpa.10084}` (not `…10082`). Bernstein–Lagarias DOI may use
+Crossref's canonical `10.4153/cjm-1996-060-x`.
 
-## 5. Limitations of this review
+---
 
-- **MathSciNet / zbMATH deep review text** was not exhaustively mined; the
-  searches above relied on Lagarias's annotated bibliographies (which curate the
-  3x+1 corpus through ~2012), arXiv full text, Crossref, and forward citation
-  chasing. A negative result on Q1 is therefore *strong but not a proof of
-  absence*; the reframed question in the extraction notes remains the honest
-  posture.
-- Q1's negative finding concerns the *specific additive class* `log₂n + w(n mod
-  2ʲ)`. Adjacent no-go results about other certificate classes (e.g. Kohl's RCWA
-  conjugacy result) exist and are now cited; a result phrased differently but
-  logically equivalent could in principle exist under terminology the search did
-  not cover.
+## 7. Limitations of this review
+
+1. **Negative results (Q1, Q4) are documented searches, not proofs of
+   absence.** MathSciNet review text was not exhaustively mined beyond
+   Lagarias's curated corpus, arXiv, Crossref, and forward citation chasing.
+2. **Pre-digital venues** (Allouche séminaire notes; Korec *Math. Slovaca*
+   1994) may lack Crossref DOIs; they are retained via the Tao/Lagarias
+   citation chain with that caveat marked.
+3. **Q1** concerns the *specific* additive class \(\log_2 n+w(n\bmod 2^j)\).
+   Logically equivalent statements under different terminology could exist.
+4. **G11 almost-all program** is deliberately *not* folded into the
+   manuscript's claimed results; §3.B is orientation, not a theorem list for
+   the paper.
+5. **Formalization literature** is a living frontier; §3.I will date quickly.
+
+---
+
+## 8. Quick reference — all DOIs (Crossref-audited 2026-07-18)
+
+| Key | DOI |
+|-----|-----|
+| terras1976 | 10.4064/aa-30-3-241-252 |
+| everett1977 | 10.1016/0001-8708(77)90087-1 |
+| garner1981 | 10.1090/S0002-9939-1981-0603593-2 |
+| lagarias1985 | 10.1080/00029890.1985.11971528 |
+| eliahou1993 | 10.1016/0012-365X(93)90052-U |
+| bernsteinlagarias1996 | 10.4153/cjm-1996-060-x |
+| krasikovlagarias2003 | 10.4064/aa109-3-4 |
+| sinai2003 | **10.1002/cpa.10084** |
+| simonsdeweger2005 | 10.4064/aa117-1-3 |
+| kontorovichsinai2007 | 10.1016/j.crma.2007.09.006 |
+| kohl2008 | 10.1142/S1793042108001237 |
+| kingsberyetal2009 | 10.1090/S0002-9947-08-04686-2 |
+| kingsberyetal2011 | 10.3934/dcds.2011.30.209 |
+| evansmatsen2012 | 10.1111/j.1467-9868.2011.01018.x |
+| kloeckner2015 | 10.1112/S0025579314000059 |
+| wirsching1998 | 10.1007/BFb0095985 |
+| villani2009 | 10.1007/978-3-540-71050-9 |
+| tao2022 | 10.1017/fmp.2022.8 |
+| barina2021 | 10.1007/s11227-020-03368-x |
+| barina2025 | 10.1007/s11227-025-07337-0 |
+| karp1978 | 10.1016/0012-365X(78)90011-0 |
+| matthewswatts1985 | 10.4064/aa-45-1-29-42 |
+| hercher2023 | arXiv:2201.00406 (JIS 26 (2023) Art. 23.3.5) |
+
+arXiv companions: Lagarias bib. `math/0309224`, `math/0608208`; Tao
+`1909.03562`; Evans–Matsen `1005.1699`; Kloeckner `1304.5219`; KLPS
+`0710.5562`, `0903.4226`; Hercher `2201.00406`.
