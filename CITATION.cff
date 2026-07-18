@@ -30,8 +30,7 @@ keywords:
   - transfer operator
   - exact arithmetic
   - reproducibility
-# Fill in after the Zenodo archive is minted (G9):
-# identifiers:
-#   - type: doi
-#     value: 10.5281/zenodo.XXXXXXXX
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21423111
 # preferred-citation then points at the arXiv / journal version once available.
