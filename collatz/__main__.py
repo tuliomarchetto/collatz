@@ -280,8 +280,8 @@ def main(argv=None) -> int:
         if args.interface:
             ran = True
             print("Almost-all ingredient map (G11; see todo/G11_PROGRAM.md):\n")
-            for k, v in density.interface_map().items():
-                print(f"  • {k}\n      → {v}")
+            for label, description in density.interface_map().items():
+                print(f"  • {label}\n      → {description}")
         if args.bad_set is not None:
             ran = True
             print(f"Exact Terras bad-set measure mod 2^k, k = 1..{args.bad_set}:")
