@@ -166,7 +166,7 @@ Since $w$ has finite domain, it is bounded, and on the integers it acts as a per
 \begin{figure}[h]
     \centering
     \input{residue_graph_j4}
-    \caption{The residue graph $G_4$ on $\Z/16\Z$ (Section~\ref{sec:karp}), generated directly from the laboratory code (\texttt{collatz.invariants.transition\_graph\_mod2j}, rendered by the accompanying script \texttt{paper/make\_residue\_graph\_figure.py}): each residue $r$ has the two successors $T(r) \bmod 16$ and $T(r+16) \bmod 16$. Solid arcs leave odd residues (shaded) and carry weight $\log_2 3 - 1 \approx 0.585$; dotted arcs leave even residues and carry weight $-1$. The graph has exactly two self-loops: at $0$, of weight $-1$, and at $15 \equiv -1 \pmod{16}$ (dark), of weight $\log_2 3 - 1 > 0$ --- the uncompensable positive-gain loop of Theorem~\ref{thm:main}, which Karp's algorithm returns as an optimal cycle at every tested level (Section~\ref{sec:results-karp}).}
+    \caption{\raggedright The residue graph $G_4$ on $\Z/16\Z$ (Section~\ref{sec:karp}), generated from the laboratory code by \texttt{paper/make\_residue\_graph\_figure.py} (via \texttt{collatz.invariants.transition\_graph\_mod2j}). Each residue~$r$ has the two successors $T(r)\bmod 16$ and $T(r+16)\bmod 16$. Solid arcs leave odd residues (shaded) and carry weight $\log_2 3-1\approx 0.585$; dotted arcs leave even residues and carry weight~$-1$. Exactly two self-loops: at~$0$ (weight~$-1$) and at $15\equiv -1\pmod{16}$ (dark, weight $\log_2 3-1>0$) --- the uncompensable positive-gain loop of Theorem~\ref{thm:main}, returned by Karp's algorithm as an optimal cycle at every tested level (Section~\ref{sec:results-karp}).}
     \label{fig:residue_graph}
 \end{figure}
 
@@ -430,8 +430,8 @@ For $k=1$ the hypothesis forces $a=0$, so $T=m/2\le m$. Assume the claim holds f
 Suppose $m\ge 3$ is odd. Set $m_{1}=(3m+1)/2\ge 5$. Then $T=T^{k-1}(m_{1})$ and $a=1+a_{1}$, so $3^{a_{1}+1}=3^{a}\le\tfrac23\cdot 2^{k}\le 2^{k}$. In particular $3^{a_{1}+1}\le 2^{(k-1)+1}$, so the inductive hypothesis at length $k-1$ yields $T^{k-1}(m_{1})\le m_{1}$. Expanding the first odd step, $T=(3^{a}m+3^{a_{1}}+2b_{1})/2^{k}$ with $0\le b_{1}<3^{a_{1}}2^{k-1}$, and therefore
 \begin{align*}
 T-m
-&\;\le\; \frac{(3^{a}-2^{k})m+3^{a_{1}}+2(3^{a_{1}}2^{k-1}-1)}{2^{k}}
-\;\le\; \Bigl(\frac{3^{a}}{2^{k}}-1\Bigr)m + 2\cdot 3^{a_{1}}
+&\;\le\; \frac{(3^{a}-2^{k})m+3^{a_{1}}+2(3^{a_{1}}2^{k-1}-1)}{2^{k}} \\
+&\;\le\; \Bigl(\frac{3^{a}}{2^{k}}-1\Bigr)m + 2\cdot 3^{a_{1}}
 \;\le\; -\frac{m}{3} + \frac{2^{k+1}}{9},
 \end{align*}
 where the last step uses $3^{a}/2^{k}\le\tfrac23$ and $3^{a_{1}}=3^{a-1}\le 2^{k+1}/9$. If $T\ge m+1$, residual and the hypothesis give $m+1\le T\le 3^{a}\le\tfrac23\cdot 2^{k}$, hence $2^{k}\ge\tfrac32(m+1)$. Substitute:
@@ -516,7 +516,11 @@ If $3^{a}\ge 2^{L}$, the right-hand side equals $2\max(1,3^{a}/2^{L})$. If $3^{a
 \medskip
 \noindent\textit{Small seeds, induction on $L$.} For $L=1$ the only seed is $n=1$, already checked. Assume the claim holds for length $L-1$ and every seed, and fix $1\le n<2^{L}$.
 
-If $n$ is even, $n=2m$ with $1\le m<2^{L-1}$, then $T^{L}(n)=T^{L-1}(m)$ with the same $a$. The inductive hypothesis yields $T^{L-1}(m)\le 2\max(1,3^{a}/2^{L-1})\,m$, so $T^{L}(n)/n\le \max(1,3^{a}/2^{L-1})$. The elementary comparison $\max(1,3^{a}/2^{L-1})\le 2\max(1,3^{a}/2^{L})$ is the same three-case check as in the even branch of Lemma~\ref{lem:residual}'s companion estimates (cf.\ the large-seed even reduction).
+If $n$ is even, $n=2m$ with $1\le m<2^{L-1}$, then $T^{L}(n)=T^{L-1}(m)$ with the same $a$. The inductive hypothesis yields $T^{L-1}(m)\le 2\max(1,3^{a}/2^{L-1})\,m$, so $T^{L}(n)/n\le \max(1,3^{a}/2^{L-1})$. The comparison
+\[
+\max\bigl(1,3^{a}/2^{L-1}\bigr) \;\le\; 2\max\bigl(1,3^{a}/2^{L}\bigr)
+\]
+is the same three-case check as in the even branch of the companion estimates to Lemma~\ref{lem:residual} (cf.\ the large-seed even reduction).
 
 If $n$ is odd, set $m=(3n+1)/2\ge 2$ and let $a'$ be the odd count of the length-$(L-1)$ word of $m$, so $a=a'+1$ and $T^{L}(n)=T^{L-1}(m)$. Write $\alpha=3^{a'}/2^{L-1}$.
 
@@ -541,16 +545,30 @@ We can now state the boundary of the no-go as a theorem rather than a heuristic.
 
 \begin{definition}[Walk-gain supremum]\label{def:walkgain}
 Let $\sigma$ be any schedule and $E$ a finite exception set. A \emph{$\sigma$-walk} (avoiding $E$) is a finite sequence $n_0, n_1, \dots, n_r$ ($r \ge 0$) of odd positive integers with $n_{i+1} = F_\sigma(n_i)$, each $n_i$ satisfying $\sigma(n_i) < \infty$ and $n_i \notin E$ for $0 \le i \le r-1$. Its \emph{gain} is $\sum_{i=0}^{r-1} \Gamma_\sigma(n_i)$ (with $\Gamma_\sigma$ as in \eqref{eq:gamma}; the empty walk $r=0$ has gain $0$). Set
-\[
-\Lambda(\sigma, E) \;:=\; \sup\Bigl\{\, \textstyle\sum_{i=0}^{r-1} \Gamma_\sigma(n_i) \;:\; n_0,\dots,n_r \text{ a } \sigma\text{-walk avoiding } E \,\Bigr\} \;\in\; [0, +\infty].
-\]
+\begin{multline*}
+\Lambda(\sigma, E)
+\;:=\;
+\sup\Bigl\{\,
+  \textstyle\sum_{i=0}^{r-1} \Gamma_\sigma(n_i)
+  \;:\;
+  n_0,\dots,n_r \text{ a $\sigma$-walk avoiding $E$}
+\,\Bigr\} \\
+\;\in\; [0, +\infty].
+\end{multline*}
 \end{definition}
 
 \begin{theorem}[Exact boundary of the bounded-correction no-go]\label{thm:exactboundary}
 Let $\sigma : \Z_+ \to \N \cup \{\infty\}$ be an arbitrary schedule and $E$ a finite exception set. A bounded $w : \Z_+ \to \R$ making $V(n) = \log_2 n + w(n)$ satisfy the block descent $V(F_\sigma(n)) \le V(n)$ at every odd $n \notin E$ with $\sigma(n) < \infty$ \textbf{exists if and only if} $\Lambda(\sigma, E) < +\infty$. When it is finite, the forward cumulative gain
-\[
-w^\star(n) \;:=\; \sup\Bigl\{\, \textstyle\sum_{i=0}^{r-1}\Gamma_\sigma(m_i) \;:\; m_0 = n,\ m_0,\dots,m_r \text{ a } \sigma\text{-walk avoiding } E \,\Bigr\}
-\]
+\begin{multline*}
+w^\star(n)
+\;:=\;
+\sup\Bigl\{\,
+  \textstyle\sum_{i=0}^{r-1}\Gamma_\sigma(m_i)
+  \;:\;
+  m_0 = n,\\
+  \qquad m_0,\dots,m_r \text{ a $\sigma$-walk avoiding $E$}
+\,\Bigr\}
+\end{multline*}
 is an explicit solution, with $0 \le w^\star \le \Lambda(\sigma,E)$; it is the pointwise-minimal nonnegative solution, and $\operatorname{osc}(w) \ge \Lambda(\sigma,E)$ for every solution $w$.
 \end{theorem}
 
@@ -1141,7 +1159,7 @@ Finally, we emphasize the reproducibility of our computational verifications. Al
 The author reports no competing interests. This research received no external funding.
 
 \section*{Data and code availability}
-The Python package \texttt{collatz}, the test suite, the reproduction script \texttt{reproduce\_paper\_results.py}, and this manuscript are available in the accompanying repository under the MIT license (code) and CC~BY~4.0 (text). All results reproduce with CPython $\ge 3.9$ with no third-party dependencies. Figure~\ref{fig:residue_graph} is itself a generated artifact of the package, certified by the reproduction script. Upon submission the exact repository state is archived on Zenodo for a citable DOI and the manuscript is deposited on arXiv (\texttt{math.NT}, cross-list \texttt{math.DS}); the DOI will be linked here once issued (see \texttt{CITATION.cff} and \texttt{DEPOSIT.md} in the repository).
+The Python package \texttt{collatz}, the test suite, the reproduction script \texttt{reproduce\_paper\_results.py}, and this manuscript are available at \url{https://github.com/tuliomarchetto/collatz} under the MIT license (code) and CC~BY~4.0 (text). All results reproduce with CPython $\ge 3.9$ with no third-party dependencies. Figure~\ref{fig:residue_graph} is itself a generated artifact of the package, certified by the reproduction script. Upon submission the exact repository state is archived on Zenodo for a citable DOI and the manuscript is deposited on arXiv (\texttt{math.NT}, cross-list \texttt{math.DS}); the DOI will be linked here once issued (see \texttt{CITATION.cff} and \texttt{DEPOSIT.md} in the repository).
 
 \bibliographystyle{amsplain}
 \bibliography{references}
