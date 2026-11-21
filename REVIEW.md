@@ -6,6 +6,14 @@
 elementary and computational number theory)
 **Date:** 2026-07-10
 
+## Version and assurance limitation (current repair)
+
+This is a **historical simulated review of the earlier R1–R8 theorem inventory**, not an independent referee certification and not an assurance about the current manuscript. The historical claims below that every proof was checked, no errors were found, and soundness was high apply only to the review's stated earlier scope; they are **withdrawn as assurances about the current stopping-time package**. The changing theorem numbers, verification record and open-point inventory below must not be read as current status.
+
+The subsequent `LACUNA_RESEARCH_REVIEW.md` identified real proof defects: an odd-only terminal-vertex definition invalidated the former exact-boundary statement; the uniform-gap chain used incorrect arithmetic, an invalid inequality substitution, a finite-check acceptance of an infinite family, and a false admissibility inequality. The unrestricted non-strict potential claim was also false: constant $V$ always works.
+
+The current manuscript repairs walks to allow arbitrary positive endpoints and empty walks at every positive vertex, supplies the supremum argument, and separates unrestricted non-strict feasibility from conditional strict hitting-time descent. It withdraws the invalid uniform-gap proof and marks the auxiliary assertion, uniform gap and dependent converse as conjectural/conditional. It narrows residual-rule classification and preserves independent obstructions and transfer-model results. The bilingual reports reflect these changes. This correction note is a scope/status record, **not a fresh comprehensive proof review or a claim that the open estimates are proved**. Historical computational execution statements below were not re-executed by this note.
+
 ---
 
 ## 1. Summary of the submission

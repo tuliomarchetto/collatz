@@ -155,10 +155,21 @@ any expanding block; **log-affine** `w = β log₂ n + b` with `b` bounded
 and `limsup Γ = +∞` forces `β ≤ −1`; **sublogarithmic envelopes**
 (`3^(q−p₋) > 2^(q+p₊)`) and **monotone** corrections also fail. The
 module builds the **block graph** of any finite rule (exact Kraft sum),
-runs Karp, and certifies obstruction by `3^A > 2^L`. Residual escapees
-are *non-expansive* rules (`Γ` bounded above); the prototype is Terras's
-coefficient stopping time, whose descent claim with `w ≡ 0` *is* the open
-coefficient stopping-time conjecture — so the no-go is sharp.
+runs Karp, and certifies obstruction by `3^A > 2^L`. Surviving the
+single-block filter requires `Γ` bounded above; this is not a complete
+classification or a proof of nonpositive coefficient gain. Terras's
+coefficient stopping time is a candidate whose coverage and global descent
+remain open; finite truncations do not prove the untruncated conjecture.
+
+`cylinder_descent_certificate(word)` now separates coefficient contraction
+from actual affine descent. Writing `T^L(n) = (3^a*n+b)/2^L`, a contracting
+word descends exactly when `(2^L-3^a)*n >= b` (strictly for `>`). The function
+computes the parity cylinder's smallest positive seed and first descent seed
+using only integers. These local certificates do not establish that a rule
+covers all positive integers. The manuscript's length-free uniform-gap bound
+and its dependent characterization direction remain conditional pending a
+valid proof; the independent all-ones and single-block obstructions do not
+rely on that bound.
 
 ### 7. `symmetries` — affine conjugations and rigidity
 Exhaustive search for `φ(x) = ax + b` such that `φ∘T_d = T_{d'}∘φ`.

@@ -436,16 +436,16 @@ def monotone_witness(s: int) -> Dict[str, object]:
 
 
 def unrestricted_potential_exists_iff_no_cycles() -> bool:
-    """Exact-limit proposition: The unrestricted unbounded class is nonempty
-    IF AND ONLY IF Z_+ has no nontrivial cycle (and with finite exceptions
-    allowed, iff at most finitely many cycles).
+    """Retired assertion; this function is not a mathematical certificate.
 
-    Proof by order-embedding of the acyclic orbit poset into Q.
-    This establishes that the sublogarithmic frontier is the provable limit
-    of the obstruction theory; beyond it, ruling out potentials is logically
-    equivalent to proving the conjecture itself.
+    For unrestricted corrections and non-strict descent, w(n)=-log2(n)
+    makes V identically zero, even on cycles. The former iff claim was
+    false in that setting. Keep the name only to fail explicitly for old
+    callers rather than silently certifying a theorem.
     """
-    return True
+    raise NotImplementedError(
+        "The unrestricted non-strict iff claim is false: V=0 always works."
+    )
 
 
 # ----------------------------------------------------------------------
@@ -476,6 +476,49 @@ def affine_block_constants(word: Word) -> Tuple[int, int, int]:
             a += 1
         L += 1
     return a, b, L
+
+
+def cylinder_descent_certificate(word: Word) -> Dict[str, object]:
+    """Exact descent thresholds for a nonempty binary parity cylinder.
+
+    With A=3^a, D=2^L and affine constant b, the endpoint is
+    (A*n+b)/D. If D>A, non-strict descent is equivalent to
+    n>=ceil(b/(D-A)); strict descent is equivalent to n>b/(D-A).
+    Intersect these thresholds with n=residue mod D. The ratio A/D+b/(D*n)
+    is nonincreasing in positive n, so its smallest seed is the worst case.
+    These are cylinder certificates, not a claim that a stopping rule covers
+    every integer or that cumulative gains of a general rule are bounded.
+    """
+    if not word or any(bit not in (0, 1) for bit in word):
+        raise ValueError("word must be a nonempty binary parity word")
+    residue = 0
+    for i, bit in enumerate(word):
+        if iterate_T(residue, i) % 2 != bit:
+            residue += 1 << i
+    a, b, length = affine_block_constants(word)
+    modulus, multiplier = 1 << length, 3 ** a
+    first = residue or modulus
+    gap = modulus - multiplier
+
+    def first_at_least(bound: int) -> int:
+        return first + max(0, (bound - first + modulus - 1) // modulus) * modulus
+
+    return {
+        "residue": residue,
+        "modulus": modulus,
+        "affine_constant": b,
+        "multiplier": multiplier,
+        "smallest_positive_seed": first,
+        "coefficient_contracts": gap > 0,
+        "all_positive_seeds_descend_nonstrictly": gap * first >= b,
+        "all_positive_seeds_descend_strictly": gap * first > b,
+        "first_nonstrict_descent_seed": (
+            first_at_least((b + gap - 1) // gap) if gap > 0 else None
+        ),
+        "first_strict_descent_seed": (
+            first_at_least(b // gap + 1) if gap > 0 else None
+        ),
+    }
 
 
 def word_gain_g(word: Word) -> float:

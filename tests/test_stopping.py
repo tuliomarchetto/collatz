@@ -302,8 +302,10 @@ def test_monotone_witness():
         assert wtn["endpoint"] > wtn["witness"]
 
 
-def test_unrestricted_potential_exists_iff_no_cycles():
-    assert unrestricted_potential_exists_iff_no_cycles() is True
+def test_retired_unrestricted_claim_does_not_certify_a_theorem():
+    import pytest
+    with pytest.raises(NotImplementedError, match="non-strict"):
+        unrestricted_potential_exists_iff_no_cycles()
 
 
 def test_exact_boundary_walk_gain_all_ones_rule():

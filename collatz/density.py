@@ -123,7 +123,7 @@ def log_density_partial(members: Sequence[int], n: int) -> Fraction:
     if n < 1:
         raise ValueError("n must be ≥ 1")
     num = Fraction(0)
-    for a in members:
+    for a in set(members):
         if 1 <= a <= n:
             num += Fraction(1, a)
     return num / harmonic_partial(n)
@@ -139,6 +139,7 @@ def residue_class_log_density_partial(
     """
     if modulus <= 0:
         raise ValueError("modulus must be positive")
+    residue %= modulus
     members = range(residue if residue > 0 else modulus, n + 1, modulus)
     return log_density_partial(members, n)
 
@@ -169,10 +170,12 @@ class StoppingProbe:
 def stopping_time_to_one(n: int, d: int = 1, max_steps: int = 1_000_000) -> Optional[int]:
     """Total accelerated steps from n down to 1, or None if max_steps hit."""
     x = n
-    for s in range(max_steps):
+    if x == 1:
+        return 0
+    for s in range(1, max_steps + 1):
+        x = T(x, d)
         if x == 1:
             return s
-        x = T(x, d)
     return None
 
 

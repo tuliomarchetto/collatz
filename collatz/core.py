@@ -48,18 +48,20 @@ def syracuse(n: int, d: int = 1) -> int:
 def trajectory(
     n: int, d: int = 1, max_steps: int = 10_000, accelerated: bool = True
 ) -> List[int]:
-    """Trajectory of n under T (or C), until reaching 1, a locally
-    repeated value (short cycle), or max_steps."""
+    """Trajectory of n under T (or C), until reaching 1, the first
+    repeated value, or max_steps (including the repeated endpoint)."""
     step = T if accelerated else collatz_step
     out = [n]
+    seen = {n}
     x = n
     for _ in range(max_steps):
         if x == 1 and d == 1:
             break
         x = step(x, d)
         out.append(x)
-        if x == n:  # cycle closed
+        if x in seen:
             break
+        seen.add(x)
     return out
 
 
@@ -103,10 +105,12 @@ def stopping_time(n: int, d: int = 1, max_steps: int = 10_000) -> int:
 def total_stopping_time(n: int, d: int = 1, max_steps: int = 10_000_000) -> int:
     """Number of T steps until reaching 1; -1 if not reached within max_steps."""
     x = n
-    for i in range(max_steps):
+    if x == 1:
+        return 0
+    for i in range(1, max_steps + 1):
+        x = T(x, d)
         if x == 1:
             return i
-        x = T(x, d)
     return -1
 
 
