@@ -13,8 +13,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Install linters
-        run: python -m pip install flake8 mypy
+      - name: Install linters and test dependencies
+        run: python -m pip install -e ".[test]" flake8 mypy
       - name: Run Flake8
         run: flake8 collatz/ tests/
       - name: Run Mypy
@@ -26,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15]
+        # Python 3.9 has no setup-python build for Ubuntu 26.04.
+        os: [ubuntu-24.04, macos-15]
         python-version: ["3.9", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v7
